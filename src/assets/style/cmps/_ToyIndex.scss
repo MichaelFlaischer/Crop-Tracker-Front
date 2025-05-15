@@ -1,0 +1,18 @@
+.toy-index {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    .pagination {
+        text-align: center;
+
+        .btn {
+            text-align: center;
+        }
+    }
+
+    .loader-container {
+        justify-content: center;
+        flex: 1;
+    }
+}

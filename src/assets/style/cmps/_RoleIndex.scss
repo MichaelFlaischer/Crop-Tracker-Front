@@ -1,0 +1,103 @@
+.role-index {
+  direction: rtl;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  h1 {
+    text-align: center;
+    font-size: 2.2rem;
+    margin-bottom: 2rem;
+  }
+
+  .add-role-btn {
+    display: block;
+    margin: 0 auto 2rem auto;
+    padding: 0.75em 1.5em;
+    font-size: 1rem;
+    background-color: #38a169;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: #2f855a;
+    }
+  }
+
+  .role-list {
+    list-style: none; // מסיר את הנקודה
+    padding: 0; // מוודא שאין ריווח פנימי מיותר
+    margin: 0;
+
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+
+    @media (max-width: 1024px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 640px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .role-preview {
+    background-color: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: translateY(-3px);
+    }
+
+    h3 {
+      font-size: 1.3rem;
+      margin-bottom: 0.5rem;
+      color: #2d3748;
+    }
+
+    p {
+      color: #4a5568;
+      margin-bottom: 1rem;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+    }
+    button {
+      padding: 0.5em 1em;
+      border-radius: 6px;
+      border: none;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+
+      &.edit-btn {
+        background-color: #3182ce;
+        color: white;
+
+        &:hover {
+          background-color: #2b6cb0;
+        }
+      }
+
+      &.remove-btn {
+        background-color: #e53e3e;
+        color: white;
+
+        &:hover {
+          background-color: #c53030;
+        }
+      }
+    }
+  }
+}

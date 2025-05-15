@@ -1,0 +1,39 @@
+.login {
+  width: 100%;
+
+  .form {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5em;
+    max-width: 100%;
+
+    input {
+      flex: 1;
+      min-width: 120px;
+      padding: 0.4em 0.6em;
+      font-size: 0.9rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      direction: rtl;
+      text-align: right;
+    }
+
+    .btn {
+      padding: 0.4em 1em;
+      font-size: 0.9rem;
+      background-color: darken($clr-brand1, 10%);
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 4px;
+      white-space: nowrap;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: darken($clr-brand1, 15%);
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+.toy-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    p {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    span {
+        font-weight: initial;
+    }
+}

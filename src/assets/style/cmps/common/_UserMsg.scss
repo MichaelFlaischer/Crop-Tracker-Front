@@ -1,0 +1,28 @@
+.user-msg {
+    display: flex;
+    align-items: center;
+
+    position: fixed;
+    bottom: 1em;
+    right: 1em;
+
+    font-weight: 700;
+    border-radius: 4px;
+    padding: 0.2em 0.5em;
+
+    &.success {
+        background-color: $clr-tertiary;
+        color: $clr-dark;
+    }
+
+    &.error {
+        background-color: $clr-tertiary;
+        color: $clr-dark;
+    }
+
+    button {
+        font-size: 0.5em;
+        float: right;
+        margin-inline-start: 1em;
+    }
+}

@@ -1,0 +1,170 @@
+.app-header {
+  background-color: $clr-brand1;
+  color: $clr-primary;
+  padding: 1em calc(1em + $layoutPadding);
+  box-sizing: border-box;
+  direction: rtl;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1em;
+
+  position: relative;
+  z-index: 10;
+  min-height: 80px;
+  grid-column: 1 / -1;
+
+  // צד ימין - תפריט ניווט
+  .nav-wrapper {
+    flex: 1;
+    margin: 0;
+    padding: 0;
+
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      gap: 1em;
+      flex-wrap: wrap;
+
+      li {
+        position: relative;
+
+        a,
+        span {
+          color: $clr-primary;
+          text-decoration: none;
+          padding: 0.5em 0.8em;
+          display: block;
+
+          &:hover {
+            background-color: darken($clr-brand1, 10%);
+          }
+        }
+
+        span.non-clickable {
+          cursor: default;
+
+          &:hover {
+            background-color: darken($clr-brand1, 10%);
+          }
+        }
+
+        &:hover > ul {
+          display: block;
+        }
+
+        ul {
+          display: none;
+          position: absolute;
+          top: 100%;
+          right: 0;
+          background-color: lighten($clr-brand1, 5%);
+          list-style: none;
+          padding: 0.5em 0;
+          min-width: 10rem;
+          z-index: 100;
+
+          li a {
+            padding: 0.5em 1em;
+            white-space: nowrap;
+
+            &:hover {
+              background-color: darken($clr-brand1, 5%);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // מרכז - לוגו
+  .logo {
+    font-family: libre, sans-serif;
+    font-size: 3.2rem;
+    text-align: center;
+    flex-shrink: 0;
+    color: $clr-primary;
+    min-width: 200px;
+
+    @media (max-width: 760px) {
+      font-size: 2.5rem;
+    }
+  }
+
+  // צד שמאל - התחברות
+  .user-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.3em;
+    max-width: 240px;
+
+    form {
+      display: flex;
+      flex-direction: row;
+      gap: 0.5em;
+      flex-wrap: wrap;
+
+      input {
+        padding: 0.4em 0.6em;
+        font-size: 0.9rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        direction: rtl;
+        text-align: right;
+      }
+
+      button {
+        padding: 0.4em 0.8em;
+        font-size: 0.9rem;
+        background-color: darken($clr-brand1, 10%);
+        border: none;
+        color: white;
+        cursor: pointer;
+        border-radius: 4px;
+
+        &:hover {
+          background-color: darken($clr-brand1, 15%);
+        }
+      }
+    }
+
+    .btn-logout {
+      background: none;
+      border: none;
+      color: $clr-primary;
+      cursor: pointer;
+      padding: 0.4em 0.8em;
+      font-size: 0.9rem;
+
+      &:hover {
+        background-color: darken($clr-brand1, 10%);
+      }
+    }
+
+    // .network-status {
+    //   font-size: 0.85rem;
+    //   margin-top: 0.2em;
+    // }
+  }
+
+  // מסכים קטנים - טור
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+
+    .nav-wrapper nav ul {
+      flex-direction: column;
+      gap: 0.5em;
+    }
+
+    .user-section {
+      align-items: center;
+      text-align: center;
+    }
+  }
+}
