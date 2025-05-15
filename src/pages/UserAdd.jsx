@@ -1,14 +1,15 @@
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { useNavigate } from 'react-router-dom'
 import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service'
 import { userService } from '../services/user.service'
+import { roleService } from '../services/role.service'
 
-// סכמה לוולידציה
 const schema = yup.object().shape({
   FullName: yup.string().required('יש להזין שם מלא'),
-  Username: yup.string().required('יש להזין שם עובד'),
+  Username: yup.string().required('יש להזין שם משתמש'),
   Password: yup.string().min(6, 'סיסמה חייבת להיות לפחות 6 תווים').required('יש להזין סיסמה'),
   Email: yup.string().email('אימייל לא תקין').optional(),
   PhoneNumber: yup
@@ -18,17 +19,21 @@ const schema = yup.object().shape({
   StartDate: yup.date().typeError('יש להזין תאריך תקין').optional(),
   Salary: yup.number().typeError('יש להזין מספר').min(0, 'שכר לא יכול להיות שלילי').optional(),
   Address: yup.string().optional(),
-  RoleID: yup.number().oneOf([1, 2], 'ערך לא חוקי').required(),
+  RoleID: yup.number().required('יש לבחור תפקיד'),
+  RoleName: yup.string().required('שם תפקיד נדרש'),
   isAdmin: yup.string().oneOf(['true', 'false']),
   Status: yup.string().oneOf(['Active', 'Inactive']),
 })
 
 export function UserAdd() {
   const navigate = useNavigate()
+  const [roles, setRoles] = useState([])
 
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
@@ -42,16 +47,46 @@ export function UserAdd() {
       Salary: '',
       Address: '',
       RoleID: 2,
+      RoleName: '',
       isAdmin: 'false',
       Status: 'Active',
     },
   })
 
+  useEffect(() => {
+    loadRoles()
+  }, [])
+
+  async function loadRoles() {
+    try {
+      const rolesFromServer = await roleService.query()
+      setRoles(rolesFromServer)
+
+      // ברירת מחדל לפי התפקיד הראשון ברשימה
+      const defaultRole = rolesFromServer.find((r) => r.RoleID === 2) || rolesFromServer[0]
+      if (defaultRole) {
+        setValue('RoleID', defaultRole.RoleID)
+        setValue('RoleName', defaultRole.RoleName)
+        setValue('isAdmin', defaultRole.IsAdmin ? 'true' : 'false')
+      }
+    } catch (err) {
+      showErrorMsg('שגיאה בטעינת התפקידים')
+    }
+  }
+
   async function onSubmit(user) {
     try {
       user.Salary = +user.Salary
       user.RoleID = +user.RoleID
-      await userService.add(user)
+
+      const userToSend = {
+        ...user,
+        IsAdmin: user.isAdmin === 'true',
+      }
+
+      delete userToSend.isAdmin
+
+      await userService.add(userToSend)
       showSuccessMsg('העובד נוסף בהצלחה!')
       navigate('/user')
     } catch (err) {
@@ -70,7 +105,7 @@ export function UserAdd() {
         </label>
 
         <label>
-          שם עובד:
+          שם משתמש:
           <input {...register('Username')} />
           {errors.Username && <span>{errors.Username.message}</span>}
         </label>
@@ -113,9 +148,23 @@ export function UserAdd() {
 
         <label>
           תפקיד:
-          <select {...register('RoleID')}>
-            <option value={1}>מנהל</option>
-            <option value={2}>עובד</option>
+          <select
+            {...register('RoleID')}
+            onChange={(e) => {
+              const selectedId = +e.target.value
+              const selectedRole = roles.find((role) => role.RoleID === selectedId)
+              if (selectedRole) {
+                setValue('RoleID', selectedRole.RoleID)
+                setValue('RoleName', selectedRole.RoleName)
+                setValue('isAdmin', selectedRole.IsAdmin ? 'true' : 'false')
+              }
+            }}
+          >
+            {roles.map((role) => (
+              <option key={role._id} value={role.RoleID}>
+                {role.RoleName}
+              </option>
+            ))}
           </select>
           {errors.RoleID && <span>{errors.RoleID.message}</span>}
         </label>
@@ -131,14 +180,21 @@ export function UserAdd() {
 
         <label>
           האם אדמין:
-          <select {...register('isAdmin')}>
-            <option value='true'>כן</option>
-            <option value='false'>לא</option>
-          </select>
-          {errors.isAdmin && <span>{errors.isAdmin.message}</span>}
+          <input type='text' value={watch('isAdmin') === 'true' ? 'כן' : 'לא'} readOnly disabled />
         </label>
 
-        <button className='btn'>שמור</button>
+        {/* מוסתרים אך דרושים לשמירה */}
+        <input type='hidden' {...register('RoleName')} />
+        <input type='hidden' {...register('isAdmin')} />
+
+        <div className='form-actions'>
+          <button type='submit' className='btn'>
+            שמור
+          </button>
+          <button type='button' className='btn cancel-btn' onClick={() => navigate('/user')}>
+            ביטול
+          </button>
+        </div>
       </form>
     </section>
   )

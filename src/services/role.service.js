@@ -1,4 +1,4 @@
-import { httpService } from './http.service' // או axios לפי מה שאתה משתמש
+import { httpService } from './http.service'
 
 export const roleService = {
   query,

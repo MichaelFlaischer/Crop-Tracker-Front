@@ -9,7 +9,7 @@ import * as yup from 'yup'
 
 const schema = yup.object().shape({
   FullName: yup.string().required('יש להזין שם מלא'),
-  Username: yup.string().required('יש להזין שם עובד'),
+  Username: yup.string().required('יש להזין שם משתמש'),
   Email: yup.string().email('אימייל לא תקין').optional(),
   PhoneNumber: yup
     .string()
@@ -123,7 +123,7 @@ export function UserEdit() {
         </label>
 
         <label>
-          שם עובד:
+          שם משתמש:
           <input {...register('Username')} />
           {errors.Username && <span>{errors.Username.message}</span>}
         </label>
