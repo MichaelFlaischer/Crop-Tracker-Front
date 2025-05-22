@@ -22,6 +22,20 @@ import { RoleIndex } from './pages/RoleIndex'
 import { RoleAdd } from './pages/RoleAdd'
 import { RoleEdit } from './pages/RoleEdit'
 
+//  Crops
+import { CropIndex } from './pages/CropIndex'
+import { CropDetails } from './pages/CropDetails'
+import { CropAdd } from './pages/CropAdd'
+import { CropEdit } from './pages/CropEdit'
+
+// Fields
+import { FieldIndex } from './pages/FieldIndex'
+import { FieldAdd } from './pages/FieldAdd'
+import { FieldEdit } from './pages/FieldEdit'
+
+// import { FieldActions } from './pages/FieldActions'
+// import { TaskAssign } from './pages/TaskAssign'
+
 // Inventory
 // import { InventoryList } from './pages/InventoryList'
 // import { InventoryEdit } from './pages/InventoryEdit'
@@ -31,13 +45,6 @@ import { RoleEdit } from './pages/RoleEdit'
 // import { StorageLocations } from './pages/StorageLocations'
 // import { StorageAdd } from './pages/StorageAdd'
 // import { StorageEdit } from './pages/StorageEdit'
-// import { ProductAdd } from './pages/ProductAdd'
-
-// Fields & Crops
-// import { FieldIndex } from './pages/FieldIndex'
-// import { FieldAdd } from './pages/FieldAdd'
-// import { FieldActions } from './pages/FieldActions'
-// import { TaskAssign } from './pages/TaskAssign'
 
 // Workers
 // import { WorkerIndex } from './pages/WorkerIndex'
@@ -98,6 +105,23 @@ export function App() {
               <Route path='/roles' element={<RoleIndex />} />
               <Route path='/roles/add' element={<RoleAdd />} />
               <Route path='/roles/edit/:roleId' element={<RoleEdit />} />
+              {/* Crops */}
+
+              <Route path='/crop' element={<CropIndex />} />
+              <Route path='/crop/:cropId' element={<CropDetails />} />
+              <Route path='/crop/add' element={<CropAdd />} />
+              <Route path='/crop/edit/:cropId' element={<CropEdit />} />
+
+              {/* Fields */}
+              <Route path='/field' element={<FieldIndex />} />
+              <Route path='/field/add' element={<FieldAdd />} />
+              <Route path='/Field/edit/:fieldId' element={<FieldEdit />} />
+
+              {/*
+              <Route path='/field/actions' element={<FieldActions />} />
+              <Route path='/task/assign' element={<TaskAssign />} />
+               /}
+
 
               {/* Inventory */}
               {/*
@@ -109,16 +133,8 @@ export function App() {
               <Route path='/storage' element={<StorageLocations />} />
               <Route path='/storage/add' element={<StorageAdd />} />
               <Route path='/storage/edit/:storageId' element={<StorageEdit />} />
-              <Route path='/product/add' element={<ProductAdd />} />
               /}
 
-              {/* Fields */}
-              {/*
-              <Route path='/field' element={<FieldIndex />} />
-              <Route path='/field/add' element={<FieldAdd />} />
-              <Route path='/field/actions' element={<FieldActions />} />
-              <Route path='/task/assign' element={<TaskAssign />} />
-               /}
 
               {/* Workers */}
               {/*

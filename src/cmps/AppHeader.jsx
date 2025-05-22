@@ -49,6 +49,29 @@ export function AppHeader() {
                     </ul>
                   </li>
                 )}
+
+                <li>
+                  <span className='non-clickable'>ניהול שדות ויבולים</span>
+                  <ul className='dropdown'>
+                    <li>
+                      <NavLink to='/field'>תצוגת שדות</NavLink>
+                    </li>
+                    {isAdmin && (
+                      <li>
+                        <NavLink to='/field/add'>הוספת שדה</NavLink>
+                      </li>
+                    )}
+                    <li>
+                      <NavLink to='/crop'>תצוגת יבולים</NavLink>
+                    </li>
+                    {isAdmin && (
+                      <li>
+                        <NavLink to='/crop/add'>הוספת יבול</NavLink>
+                      </li>
+                    )}
+                  </ul>
+                </li>
+
                 {isAdmin && (
                   <li>
                     <span className='non-clickable'>ניהול מלאי</span>
@@ -71,26 +94,9 @@ export function AppHeader() {
                       <li>
                         <NavLink to='/storage/add'>הוספת מחסן</NavLink>
                       </li>
-                      <li>
-                        <NavLink to='/product/add'>יצירת יבול חדש</NavLink>
-                      </li>
                     </ul>
                   </li>
                 )}
-
-                <li>
-                  <span className='non-clickable'>ניהול שדות</span>
-                  <ul className='dropdown'>
-                    <li>
-                      <NavLink to='/field'>תצוגת שדות</NavLink>
-                    </li>
-                    {isAdmin && (
-                      <li>
-                        <NavLink to='/field/add'>הוספת שדה</NavLink>
-                      </li>
-                    )}
-                  </ul>
-                </li>
 
                 <li>
                   <span className='non-clickable'>משימות</span>
