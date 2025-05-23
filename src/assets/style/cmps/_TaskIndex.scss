@@ -1,0 +1,132 @@
+.task-index {
+  padding: 2rem 0;
+
+  h1 {
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    color: #2c3e50;
+    text-align: center;
+  }
+
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background-color: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    align-items: center;
+
+    select,
+    input[type='date'] {
+      padding: 0.6rem 0.9rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+      direction: rtl;
+      background-color: white;
+    }
+
+    .info-text {
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    .btn-add,
+    .btn-reset {
+      padding: 0.6rem 1rem;
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .btn-add {
+      background-color: #4caf50;
+      color: white;
+
+      &:hover {
+        background-color: #388e3c;
+      }
+    }
+
+    .btn-reset {
+      background-color: #e0e0e0;
+      color: #333;
+
+      &:hover {
+        background-color: #d6d6d6;
+      }
+    }
+  }
+
+  .task-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+
+    th,
+    td {
+      border: 1px solid #e0e0e0;
+      padding: 0.8rem 1rem;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+
+    th {
+      background-color: #f1f1f1;
+      font-weight: bold;
+      color: #333;
+    }
+
+    tbody tr {
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: #f9f9f9;
+      }
+    }
+
+    td button {
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-size: 1rem;
+      transition: 0.2s ease-in-out;
+
+      &:hover {
+        transform: scale(1.1);
+        opacity: 0.8;
+      }
+    }
+
+    .status {
+      font-weight: bold;
+
+      &.pending {
+        color: #f0ad4e;
+      }
+
+      &.in-progress {
+        color: #0275d8;
+      }
+
+      &.done {
+        color: #5cb85c;
+      }
+
+      &.delayed {
+        color: #d9534f;
+      }
+    }
+
+    .danger {
+      color: #d9534f;
+    }
+  }
+}

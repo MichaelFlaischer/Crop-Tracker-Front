@@ -48,6 +48,14 @@ import { OperationIndex } from './pages/OperationIndex'
 import { OperationAdd } from './pages/OperationAdd'
 import { OperationEdit } from './pages/OperationEdit'
 
+// Task Management
+import { TaskIndex } from './pages/TaskIndex'
+import { TaskAdd } from './pages/TaskAdd'
+import { TaskEdit } from './pages/TaskEdit'
+//import { EmployeesInTaskIndex } from './pages/EmployeesInTaskIndex'
+import { TaskDetails } from './pages/TaskDetails'
+import { TaskAssign } from './pages/TaskAssign'
+
 // Workers
 // import { WorkerIndex } from './pages/WorkerIndex'
 
@@ -99,7 +107,6 @@ export function App() {
             <Routes>
               {/* Dynamic Dashboard */}
               <Route path='/' element={<DynamicDashboardRoute />} />
-
               {/* Users & Roles */}
               <Route path='/user' element={<UserIndex />} />
               <Route path='/user/edit/:userId?' element={<UserEdit />} />
@@ -108,31 +115,32 @@ export function App() {
               <Route path='/roles/add' element={<RoleAdd />} />
               <Route path='/roles/edit/:roleId' element={<RoleEdit />} />
               {/* Crops */}
-
               <Route path='/crop' element={<CropIndex />} />
               <Route path='/crop/:cropId' element={<CropDetails />} />
               <Route path='/crop/add' element={<CropAdd />} />
               <Route path='/crop/edit/:cropId' element={<CropEdit />} />
-
               {/* Fields */}
               <Route path='/field' element={<FieldIndex />} />
               <Route path='/field/add' element={<FieldAdd />} />
               <Route path='/Field/edit/:fieldId' element={<FieldEdit />} />
-
               {/* Sowing & Harvest */}
               <Route path='/sowing/add' element={<SowingAdd />} />
               <Route path='/harvest/:sowingId' element={<HarvestAdd />} />
-
               {/* Inventory */}
               <Route path='/inventory' element={<InventoryList />} />
               <Route path='/Warehouse' element={<WarehouseIndex />} />
               <Route path='/Warehouse/add' element={<WarehouseAdd />} />
               <Route path='/Warehouse/edit/:WarehouseId' element={<WarehouseEdit />} />
-
               {/* Operations */}
               <Route path='/operations' element={<OperationIndex />} />
               <Route path='/operations/add' element={<OperationAdd />} />
               <Route path='/operations/edit/:operationId' element={<OperationEdit />} />
+              {/* Tasks */}
+              <Route path='/tasks' element={<TaskIndex />} />
+              <Route path='/tasks/add' element={<TaskAdd />} />
+              <Route path='/tasks/edit/:taskId' element={<TaskEdit />} />
+              <Route path='/tasks/assign' element={<TaskAssign />} />
+              <Route path='/tasks/:taskId' element={<TaskDetails />} />
 
               {/* Workers */}
               {/*

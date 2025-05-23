@@ -30,19 +30,29 @@ export function AppHeader() {
               <>
                 {isAdmin && (
                   <li>
-                    <span className='non-clickable'>ניהול עובדים</span>
+                    <span className='non-clickable'>👷 ניהול עובדים</span>
                     <ul className='dropdown'>
                       <li>
-                        <NavLink to='/user'>רשימת עובדים</NavLink>
+                        <span className='non-clickable'>עובדים</span>
+                        <ul className='dropdown'>
+                          <li>
+                            <NavLink to='/user'>רשימת עובדים</NavLink>
+                          </li>
+                          <li>
+                            <NavLink to='/users/add'>➕ הוספת עובד חדש</NavLink>
+                          </li>
+                        </ul>
                       </li>
                       <li>
-                        <NavLink to='/users/add'>הוספת עובד</NavLink>
-                      </li>
-                      <li>
-                        <NavLink to='/roles'>רשימת תפקידים</NavLink>
-                      </li>
-                      <li>
-                        <NavLink to='/roles/add'>הוספת תפקיד</NavLink>
+                        <span className='non-clickable'>תפקידים</span>
+                        <ul className='dropdown'>
+                          <li>
+                            <NavLink to='/roles'>רשימת תפקידים</NavLink>
+                          </li>
+                          <li>
+                            <NavLink to='/roles/add'>➕ הוספת תפקיד</NavLink>
+                          </li>
+                        </ul>
                       </li>
                     </ul>
                   </li>
@@ -102,18 +112,24 @@ export function AppHeader() {
                 </li>
 
                 <li>
-                  <span className='non-clickable'>משימות</span>
+                  <span className='non-clickable'>📋 משימות</span>
                   <ul className='dropdown'>
                     <li>
-                      <NavLink to='/task/assign'>המשימות שלי</NavLink>
+                      <NavLink to='/tasks/assign'>המשימות שלי</NavLink>
                     </li>
+
                     {isAdmin && (
                       <>
                         <li>
-                          <NavLink to='/field/actions'>תיעוד פעולות</NavLink>
-                        </li>
-                        <li>
-                          <NavLink to='/task/assign'>שיבוץ משימות</NavLink>
+                          <span className='non-clickable'>ניהול משימות</span>
+                          <ul className='dropdown'>
+                            <li>
+                              <NavLink to='/tasks/'>צפייה בכל המשימות </NavLink>
+                            </li>
+                            <li>
+                              <NavLink to='/tasks/add'>➕ הוספת משימה חדשה</NavLink>
+                            </li>
+                          </ul>
                         </li>
                         <li>
                           <span className='non-clickable'>ניהול פעולות</span>
