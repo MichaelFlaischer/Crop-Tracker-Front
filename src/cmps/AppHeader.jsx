@@ -115,6 +115,17 @@ export function AppHeader() {
                         <li>
                           <NavLink to='/task/assign'>שיבוץ משימות</NavLink>
                         </li>
+                        <li>
+                          <span className='non-clickable'>ניהול פעולות</span>
+                          <ul className='dropdown'>
+                            <li>
+                              <NavLink to='/operations'>רשימת פעולות</NavLink>
+                            </li>
+                            <li>
+                              <NavLink to='/operations/add'>➕ הוספת פעולה חדשה</NavLink>
+                            </li>
+                          </ul>
+                        </li>
                       </>
                     )}
                   </ul>

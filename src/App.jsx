@@ -33,20 +33,20 @@ import { FieldIndex } from './pages/FieldIndex'
 import { FieldAdd } from './pages/FieldAdd'
 import { FieldEdit } from './pages/FieldEdit'
 
-// import { FieldActions } from './pages/FieldActions'
-// import { TaskAssign } from './pages/TaskAssign'
-
 // Sowing & Harvest
-// import { SowingAndHarvestIndex } from './pages/SowingAndHarvestIndex'
 import { SowingAdd } from './pages/SowingAdd'
 import { HarvestAdd } from './pages/HarvestAdd'
 
 // Inventory
 import { InventoryList } from './pages/InventoryList'
-// import { InventoryAlerts } from './pages/InventoryAlerts'
 import { WarehouseIndex } from './pages/WarehouseIndex'
 import { WarehouseAdd } from './pages/WarehouseAdd'
 import { WarehouseEdit } from './pages/WarehouseEdit'
+
+// Operations
+import { OperationIndex } from './pages/OperationIndex'
+import { OperationAdd } from './pages/OperationAdd'
+import { OperationEdit } from './pages/OperationEdit'
 
 // Workers
 // import { WorkerIndex } from './pages/WorkerIndex'
@@ -119,16 +119,7 @@ export function App() {
               <Route path='/field/add' element={<FieldAdd />} />
               <Route path='/Field/edit/:fieldId' element={<FieldEdit />} />
 
-              {/*
-              <Route path='/field/actions' element={<FieldActions />} />
-              <Route path='/task/assign' element={<TaskAssign />} />
-               */}
-
               {/* Sowing & Harvest */}
-              {/*
-              <Route path='/sowing' element={<SowingAndHarvestIndex />} />
-                */}
-
               <Route path='/sowing/add' element={<SowingAdd />} />
               <Route path='/harvest/:sowingId' element={<HarvestAdd />} />
 
@@ -137,6 +128,11 @@ export function App() {
               <Route path='/Warehouse' element={<WarehouseIndex />} />
               <Route path='/Warehouse/add' element={<WarehouseAdd />} />
               <Route path='/Warehouse/edit/:WarehouseId' element={<WarehouseEdit />} />
+
+              {/* Operations */}
+              <Route path='/operations' element={<OperationIndex />} />
+              <Route path='/operations/add' element={<OperationAdd />} />
+              <Route path='/operations/edit/:operationId' element={<OperationEdit />} />
 
               {/* Workers */}
               {/*
