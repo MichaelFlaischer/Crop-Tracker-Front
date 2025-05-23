@@ -1,5 +1,4 @@
 import { NavLink } from 'react-router-dom'
-//import { useOnlineStatus } from '../hooks/useOnlineStatus'
 import { useSelector } from 'react-redux'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service'
 import { logout } from '../store/actions/user.actions'
@@ -7,7 +6,6 @@ import { LoginSignup } from './LoginSignup'
 
 export function AppHeader() {
   const user = useSelector((storeState) => storeState.userModule.loggedInUser)
-  // const isOnline = useOnlineStatus()
   const isAdmin = user?.IsAdmin
 
   async function onLogout() {
@@ -51,52 +49,57 @@ export function AppHeader() {
                 )}
 
                 <li>
-                  <span className='non-clickable'>ניהול שדות ויבולים</span>
+                  <span className='non-clickable'>🌾 ניהול חקלאי</span>
                   <ul className='dropdown'>
                     <li>
-                      <NavLink to='/field'>תצוגת שדות</NavLink>
+                      <span className='non-clickable'>שדות</span>
+                      <ul className='dropdown'>
+                        <li>
+                          <NavLink to='/field'>תצוגת שדות</NavLink>
+                        </li>
+                        {isAdmin && (
+                          <li>
+                            <NavLink to='/field/add'>➕ הוספת שדה</NavLink>
+                          </li>
+                        )}
+                      </ul>
                     </li>
-                    {isAdmin && (
-                      <li>
-                        <NavLink to='/field/add'>הוספת שדה</NavLink>
-                      </li>
-                    )}
                     <li>
-                      <NavLink to='/crop'>תצוגת יבולים</NavLink>
+                      <span className='non-clickable'>יבולים</span>
+                      <ul className='dropdown'>
+                        <li>
+                          <NavLink to='/crop'>תצוגת יבולים</NavLink>
+                        </li>
+                        {isAdmin && (
+                          <li>
+                            <NavLink to='/crop/add'>➕ הוספת יבול</NavLink>
+                          </li>
+                        )}
+                      </ul>
                     </li>
-                    {isAdmin && (
-                      <li>
-                        <NavLink to='/crop/add'>הוספת יבול</NavLink>
-                      </li>
-                    )}
+                    <li>
+                      <span className='non-clickable'>מחסנים</span>
+                      <ul className='dropdown'>
+                        <li>
+                          <NavLink to='/Warehouse'>תצוגת מחסנים</NavLink>
+                        </li>
+                        {isAdmin && (
+                          <li>
+                            <NavLink to='/warehouse/add'>➕ הוספת מחסן</NavLink>
+                          </li>
+                        )}
+                      </ul>
+                    </li>
+                    <li>
+                      <span className='non-clickable'>מלאי</span>
+                      <ul className='dropdown'>
+                        <li>
+                          <NavLink to='/inventory'>צפייה במלאי</NavLink>
+                        </li>
+                      </ul>
+                    </li>
                   </ul>
                 </li>
-
-                {isAdmin && (
-                  <li>
-                    <span className='non-clickable'>ניהול מלאי</span>
-                    <ul className='dropdown'>
-                      <li>
-                        <NavLink to='/inventory'>צפייה במלאי</NavLink>
-                      </li>
-                      <li>
-                        <NavLink to='/inventory/history'>מעקב היסטורי</NavLink>
-                      </li>
-                      <li>
-                        <NavLink to='/inventory/alerts'>התראות מלאי</NavLink>
-                      </li>
-                      <li>
-                        <NavLink to='/inventory/categories'>ניהול קטגוריות</NavLink>
-                      </li>
-                      <li>
-                        <NavLink to='/storage'>ניהול מיקומים</NavLink>
-                      </li>
-                      <li>
-                        <NavLink to='/storage/add'>הוספת מחסן</NavLink>
-                      </li>
-                    </ul>
-                  </li>
-                )}
 
                 <li>
                   <span className='non-clickable'>משימות</span>
@@ -166,6 +169,9 @@ export function AppHeader() {
                         <li>
                           <NavLink to='/reports/insights'>גרפים ותובנות</NavLink>
                         </li>
+                        <li>
+                          <NavLink to='/inventory/alerts'>התראות מלאי</NavLink>
+                        </li>
                       </>
                     )}
                     <li>
@@ -185,7 +191,7 @@ export function AppHeader() {
 
       <section className='bottom flex justify-between'>
         <div className='logo'>Farm-ERP</div>
-        <div>
+        <div className='user-section'>
           {user ? (
             <section>
               <span>שלום {user.FullName}</span>
@@ -196,7 +202,6 @@ export function AppHeader() {
           ) : (
             <LoginSignup />
           )}
-          {/* <p className='network-status'>{isOnline ? '✅ רשת מחוברת' : '❌ רשת מנותקת'}</p> */}
         </div>
       </section>
     </section>

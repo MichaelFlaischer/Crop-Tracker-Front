@@ -1,4 +1,3 @@
-// CropAdd.jsx
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
@@ -14,8 +13,10 @@ const schema = yup.object().shape({
   growthTime: yup.number().required('יש להזין זמן גדילה').positive('חייב להיות חיובי'),
   minTemp: yup.number().required(),
   maxTemp: yup.number().required().moreThan(yup.ref('minTemp'), 'טמפ׳ מקס׳ צריכה להיות גדולה מהמינ׳'),
-  minValue: yup.number().required(),
-  maxValue: yup.number().required().moreThan(yup.ref('minValue'), 'לחות מקס׳ צריכה להיות גדולה מהמינ׳'),
+  businessMinValue: yup.number().required(),
+  businessMaxValue: yup.number().required().moreThan(yup.ref('businessMinValue'), 'ערך מקס׳ צריך להיות גדול מהמינ׳'),
+  minHumidity: yup.number().required(),
+  maxHumidity: yup.number().required().moreThan(yup.ref('minHumidity'), 'לחות מקס׳ צריכה להיות גדולה מהמינ׳'),
   waterRecommendation: yup.number().nullable(),
   fertilizerRecommendation: yup.number().nullable(),
   additionalConditions: yup.string(),
@@ -37,17 +38,23 @@ export function CropAdd() {
 
   const [tempRange, setTempRange] = useState([30, 10])
   const [humidityRange, setHumidityRange] = useState([80, 40])
+  const [businessRange, setBusinessRange] = useState([100, 50])
 
-  const handleTempChange = (event, newValue) => {
-    setTempRange([newValue[1], newValue[0]])
-    setValue('minTemp', newValue[0])
-    setValue('maxTemp', newValue[1])
+  const handleSliderChange = (setter, minKey, maxKey) => (event, newValue) => {
+    setter([newValue[1], newValue[0]])
+    setValue(minKey, newValue[0])
+    setValue(maxKey, newValue[1])
   }
 
-  const handleHumidityChange = (event, newValue) => {
-    setHumidityRange([newValue[1], newValue[0]])
-    setValue('minValue', newValue[0])
-    setValue('maxValue', newValue[1])
+  const handleInputChange = (val, index, range, setter, key) => {
+    const newRange = [...range]
+    newRange[index] = +val
+    setter(newRange)
+    setValue(key, +val)
+  }
+
+  function onCancel() {
+    navigate('/crop')
   }
 
   async function onSubmit(data) {
@@ -82,78 +89,97 @@ export function CropAdd() {
           {errors.growthTime && <span className='error'>{errors.growthTime.message}</span>}
         </label>
 
+        {/* טווח טמפרטורה */}
         <div className='slider-field'>
           <label>🌡️ טווח טמפרטורה (°C)</label>
-          <div dir='rtl'>
-            <Slider value={[tempRange[1], tempRange[0]]} onChange={handleTempChange} valueLabelDisplay='auto' disableSwap min={-10} max={60} step={0.1} />
-          </div>
+          <Slider
+            value={[tempRange[1], tempRange[0]]}
+            onChange={handleSliderChange(setTempRange, 'minTemp', 'maxTemp')}
+            valueLabelDisplay='auto'
+            disableSwap
+            min={-10}
+            max={60}
+            step={0.1}
+          />
           <div className='inputs-inline'>
             <TextField
               label='מקס׳'
               type='number'
               value={tempRange[0]}
-              onChange={(e) => {
-                const val = +e.target.value
-                setTempRange([val, tempRange[1]])
-                setValue('maxTemp', val)
-              }}
+              onChange={(e) => handleInputChange(e.target.value, 0, tempRange, setTempRange, 'maxTemp')}
               size='small'
             />
-
             <TextField
               label='מינ׳'
               type='number'
               value={tempRange[1]}
-              onChange={(e) => {
-                const val = +e.target.value
-                setTempRange([tempRange[0], val])
-                setValue('minTemp', val)
-              }}
+              onChange={(e) => handleInputChange(e.target.value, 1, tempRange, setTempRange, 'minTemp')}
               size='small'
             />
           </div>
           {errors.maxTemp && <span className='error'>{errors.maxTemp.message}</span>}
         </div>
 
+        {/* טווח לחות */}
         <div className='slider-field'>
           <label>💧 טווח לחות (%)</label>
-          <div dir='rtl'>
-            <Slider
-              value={[humidityRange[1], humidityRange[0]]}
-              onChange={handleHumidityChange}
-              valueLabelDisplay='auto'
-              disableSwap
-              min={0}
-              max={100}
-              step={0.1}
-            />
-          </div>
+          <Slider
+            value={[humidityRange[1], humidityRange[0]]}
+            onChange={handleSliderChange(setHumidityRange, 'minHumidity', 'maxHumidity')}
+            valueLabelDisplay='auto'
+            disableSwap
+            min={0}
+            max={100}
+            step={0.1}
+          />
           <div className='inputs-inline'>
             <TextField
               label='מקס׳'
               type='number'
               value={humidityRange[0]}
-              onChange={(e) => {
-                const val = +e.target.value
-                setHumidityRange([val, humidityRange[1]])
-                setValue('maxValue', val)
-              }}
+              onChange={(e) => handleInputChange(e.target.value, 0, humidityRange, setHumidityRange, 'maxHumidity')}
               size='small'
             />
-
             <TextField
               label='מינ׳'
               type='number'
               value={humidityRange[1]}
-              onChange={(e) => {
-                const val = +e.target.value
-                setHumidityRange([humidityRange[0], val])
-                setValue('minValue', val)
-              }}
+              onChange={(e) => handleInputChange(e.target.value, 1, humidityRange, setHumidityRange, 'minHumidity')}
               size='small'
             />
           </div>
-          {errors.maxValue && <span className='error'>{errors.maxValue.message}</span>}
+          {errors.maxHumidity && <span className='error'>{errors.maxHumidity.message}</span>}
+        </div>
+
+        {/* ערכים עסקיים */}
+        <div className='slider-field'>
+          <label>📈 ערך עסקי רצוי</label>
+          <Slider
+            value={[businessRange[1], businessRange[0]]}
+            onChange={handleSliderChange(setBusinessRange, 'businessMinValue', 'businessMaxValue')}
+            valueLabelDisplay='auto'
+            disableSwap
+            min={0}
+            max={10000}
+            step={1}
+          />
+          <div className='inputs-inline'>
+            <TextField
+              label='מקס׳'
+              type='number'
+              value={businessRange[0]}
+              onChange={(e) => handleInputChange(e.target.value, 0, businessRange, setBusinessRange, 'businessMaxValue')}
+              size='small'
+            />
+            <TextField
+              label='מינ׳'
+              type='number'
+              value={businessRange[1]}
+              onChange={(e) => handleInputChange(e.target.value, 1, businessRange, setBusinessRange, 'businessMinValue')}
+              size='small'
+            />
+          </div>
+          {errors.businessMaxValue && <span className='error'>{errors.businessMaxValue.message}</span>}
         </div>
 
         <label>
@@ -176,7 +202,12 @@ export function CropAdd() {
           <textarea {...register('notes')} />
         </label>
 
-        <button type='submit'>✔️ שמור יבול</button>
+        <div className='form-actions'>
+          <button type='submit'>✔️ שמור יבול</button>
+          <button type='button' className='btn-cancel' onClick={onCancel}>
+            ❌ ביטול
+          </button>
+        </div>
       </form>
     </section>
   )

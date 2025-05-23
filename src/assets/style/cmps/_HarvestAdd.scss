@@ -1,0 +1,145 @@
+.harvest-add {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+
+  h1 {
+    text-align: center;
+    font-size: 1.75rem;
+    color: #111827;
+    margin-bottom: 1.5rem;
+  }
+
+  .info-box {
+    background-color: #f0fdf4;
+    border: 1px solid #86efac;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+
+    p {
+      margin: 0.5rem 0;
+      font-size: 0.95rem;
+      color: #1f2937;
+
+      strong {
+        color: #111827;
+      }
+
+      span {
+        font-size: 0.85rem;
+        color: #6b7280;
+      }
+    }
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    label {
+      display: flex;
+      flex-direction: column;
+      font-weight: 500;
+      font-size: 0.95rem;
+      color: #374151;
+
+      input,
+      textarea {
+        margin-top: 0.3rem;
+        padding: 0.5rem;
+        font-size: 0.95rem;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+      }
+
+      textarea {
+        min-height: 80px;
+        resize: vertical;
+      }
+    }
+
+    .toggle-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      background-color: #fefce8;
+      border: 1px solid #facc15;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      color: #92400e;
+
+      .headlessui-switch {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        width: 48px;
+        height: 24px;
+        background-color: #d1d5db;
+        border-radius: 9999px;
+        transition: background-color 0.3s ease;
+        cursor: pointer;
+
+        &[data-headlessui-state='checked'] {
+          background-color: #10b981;
+        }
+
+        .headlessui-switch-thumb {
+          position: absolute;
+          height: 18px;
+          width: 18px;
+          background-color: white;
+          border-radius: 50%;
+          top: 3px;
+          left: 3px;
+          transition: transform 0.3s ease;
+
+          &[data-headlessui-state='checked'] {
+            transform: translateX(24px);
+          }
+        }
+      }
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+
+      .submit-btn {
+        background-color: #10b981;
+        color: white;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+          background-color: #059669;
+        }
+      }
+
+      .cancel-btn {
+        background-color: #ef4444;
+        color: white;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+          background-color: #dc2626;
+        }
+      }
+    }
+  }
+}

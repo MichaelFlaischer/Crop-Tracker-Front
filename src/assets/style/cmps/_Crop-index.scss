@@ -3,20 +3,26 @@
 
   h1 {
     text-align: center;
-    margin-bottom: 1rem;
     font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: #333;
   }
 
   .btn-add {
-    margin-bottom: 1rem;
-    padding: 0.6rem 1rem;
+    display: block;
+    margin: 0 auto 1rem;
+    padding: 0.5rem 1.2rem;
     background-color: #4caf50;
     color: white;
-    border: none;
-    border-radius: 4px;
     font-weight: bold;
+    font-size: 1rem;
+    border: none;
+    border-radius: 6px;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.3s ease;
+    max-width: 250px;
+    height: 42px;
+    line-height: 1.2;
 
     &:hover {
       background-color: #388e3c;
@@ -26,36 +32,61 @@
   .crop-table {
     width: 100%;
     border-collapse: collapse;
-    background-color: #fff;
-    box-shadow: 0 0 10px #ccc;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    direction: rtl;
 
     th,
     td {
-      text-align: right;
       padding: 1rem;
+      text-align: right;
+      vertical-align: top;
       border-bottom: 1px solid #ddd;
+      white-space: normal;
+      word-break: break-word;
     }
 
     th {
-      background-color: #f2f2f2;
+      background-color: #f0f0f0;
       font-weight: bold;
+      color: #444;
     }
 
-    tr:hover {
-      background-color: #f9f9f9;
+    td:nth-child(4) {
+      max-width: 300px;
+    }
+
+    td ul {
+      padding-right: 1.2rem;
+      margin: 0;
+      list-style-type: disc;
+
+      li {
+        margin-bottom: 0.4rem;
+        line-height: 1.4;
+        color: #333;
+      }
+    }
+
+    tr:last-child td {
+      border-bottom: none;
     }
 
     .actions {
       display: flex;
+      flex-wrap: wrap;
       gap: 0.5rem;
 
       button {
         padding: 0.4rem 0.8rem;
-        border: none;
-        border-radius: 4px;
+        font-size: 0.9rem;
         font-weight: bold;
+        border-radius: 5px;
+        border: none;
         cursor: pointer;
-        transition: background-color 0.2s ease;
+        transition: background-color 0.3s ease;
 
         &:nth-child(1) {
           background-color: #2196f3;
@@ -67,11 +98,11 @@
         }
 
         &:nth-child(2) {
-          background-color: #ffc107;
-          color: black;
+          background-color: #ff9800;
+          color: white;
 
           &:hover {
-            background-color: #ffb300;
+            background-color: #e68900;
           }
         }
 
@@ -87,18 +118,10 @@
     }
   }
 
-  @media (max-width: 768px) {
-    .crop-table {
-      font-size: 0.9rem;
-
-      th,
-      td {
-        padding: 0.6rem;
-      }
-
-      .actions {
-        flex-direction: column;
-      }
-    }
+  .loader {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #666;
+    margin-top: 2rem;
   }
 }

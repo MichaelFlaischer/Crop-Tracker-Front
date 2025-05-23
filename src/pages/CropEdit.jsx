@@ -5,7 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { cropService } from '../services/crop.service'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service'
-import { Slider, TextField } from '@mui/material'
+import { Slider, TextField, Button } from '@mui/material'
 
 const schema = yup.object().shape({
   cropName: yup.string().required('יש להזין שם יבול'),
@@ -13,8 +13,10 @@ const schema = yup.object().shape({
   growthTime: yup.number().required('יש להזין זמן גדילה').positive(),
   minTemp: yup.number().required(),
   maxTemp: yup.number().required().moreThan(yup.ref('minTemp')),
-  minValue: yup.number().required(),
-  maxValue: yup.number().required().moreThan(yup.ref('minValue')),
+  businessMinValue: yup.number().required(),
+  businessMaxValue: yup.number().required().moreThan(yup.ref('businessMinValue')),
+  minHumidity: yup.number().required(),
+  maxHumidity: yup.number().required().moreThan(yup.ref('minHumidity')),
   waterRecommendation: yup.number().nullable(),
   fertilizerRecommendation: yup.number().nullable(),
   additionalConditions: yup.string(),
@@ -27,6 +29,7 @@ export function CropEdit() {
   const [isLoading, setIsLoading] = useState(true)
   const [tempRange, setTempRange] = useState([30, 10])
   const [humidityRange, setHumidityRange] = useState([80, 40])
+  const [businessRange, setBusinessRange] = useState([1000, 500])
 
   const {
     register,
@@ -49,7 +52,8 @@ export function CropEdit() {
       if (!crop) throw new Error('לא נמצא יבול')
       reset(crop)
       setTempRange([crop.maxTemp, crop.minTemp])
-      setHumidityRange([crop.maxValue, crop.minValue])
+      setHumidityRange([crop.maxHumidity, crop.minHumidity])
+      setBusinessRange([crop.businessMaxValue, crop.businessMinValue])
     } catch (err) {
       showErrorMsg('שגיאה בטעינת היבול')
     } finally {
@@ -57,16 +61,17 @@ export function CropEdit() {
     }
   }
 
-  const handleTempChange = (e, newVal) => {
-    setTempRange([newVal[1], newVal[0]])
-    setValue('minTemp', newVal[0])
-    setValue('maxTemp', newVal[1])
+  const handleSlider = (setter, fieldMin, fieldMax) => (e, newVal) => {
+    setter([newVal[1], newVal[0]])
+    setValue(fieldMin, newVal[0])
+    setValue(fieldMax, newVal[1])
   }
 
-  const handleHumidityChange = (e, newVal) => {
-    setHumidityRange([newVal[1], newVal[0]])
-    setValue('minValue', newVal[0])
-    setValue('maxValue', newVal[1])
+  const handleInputChange = (val, index, range, setter, field) => {
+    const newRange = [...range]
+    newRange[index] = +val
+    setter(newRange)
+    setValue(field, +val)
   }
 
   async function onSubmit(data) {
@@ -78,6 +83,10 @@ export function CropEdit() {
       console.error(err)
       showErrorMsg('שגיאה בעדכון יבול')
     }
+  }
+
+  function onCancel() {
+    navigate('/crop')
   }
 
   if (isLoading) return <div className='loader'>טוען...</div>
@@ -99,30 +108,28 @@ export function CropEdit() {
 
         <div className='slider-field'>
           <label>🌡️ טווח טמפרטורה (°C)</label>
-          <div dir='rtl'>
-            <Slider value={[tempRange[1], tempRange[0]]} onChange={handleTempChange} valueLabelDisplay='auto' disableSwap min={-10} max={60} step={0.1} />
-          </div>
+          <Slider
+            value={[tempRange[1], tempRange[0]]}
+            onChange={handleSlider(setTempRange, 'minTemp', 'maxTemp')}
+            valueLabelDisplay='auto'
+            disableSwap
+            min={-10}
+            max={60}
+            step={0.1}
+          />
           <div className='inputs-inline'>
             <TextField
               label='מקס׳'
               type='number'
               value={tempRange[0]}
-              onChange={(e) => {
-                const val = +e.target.value
-                setTempRange([val, tempRange[1]])
-                setValue('maxTemp', val)
-              }}
+              onChange={(e) => handleInputChange(e.target.value, 0, tempRange, setTempRange, 'maxTemp')}
               size='small'
             />
             <TextField
               label='מינ׳'
               type='number'
               value={tempRange[1]}
-              onChange={(e) => {
-                const val = +e.target.value
-                setTempRange([tempRange[0], val])
-                setValue('minTemp', val)
-              }}
+              onChange={(e) => handleInputChange(e.target.value, 1, tempRange, setTempRange, 'minTemp')}
               size='small'
             />
           </div>
@@ -130,47 +137,66 @@ export function CropEdit() {
 
         <div className='slider-field'>
           <label>💧 טווח לחות (%)</label>
-          <div dir='rtl'>
-            <Slider
-              value={[humidityRange[1], humidityRange[0]]}
-              onChange={handleHumidityChange}
-              valueLabelDisplay='auto'
-              disableSwap
-              min={0}
-              max={100}
-              step={0.1}
-            />
-          </div>
+          <Slider
+            value={[humidityRange[1], humidityRange[0]]}
+            onChange={handleSlider(setHumidityRange, 'minHumidity', 'maxHumidity')}
+            valueLabelDisplay='auto'
+            disableSwap
+            min={0}
+            max={100}
+            step={0.1}
+          />
           <div className='inputs-inline'>
             <TextField
               label='מקס׳'
               type='number'
               value={humidityRange[0]}
-              onChange={(e) => {
-                const val = +e.target.value
-                setHumidityRange([val, humidityRange[1]])
-                setValue('maxValue', val)
-              }}
+              onChange={(e) => handleInputChange(e.target.value, 0, humidityRange, setHumidityRange, 'maxHumidity')}
               size='small'
             />
             <TextField
               label='מינ׳'
               type='number'
               value={humidityRange[1]}
-              onChange={(e) => {
-                const val = +e.target.value
-                setHumidityRange([humidityRange[0], val])
-                setValue('minValue', val)
-              }}
+              onChange={(e) => handleInputChange(e.target.value, 1, humidityRange, setHumidityRange, 'minHumidity')}
               size='small'
             />
           </div>
         </div>
 
-        <label>השקיה מומלצת (מ\"מ ליום)</label>
+        <div className='slider-field'>
+          <label>📈 ערך עסקי רצוי (ק״ג)</label>
+          <Slider
+            value={[businessRange[1], businessRange[0]]}
+            onChange={handleSlider(setBusinessRange, 'businessMinValue', 'businessMaxValue')}
+            valueLabelDisplay='auto'
+            disableSwap
+            min={0}
+            max={10000}
+            step={1}
+          />
+          <div className='inputs-inline'>
+            <TextField
+              label='מקס׳'
+              type='number'
+              value={businessRange[0]}
+              onChange={(e) => handleInputChange(e.target.value, 0, businessRange, setBusinessRange, 'businessMaxValue')}
+              size='small'
+            />
+            <TextField
+              label='מינ׳'
+              type='number'
+              value={businessRange[1]}
+              onChange={(e) => handleInputChange(e.target.value, 1, businessRange, setBusinessRange, 'businessMinValue')}
+              size='small'
+            />
+          </div>
+        </div>
+
+        <label>השקיה מומלצת (מ"מ ליום)</label>
         <input type='number' step='0.1' {...register('waterRecommendation')} />
 
-        <label>דישון מומלץ (גרם/מ\"ר)</label>
+        <label>דישון מומלץ (גרם/מ"ר)</label>
         <input type='number' step='0.1' {...register('fertilizerRecommendation')} />
 
         <label>תנאים נוספים</label>
@@ -179,7 +205,14 @@ export function CropEdit() {
         <label>הערות</label>
         <textarea {...register('notes')} />
 
-        <button type='submit'>💾 שמור שינויים</button>
+        <div className='form-actions'>
+          <Button variant='contained' color='primary' type='submit'>
+            💾 שמור שינויים
+          </Button>
+          <Button variant='outlined' color='secondary' onClick={onCancel}>
+            ❌ ביטול
+          </Button>
+        </div>
       </form>
     </section>
   )

@@ -36,15 +36,17 @@ import { FieldEdit } from './pages/FieldEdit'
 // import { FieldActions } from './pages/FieldActions'
 // import { TaskAssign } from './pages/TaskAssign'
 
+// Sowing & Harvest
+// import { SowingAndHarvestIndex } from './pages/SowingAndHarvestIndex'
+import { SowingAdd } from './pages/SowingAdd'
+import { HarvestAdd } from './pages/HarvestAdd'
+
 // Inventory
-// import { InventoryList } from './pages/InventoryList'
-// import { InventoryEdit } from './pages/InventoryEdit'
-// import { InventoryHistory } from './pages/InventoryHistory'
+import { InventoryList } from './pages/InventoryList'
 // import { InventoryAlerts } from './pages/InventoryAlerts'
-// import { InventoryCategories } from './pages/InventoryCategories'
-// import { StorageLocations } from './pages/StorageLocations'
-// import { StorageAdd } from './pages/StorageAdd'
-// import { StorageEdit } from './pages/StorageEdit'
+import { WarehouseIndex } from './pages/WarehouseIndex'
+import { WarehouseAdd } from './pages/WarehouseAdd'
+import { WarehouseEdit } from './pages/WarehouseEdit'
 
 // Workers
 // import { WorkerIndex } from './pages/WorkerIndex'
@@ -120,21 +122,21 @@ export function App() {
               {/*
               <Route path='/field/actions' element={<FieldActions />} />
               <Route path='/task/assign' element={<TaskAssign />} />
-               /}
+               */}
 
+              {/* Sowing & Harvest */}
+              {/*
+              <Route path='/sowing' element={<SowingAndHarvestIndex />} />
+                */}
+
+              <Route path='/sowing/add' element={<SowingAdd />} />
+              <Route path='/harvest/:sowingId' element={<HarvestAdd />} />
 
               {/* Inventory */}
-              {/*
               <Route path='/inventory' element={<InventoryList />} />
-              <Route path='/inventory/edit/:itemId?' element={<InventoryEdit />} />
-              <Route path='/inventory/history' element={<InventoryHistory />} />
-              <Route path='/inventory/alerts' element={<InventoryAlerts />} />
-              <Route path='/inventory/categories' element={<InventoryCategories />} />
-              <Route path='/storage' element={<StorageLocations />} />
-              <Route path='/storage/add' element={<StorageAdd />} />
-              <Route path='/storage/edit/:storageId' element={<StorageEdit />} />
-              /}
-
+              <Route path='/Warehouse' element={<WarehouseIndex />} />
+              <Route path='/Warehouse/add' element={<WarehouseAdd />} />
+              <Route path='/Warehouse/edit/:WarehouseId' element={<WarehouseEdit />} />
 
               {/* Workers */}
               {/*
@@ -163,7 +165,9 @@ export function App() {
               <Route path='/reports/irrigation' element={<IrrigationFertilization />} />
               <Route path='/reports/weather' element={<WeatherForecast />} />
               <Route path='/reports/profit' element={<ProfitAnalysis />} />
+              <Route path='/inventory/alerts' element={<InventoryAlerts />} />
               <Route path='/reports/insights' element={<GraphInsights />} />
+
               /}
 
               {/* Static */}

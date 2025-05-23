@@ -1,0 +1,126 @@
+.warehouse-index.split-layout {
+  display: flex;
+  height: calc(100vh - 80px); // התאמה ל־navbar
+
+  .filter-controls {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+
+    label {
+      font-size: 1rem;
+      color: #333;
+    }
+
+    select {
+      padding: 0.4em 0.8em;
+      border-radius: 0.5em;
+      border: 1px solid #ccc;
+      background-color: #fff;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: border-color 0.2s;
+
+      &:hover {
+        border-color: #999;
+      }
+
+      &:focus {
+        outline: none;
+        border-color: #1976d2;
+      }
+    }
+  }
+
+  .map-container {
+    flex: 2;
+    height: 100%;
+  }
+
+  .cards-container {
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto;
+    background-color: #f9f9f9;
+    border-right: 1px solid #ddd;
+
+    h1 {
+      margin-bottom: 1rem;
+      font-size: 1.8rem;
+    }
+
+    .btn {
+      padding: 0.5em 1em;
+      border: none;
+      border-radius: 0.5em;
+      cursor: pointer;
+      font-weight: bold;
+      margin-inline-end: 0.5rem;
+
+      &.add-btn {
+        background-color: #4caf50;
+        color: white;
+      }
+
+      &.reset-btn {
+        background-color: #1976d2;
+        color: white;
+      }
+
+      &.edit-btn {
+        margin-top: 0.7rem;
+        background-color: #2196f3;
+        color: white;
+        padding: 0.4em 0.8em;
+        border-radius: 0.5em;
+        border: none;
+      }
+    }
+
+    .warehouse-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      margin-top: 1rem;
+
+      .warehouse-card {
+        background: #fff;
+        border-radius: 1rem;
+        padding: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: 0.3s ease;
+
+        &.active {
+          border: 2px solid #2196f3;
+          background-color: #f0faff;
+        }
+
+        h2 {
+          margin-top: 0;
+        }
+
+        p {
+          margin: 0.3em 0;
+          strong {
+            font-weight: 600;
+          }
+        }
+
+        .status {
+          &.empty {
+            color: red;
+          }
+          &.partial {
+            color: green;
+          }
+          &.full {
+            color: orange;
+          }
+        }
+      }
+    }
+  }
+}

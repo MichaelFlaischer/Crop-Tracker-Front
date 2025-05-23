@@ -16,7 +16,6 @@
   min-height: 80px;
   grid-column: 1 / -1;
 
-  // צד ימין - תפריט ניווט
   .nav-wrapper {
     flex: 1;
     margin: 0;
@@ -53,10 +52,7 @@
           }
         }
 
-        &:hover > ul {
-          display: block;
-        }
-
+        // Level 1
         ul {
           display: none;
           position: absolute;
@@ -68,20 +64,42 @@
           min-width: 10rem;
           z-index: 100;
 
-          li a {
-            padding: 0.5em 1em;
-            white-space: nowrap;
+          li {
+            position: relative;
 
-            &:hover {
-              background-color: darken($clr-brand1, 5%);
+            a {
+              padding: 0.5em 1em;
+              white-space: nowrap;
+
+              &:hover {
+                background-color: darken($clr-brand1, 5%);
+              }
+            }
+
+            // Level 2 and 3
+            ul {
+              display: none;
+              position: absolute;
+              top: 0;
+              right: 100%;
+              background-color: lighten($clr-brand1, 8%);
+              min-width: 10rem;
+              z-index: 110;
+            }
+
+            &:hover > ul {
+              display: block;
             }
           }
+        }
+
+        &:hover > ul {
+          display: block;
         }
       }
     }
   }
 
-  // מרכז - לוגו
   .logo {
     font-family: libre, sans-serif;
     font-size: 3.2rem;
@@ -95,7 +113,6 @@
     }
   }
 
-  // צד שמאל - התחברות
   .user-section {
     display: flex;
     flex-direction: column;
@@ -145,14 +162,8 @@
         background-color: darken($clr-brand1, 10%);
       }
     }
-
-    // .network-status {
-    //   font-size: 0.85rem;
-    //   margin-top: 0.2em;
-    // }
   }
 
-  // מסכים קטנים - טור
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: center;

@@ -1,0 +1,106 @@
+.crop-edit {
+  padding: 2rem;
+
+  h1 {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    color: #333;
+  }
+
+  .form {
+    max-width: 650px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+
+    label {
+      font-weight: bold;
+      margin-bottom: 0.3rem;
+      display: block;
+      color: #444;
+    }
+
+    input,
+    textarea {
+      padding: 0.6rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      width: 100%;
+      background-color: #fafafa;
+
+      &:focus {
+        outline: none;
+        border-color: #1976d2;
+        background-color: #fff;
+      }
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .slider-field {
+      display: flex;
+      flex-direction: column;
+
+      label {
+        margin-bottom: 0.3rem;
+      }
+
+      .inputs-inline {
+        display: flex;
+        gap: 1rem;
+        margin-top: 0.5rem;
+
+        .MuiTextField-root {
+          flex: 1;
+        }
+      }
+    }
+
+    .error {
+      color: red;
+      font-size: 0.9rem;
+      margin-top: -0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 1.5rem;
+
+      button {
+        flex: 1;
+        padding: 0.8rem;
+        font-size: 1.1rem;
+        font-weight: bold;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+
+        &.MuiButton-containedPrimary {
+          background-color: #1976d2;
+
+          &:hover {
+            background-color: #115293;
+          }
+        }
+
+        &.MuiButton-outlinedSecondary {
+          color: #555;
+          border: 1px solid #aaa;
+
+          &:hover {
+            background-color: #eee;
+          }
+        }
+      }
+    }
+  }
+}

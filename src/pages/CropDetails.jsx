@@ -42,20 +42,17 @@ export function CropDetails() {
     navigate(`/crop/edit/${crop._id}`)
   }
 
+  const formatNumber = (num) => {
+    if (typeof num !== 'number') return num
+    return num.toLocaleString('he-IL')
+  }
+
   if (isLoading) return <div className='loader'>טוען פרטי יבול...</div>
   if (!crop) return <div>לא נמצאו נתונים עבור היבול המבוקש</div>
 
   return (
     <section className='crop-details main-layout'>
       <h1>פרטי יבול</h1>
-
-      <div className='actions'>
-        <button onClick={() => navigate('/crop')}>⬅ חזרה לרשימה</button>
-        <button onClick={onEditCrop}>✏️ עריכה</button>
-        <button className='danger' onClick={onDeleteCrop}>
-          🗑️ מחיקה
-        </button>
-      </div>
 
       <table className='crop-details-table'>
         <tbody>
@@ -68,7 +65,7 @@ export function CropDetails() {
             <td>{crop.description}</td>
           </tr>
           <tr>
-            <td>זמן גדילה (ימים)</td>
+            <td>⏳ זמן גדילה (ימים)</td>
             <td>{crop.growthTime}</td>
           </tr>
           <tr>
@@ -82,29 +79,45 @@ export function CropDetails() {
           <tr>
             <td>💧 טווח לחות</td>
             <td>
-              <span style={{ color: '#1976d2', fontWeight: 'bold' }}>{crop.minValue}%</span>
+              <span style={{ color: '#1976d2', fontWeight: 'bold' }}>{crop.minHumidity}%</span>
               <span style={{ margin: '0 6px', color: '#999' }}>⬅</span>
-              <span style={{ color: '#ef5350', fontWeight: 'bold' }}>{crop.maxValue}%</span>
+              <span style={{ color: '#ef5350', fontWeight: 'bold' }}>{crop.maxHumidity}%</span>
             </td>
           </tr>
           <tr>
-            <td>השקיה מומלצת</td>
-            <td>{crop.waterRecommendation} (מילימטרים של מים ליום למ"ר)</td>
+            <td>📈 ערך עסקי רצוי (ק"ג)</td>
+            <td>
+              <span style={{ color: '#1976d2', fontWeight: 'bold' }}>{formatNumber(crop.businessMinValue)}</span>
+              <span style={{ margin: '0 6px', color: '#999' }}>⬅</span>
+              <span style={{ color: '#ef5350', fontWeight: 'bold' }}>{formatNumber(crop.businessMaxValue)}</span>
+            </td>
           </tr>
           <tr>
-            <td>דישון מומלץ</td>
-            <td>{crop.fertilizerRecommendation} (גרם דשן לכל מ"ר)</td>
+            <td>🚿 השקיה מומלצת</td>
+            <td>{formatNumber(crop.waterRecommendation)} מ"מ ליום למ"ר</td>
           </tr>
           <tr>
-            <td>תנאים נוספים</td>
+            <td>🧪 דישון מומלץ</td>
+            <td>{formatNumber(crop.fertilizerRecommendation)} גרם למ"ר</td>
+          </tr>
+          <tr>
+            <td>📝 תנאים נוספים</td>
             <td>{crop.additionalConditions}</td>
           </tr>
           <tr>
-            <td>הערות</td>
+            <td>📌 הערות</td>
             <td>{crop.notes}</td>
           </tr>
         </tbody>
       </table>
+
+      <div className='actions'>
+        <button onClick={() => navigate('/crop')}>⬅ חזרה לרשימה</button>
+        <button onClick={onEditCrop}>✏️ עריכה</button>
+        <button className='danger' onClick={onDeleteCrop}>
+          🗑️ מחיקה
+        </button>
+      </div>
     </section>
   )
 }
