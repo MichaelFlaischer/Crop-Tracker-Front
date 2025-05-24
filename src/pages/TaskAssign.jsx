@@ -86,22 +86,32 @@ export function TaskAssign() {
     const assignment = employeeAssignments.find((a) => a._id === assignmentId)
     if (!assignment) return
 
+    const status = statusMap[assignmentId]
+    const now = new Date().toISOString()
+
     const updated = {
       ...assignment,
-      status: statusMap[assignmentId],
+      status,
       employeeNotes: notesMap[assignmentId],
+      actualEnd: ['done', 'delayed', 'missed'].includes(status) ? now : assignment.actualEnd,
     }
 
     try {
       await employeesInTaskService.update(updated)
       showSuccessMsg('עודכן בהצלחה')
+      setEmployeeAssignments((prev) => prev.map((a) => (a._id === updated._id ? { ...a, actualEnd: updated.actualEnd, status: updated.status } : a)))
     } catch {
       showErrorMsg('שגיאה בשמירה')
     }
   }
 
-  const activeTasks = myTasks.filter(({ assignment }) => ['pending', 'in-progress'].includes(assignment.status))
-  const finishedTasks = myTasks.filter(({ assignment }) => ['done', 'delayed', 'missed'].includes(assignment.status))
+  const activeTasks = myTasks
+    .filter(({ assignment }) => ['pending', 'in-progress'].includes(assignment.status))
+    .sort((a, b) => new Date(a.task.startDate) - new Date(b.task.startDate))
+
+  const finishedTasks = myTasks
+    .filter(({ assignment }) => ['done', 'delayed', 'missed'].includes(assignment.status))
+    .sort((a, b) => new Date(a.task.startDate) - new Date(b.task.startDate))
 
   return (
     <section className='task-assign main-layout'>
@@ -155,7 +165,7 @@ export function TaskAssign() {
         </table>
       )}
 
-      <h2>משימות שהושלמו / נדחו</h2>
+      <h2>משימות שהושלמו / נדחו / לא בוצעו</h2>
       {finishedTasks.length === 0 ? (
         <p>אין משימות שהושלמו או נדחו</p>
       ) : (

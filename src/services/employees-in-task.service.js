@@ -27,6 +27,8 @@ function add(record) {
 
 // עדכון שיבוץ עובד למשימה
 function update(record) {
+  console.log(record)
+
   return httpService.put(`${ENDPOINT}/${record._id}`, record)
 }
 

@@ -10,7 +10,7 @@ import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service.js'
 export function TaskIndex() {
   const [tasks, setTasks] = useState([])
   const [assignedMap, setAssignedMap] = useState({})
-  const [filter, setFilter] = useState({ status: 'all', filterDate: '' })
+  const [filter, setFilter] = useState({ status: 'all', filterDate: '', sortBy: 'startDateAsc' })
   const [isLoading, setIsLoading] = useState(true)
   const navigate = useNavigate()
 
@@ -105,13 +105,21 @@ export function TaskIndex() {
     return d.toLocaleDateString('he-IL')
   }
 
-  const filteredTasks = tasks.filter((task) => {
-    const statusMatch = filter.status === 'all' || task.status === filter.status
-    const filterDate = filter.filterDate ? new Date(filter.filterDate) : null
-    const fromMatch = !filterDate || new Date(task.startDate) <= filterDate
-    const toMatch = !filterDate || new Date(task.endDate) >= filterDate
-    return statusMatch && fromMatch && toMatch
-  })
+  const filteredTasks = tasks
+    .filter((task) => {
+      const statusMatch = filter.status === 'all' || task.status === filter.status
+      const filterDate = filter.filterDate ? new Date(filter.filterDate) : null
+      const fromMatch = !filterDate || new Date(task.startDate) <= filterDate
+      const toMatch = !filterDate || new Date(task.endDate) >= filterDate
+      return statusMatch && fromMatch && toMatch
+    })
+    .sort((a, b) => {
+      if (filter.sortBy === 'startDateAsc') return new Date(a.startDate) - new Date(b.startDate)
+      if (filter.sortBy === 'startDateDesc') return new Date(b.startDate) - new Date(a.startDate)
+      if (filter.sortBy === 'endDateAsc') return new Date(a.endDate) - new Date(b.endDate)
+      if (filter.sortBy === 'endDateDesc') return new Date(b.endDate) - new Date(a.endDate)
+      return 0
+    })
 
   return (
     <section className='task-index main-layout'>
@@ -126,7 +134,13 @@ export function TaskIndex() {
           <option value='delayed'>נדחתה</option>
         </select>
         <input type='date' value={filter.filterDate} onChange={(e) => setFilter((prev) => ({ ...prev, filterDate: e.target.value }))} />
-        <button className='btn-reset' onClick={() => setFilter({ status: 'all', filterDate: '' })}>
+        <select value={filter.sortBy} onChange={(e) => setFilter((prev) => ({ ...prev, sortBy: e.target.value }))}>
+          <option value='startDateAsc'>מיון לפי התחלה (עולה)</option>
+          <option value='startDateDesc'>מיון לפי התחלה (יורד)</option>
+          <option value='endDateAsc'>מיון לפי סיום (עולה)</option>
+          <option value='endDateDesc'>מיון לפי סיום (יורד)</option>
+        </select>
+        <button className='btn-reset' onClick={() => setFilter({ status: 'all', filterDate: '', sortBy: 'startDateAsc' })}>
           איפוס
         </button>
         <button className='btn-add' onClick={onAdd}>
