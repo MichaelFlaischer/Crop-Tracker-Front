@@ -52,23 +52,20 @@ import { OperationEdit } from './pages/OperationEdit'
 import { TaskIndex } from './pages/TaskIndex'
 import { TaskAdd } from './pages/TaskAdd'
 import { TaskEdit } from './pages/TaskEdit'
-//import { EmployeesInTaskIndex } from './pages/EmployeesInTaskIndex'
 import { TaskDetails } from './pages/TaskDetails'
 import { TaskAssign } from './pages/TaskAssign'
 
-// Workers
-// import { WorkerIndex } from './pages/WorkerIndex'
-
 // Clients & Deliveries
-// import { ClientIndex } from './pages/ClientIndex'
-// import { ClientAdd } from './pages/ClientAdd'
-// import { ClientEdit } from './pages/ClientEdit'
-// import { ClientOrders } from './pages/ClientOrders'
-// import { OrderAdd } from './pages/OrderAdd'
-// import { OrderUpdateQty } from './pages/OrderUpdateQty'
-// import { OrderIndex } from './pages/OrderIndex'
-// import { TruckAdd } from './pages/TruckAdd'
-// import { DeliveryAssign } from './pages/DeliveryAssign'
+import { ClientIndex } from './pages/ClientIndex'
+import { ClientAdd } from './pages/ClientAdd'
+import { ClientEdit } from './pages/ClientEdit'
+import { OrderIndex } from './pages/OrderIndex'
+import { ClientOrders } from './pages/ClientOrders'
+import { OrderAdd } from './pages/OrderAdd'
+import { OrderDetails } from './pages/OrderDetails'
+import { OrderEdit } from './pages/OrderEdit'
+import { OrderUpdateQty } from './pages/OrderUpdateQty'
+import { DeliveryAssign } from './pages/DeliveryAssign'
 
 // Reports
 // import { ReportIndex } from './pages/ReportIndex'
@@ -83,7 +80,6 @@ import { TaskAssign } from './pages/TaskAssign'
 // Static
 import { About } from './pages/About'
 
-// קומפוננטה פנימית להצגת דשבורד מתאים
 function DynamicDashboardRoute() {
   const user = useSelector((storeState) => storeState.userModule.loggedInUser)
   const [dashboard, setDashboard] = useState(<MainDashboard />)
@@ -142,13 +138,7 @@ export function App() {
               <Route path='/tasks/assign' element={<TaskAssign />} />
               <Route path='/tasks/:taskId' element={<TaskDetails />} />
 
-              {/* Workers */}
-              {/*
-              <Route path='/worker' element={<WorkerIndex />} />
-               /}
-
               {/* Clients & Orders & Delivery */}
-              {/*
               <Route path='/client' element={<ClientIndex />} />
               <Route path='/client/add' element={<ClientAdd />} />
               <Route path='/client/edit/:clientId' element={<ClientEdit />} />
@@ -156,9 +146,8 @@ export function App() {
               <Route path='/order/add' element={<OrderAdd />} />
               <Route path='/order/update-qty/:orderId' element={<OrderUpdateQty />} />
               <Route path='/orders/view' element={<OrderIndex />} />
-              <Route path='/truck/add' element={<TruckAdd />} />
-              <Route path='/delivery/assign' element={<DeliveryAssign />} />
-              /}
+              <Route path='/order/:orderId' element={<OrderDetails />} />
+              <Route path='/order/edit/:orderId' element={<OrderEdit />} />
 
               {/* Reports */}
               {/*

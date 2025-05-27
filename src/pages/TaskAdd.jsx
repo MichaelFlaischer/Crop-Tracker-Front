@@ -9,6 +9,8 @@ import { fieldService } from '../services/field.service.js'
 import { operationService } from '../services/operation.service.js'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service.js'
 
+const DELIVERY_TASK_OPERATION_ID = '68354fa1d29fa199e95c04d8'
+
 const schema = yup.object().shape({
   taskDescription: yup.string().required('יש להזין תיאור פעולה'),
   fieldId: yup.string().required('יש לבחור שדה'),
@@ -65,7 +67,7 @@ export function TaskAdd() {
   return (
     <section className='task-add main-layout'>
       <h1>הוספת משימה חדשה</h1>
-      <form className='form' onSubmit={handleSubmit(onSubmit)}>
+      <form className='form styled-form' onSubmit={handleSubmit(onSubmit)}>
         <label>
           תיאור פעולה
           <input type='text' {...register('taskDescription')} />
@@ -89,11 +91,13 @@ export function TaskAdd() {
           פעולה
           <select {...register('operationId')}>
             <option value=''>בחר פעולה</option>
-            {operations.map((op) => (
-              <option key={op._id} value={op._id}>
-                {op.operationName}
-              </option>
-            ))}
+            {operations
+              .filter((op) => op._id !== DELIVERY_TASK_OPERATION_ID)
+              .map((op) => (
+                <option key={op._id} value={op._id}>
+                  {op.operationName}
+                </option>
+              ))}
           </select>
           {errors.operationId && <span className='error'>{errors.operationId.message}</span>}
         </label>
@@ -133,8 +137,6 @@ export function TaskAdd() {
           <select {...register('status')}>
             <option value='pending'>בהמתנה</option>
             <option value='in-progress'>בתהליך</option>
-            <option value='done'>הושלמה</option>
-            <option value='delayed'>נדחתה</option>
           </select>
           {errors.status && <span className='error'>{errors.status.message}</span>}
         </label>

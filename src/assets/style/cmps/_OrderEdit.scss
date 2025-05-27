@@ -1,0 +1,148 @@
+.order-edit {
+  padding: 2rem;
+  max-width: 900px;
+  margin: auto;
+
+  h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 2rem;
+  }
+
+  button {
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+
+    &:first-child {
+      background-color: #4caf50;
+      color: white;
+    }
+
+    &:last-child {
+      background-color: #9e9e9e;
+      color: white;
+    }
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    .form-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+
+      label {
+        flex: 1 1 45%;
+        display: flex;
+        flex-direction: column;
+        font-weight: bold;
+
+        select,
+        textarea,
+        input {
+          margin-top: 0.5rem;
+          padding: 0.5rem;
+          border-radius: 6px;
+          border: 1px solid #ccc;
+        }
+
+        textarea {
+          resize: vertical;
+          min-height: 80px;
+        }
+      }
+
+      .custom-datepicker {
+        padding: 0.5rem;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+      }
+    }
+
+    .client-info {
+      background: #f9f9f9;
+      padding: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      font-size: 0.95rem;
+
+      div {
+        margin-bottom: 0.4rem;
+      }
+    }
+
+    .item-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      padding: 0.5rem 0;
+      border-bottom: 1px dashed #ccc;
+
+      select,
+      input {
+        padding: 0.5rem;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+      }
+
+      select {
+        flex: 2;
+      }
+
+      input[type='number'] {
+        width: 100px;
+      }
+
+      button {
+        background-color: #f44336;
+        color: white;
+        border: none;
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+        cursor: pointer;
+
+        &:hover {
+          background-color: #d32f2f;
+        }
+      }
+
+      .crop-info {
+        font-size: 0.85rem;
+        margin-top: 0.4rem;
+        width: 100%;
+
+        .inventory-total,
+        .reserved {
+          color: #d32f2f;
+        }
+
+        .available {
+          color: #1976d2;
+        }
+      }
+    }
+
+    .summary {
+      text-align: right;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+  }
+}

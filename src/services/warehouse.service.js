@@ -7,6 +7,8 @@ export const warehouseService = {
   getById,
   save,
   remove,
+  queryByCrop,
+  updateCropQuantity,
 }
 
 async function query() {
@@ -27,4 +29,16 @@ async function save(warehouse) {
 
 async function remove(id) {
   return await httpService.delete(`${ENDPOINT}/${id}`)
+}
+
+async function queryByCrop(cropId) {
+  return await httpService.get(`${ENDPOINT}/by-crop/${cropId}`)
+}
+
+async function updateCropQuantity(warehouseId, cropId, diff) {
+  return await httpService.post(`${ENDPOINT}/update-crop-quantity`, {
+    warehouseId,
+    cropId,
+    diff,
+  })
 }

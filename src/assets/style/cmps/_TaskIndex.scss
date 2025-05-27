@@ -8,6 +8,14 @@
     text-align: center;
   }
 
+  h2 {
+    font-size: 1.4rem;
+    margin-top: 2rem;
+    color: #34495e;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 0.4rem;
+  }
+
   .filter-bar {
     display: flex;
     flex-wrap: wrap;
@@ -65,13 +73,14 @@
     }
   }
 
-  .task-table {
+  table {
     width: 100%;
     border-collapse: collapse;
     background-color: #fff;
     border: 1px solid #ccc;
     border-radius: 8px;
     overflow: hidden;
+    margin-bottom: 2rem;
 
     th,
     td {
@@ -106,6 +115,10 @@
         transform: scale(1.1);
         opacity: 0.8;
       }
+
+      &.danger {
+        color: #d9534f;
+      }
     }
 
     .status {
@@ -129,9 +142,26 @@
         color: #d9534f;
       }
     }
+  }
 
-    .danger {
-      color: #d9534f;
+  @media (max-width: 768px) {
+    .filter-bar {
+      flex-direction: column;
+      align-items: stretch;
+
+      select,
+      input[type='date'] {
+        width: 100%;
+      }
+    }
+
+    table {
+      font-size: 0.85rem;
+
+      th,
+      td {
+        padding: 0.6rem;
+      }
     }
   }
 }

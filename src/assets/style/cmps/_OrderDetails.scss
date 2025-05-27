@@ -1,0 +1,163 @@
+.order-details {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: auto;
+  color: #2c3e50;
+
+  h1 {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+  }
+
+  .order-summary,
+  .order-info,
+  .order-items,
+  .delivery-employees {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: 8px;
+
+    h2 {
+      margin-bottom: 1rem;
+      color: #1a237e;
+    }
+
+    p {
+      margin: 0.5rem 0;
+      font-size: 1rem;
+
+      strong {
+        font-weight: bold;
+      }
+    }
+  }
+
+  .back-btn {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    padding: 0.4rem 0.8rem;
+    background-color: #2196f3;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: #1976d2;
+    }
+  }
+
+  .order-info p {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px dashed #ddd;
+    padding-bottom: 4px;
+    margin-bottom: 8px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+
+    th,
+    td {
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+
+    th {
+      background-color: #e3f2fd;
+      color: #0d47a1;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f1f1f1;
+    }
+  }
+
+  .warehouse-breakdown-table {
+    width: 100%;
+    margin: auto;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #ffffff;
+
+    th {
+      background-color: #f0f8ff;
+      font-size: 0.95rem;
+    }
+
+    td {
+      font-size: 0.95rem;
+    }
+  }
+
+  .delivery-employees table {
+    margin-top: 0.5rem;
+
+    th {
+      background-color: #ede7f6;
+      color: #311b92;
+    }
+  }
+
+  .actions {
+    text-align: center;
+    margin-top: 2rem;
+
+    button {
+      margin: 0.5rem;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s;
+
+      &:hover {
+        opacity: 0.9;
+      }
+
+      &:first-child {
+        background-color: #4caf50;
+        color: white;
+      }
+
+      &:nth-child(2) {
+        background-color: #2196f3;
+        color: white;
+      }
+
+      &:last-child {
+        background-color: #f44336;
+        color: white;
+      }
+    }
+  }
+
+  @media (max-width: 600px) {
+    padding: 1rem;
+
+    .actions {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    table {
+      font-size: 0.9rem;
+
+      th,
+      td {
+        padding: 0.5rem;
+      }
+    }
+  }
+}

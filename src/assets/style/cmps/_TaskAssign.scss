@@ -43,22 +43,22 @@
       background-color: #f4f6f8;
     }
 
-    // צבעים לפי סטטוס
     .status-row {
       &.done {
-        background-color: #e8f5e9; // ירוק בהיר
+        background-color: #e8f5e9;
       }
       &.completed {
         background-color: #e8f5e9;
       }
       &.missed,
       &.delayed {
-        background-color: #ffebee; // אדום בהיר
+        background-color: #ffebee;
       }
     }
 
     input[type='text'],
-    select {
+    select,
+    textarea {
       padding: 0.4rem 0.6rem;
       border: 1px solid #ccc;
       border-radius: 4px;
@@ -104,9 +104,74 @@
     }
   }
 
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 2rem;
+    border-radius: 8px;
+    max-width: 600px;
+    margin: auto;
+
+    label {
+      display: flex;
+      flex-direction: column;
+      font-weight: bold;
+      color: #2c3e50;
+
+      input,
+      select,
+      textarea {
+        margin-top: 0.5rem;
+      }
+    }
+
+    .error {
+      color: #e53935;
+      font-size: 0.85rem;
+      margin-top: 0.2rem;
+    }
+
+    .actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 1rem;
+
+      button {
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
+        font-weight: bold;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+
+        &:first-child {
+          background-color: #4caf50;
+          color: white;
+        }
+
+        &.btn-cancel {
+          background-color: #f44336;
+          color: white;
+        }
+      }
+    }
+  }
+
   p {
     font-size: 1rem;
     color: #666;
     margin: 1rem 0;
+  }
+
+  .my-task-table td:last-child button {
+    white-space: nowrap;
+  }
+
+  .my-task-table td button {
+    min-width: 90px;
   }
 }

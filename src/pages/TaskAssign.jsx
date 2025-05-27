@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { taskService } from '../services/task.service.js'
 import { employeesInTaskService } from '../services/employees-in-task.service.js'
 import { userService } from '../services/user.service.js'
 import { fieldService } from '../services/field.service.js'
+import { customerOrderService } from '../services/customer-order.service.js'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service.js'
 
 export function TaskAssign() {
@@ -10,10 +12,13 @@ export function TaskAssign() {
   const [employeeAssignments, setEmployeeAssignments] = useState([])
   const [myTasks, setMyTasks] = useState([])
   const [fields, setFields] = useState([])
+  const [ordersMap, setOrdersMap] = useState({})
   const [notesMap, setNotesMap] = useState({})
   const [statusMap, setStatusMap] = useState({})
 
   const loggedInUser = userService.getLoggedInUser()
+  const navigate = useNavigate()
+  const DELIVERY_TASK_OPERATION_ID = '68354fa1d29fa199e95c04d8'
 
   useEffect(() => {
     loadData()
@@ -21,18 +26,31 @@ export function TaskAssign() {
 
   async function loadData() {
     try {
-      const [allTasks, allAssignments, allFields] = await Promise.all([taskService.query(), employeesInTaskService.query(), fieldService.query()])
+      const [allTasks, allAssignments, allFields, allOrders] = await Promise.all([
+        taskService.query(),
+        employeesInTaskService.query(),
+        fieldService.query(),
+        customerOrderService.query(),
+      ])
 
       setTasks(allTasks)
       setEmployeeAssignments(allAssignments)
       setFields(allFields)
 
+      const orderMap = allOrders.reduce((acc, order) => {
+        acc[order._id] = order.address
+        return acc
+      }, {})
+      setOrdersMap(orderMap)
+
       const userAssignments = allAssignments.filter((assign) => assign.employeeId === loggedInUser._id)
 
-      const taskMap = userAssignments.map((assign) => ({
-        task: allTasks.find((task) => task._id === assign.taskId),
-        assignment: assign,
-      }))
+      const taskMap = userAssignments
+        .map((assign) => {
+          const task = allTasks.find((task) => task._id?.toString() === assign.taskId)
+          return task ? { task, assignment: assign } : null
+        })
+        .filter(Boolean)
 
       setMyTasks(taskMap)
 
@@ -105,99 +123,158 @@ export function TaskAssign() {
     }
   }
 
-  const activeTasks = myTasks
-    .filter(({ assignment }) => ['pending', 'in-progress'].includes(assignment.status))
-    .sort((a, b) => new Date(a.task.startDate) - new Date(b.task.startDate))
+  const deliveryTasks = myTasks.filter(({ task }) => task?.operationId?.toString() === DELIVERY_TASK_OPERATION_ID)
+  const regularTasks = myTasks.filter(({ task }) => task?.operationId?.toString() !== DELIVERY_TASK_OPERATION_ID)
 
-  const finishedTasks = myTasks
-    .filter(({ assignment }) => ['done', 'delayed', 'missed'].includes(assignment.status))
-    .sort((a, b) => new Date(a.task.startDate) - new Date(b.task.startDate))
+  const activeRegular = regularTasks.filter(({ assignment }) => ['pending', 'in-progress'].includes(assignment.status))
+  const finishedRegular = regularTasks.filter(({ assignment }) => ['done', 'delayed', 'missed'].includes(assignment.status))
+
+  const groupTasks = (taskList) => {
+    const active = taskList
+      .filter(({ assignment }) => ['pending', 'in-progress'].includes(assignment.status))
+      .filter(({ task }) => task?.startDate)
+      .sort((a, b) => new Date(a.task.startDate) - new Date(b.task.startDate))
+
+    const finished = taskList
+      .filter(({ assignment }) => ['done', 'delayed', 'missed'].includes(assignment.status))
+      .filter(({ task }) => task?.startDate)
+      .sort((a, b) => new Date(a.task.startDate) - new Date(b.task.startDate))
+
+    return { active, finished }
+  }
+
+  const { active: activeDelivery, finished: finishedDelivery } = groupTasks(deliveryTasks)
+
+  const renderDeliveryTable = (title, tasks, editable = false) => (
+    <>
+      <h3>{title}</h3>
+      {tasks.length === 0 ? (
+        <p>אין משימות להצגה</p>
+      ) : (
+        <table className='my-task-table'>
+          <thead>
+            <tr>
+              <th>תיאור משלוח</th>
+              <th>תאריך משלוח</th>
+              <th>סטטוס</th>
+              {editable ? <th>הערות</th> : <th>הערות שבוצעו</th>}
+              {editable && <th>עדכון</th>}
+              <th>📦 צפייה בפרטי הזמנה</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tasks.map(({ task, assignment }) => (
+              <tr key={assignment._id}>
+                <td>{task.taskDescription}</td>
+                <td>{formatDate(task.startDate)}</td>
+                <td>
+                  {editable ? (
+                    <select value={statusMap[assignment._id]} onChange={(e) => handleStatusChange(assignment._id, e.target.value)}>
+                      <option value='in-progress'>בתהליך</option>
+                      <option value='done'>הושלמה</option>
+                      <option value='delayed'>נדחתה</option>
+                      <option value='missed'>לא בוצעה</option>
+                    </select>
+                  ) : (
+                    translateStatus(assignment.status)
+                  )}
+                </td>
+                <td>
+                  {editable ? (
+                    <input type='text' value={notesMap[assignment._id]} onChange={(e) => handleNotesChange(assignment._id, e.target.value)} />
+                  ) : (
+                    assignment.employeeNotes || '-'
+                  )}
+                </td>
+                {editable && (
+                  <td>
+                    <button onClick={() => onSave(assignment._id)}>💾 שמור</button>
+                  </td>
+                )}
+                <td>
+                  <button onClick={() => window.open(`/order/${task.fieldId}`, '_blank')}>🔍 צפייה</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </>
+  )
+
+  const renderRegularTable = (title, tasks, editable = false) => (
+    <>
+      <h3>{title}</h3>
+      {tasks.length === 0 ? (
+        <p>אין משימות להצגה</p>
+      ) : (
+        <table className='my-task-table'>
+          <thead>
+            <tr>
+              <th>תיאור פעולה</th>
+              <th>שדה</th>
+              <th>תאריך התחלה</th>
+              <th>שעת התחלה</th>
+              <th>תאריך סיום</th>
+              <th>שעת סיום</th>
+              <th>סטטוס</th>
+              {editable ? <th>הערות</th> : <th>הערות שבוצעו</th>}
+              {editable && <th>עדכון</th>}
+            </tr>
+          </thead>
+          <tbody>
+            {tasks.map(({ task, assignment }) => (
+              <tr key={assignment._id}>
+                <td>{task.taskDescription}</td>
+                <td>{getFieldName(task.fieldId)}</td>
+                <td>{formatDate(task.startDate)}</td>
+                <td>{task.startTime}</td>
+                <td>{formatDate(task.endDate)}</td>
+                <td>{task.endTime}</td>
+                <td>
+                  {editable ? (
+                    <select value={statusMap[assignment._id]} onChange={(e) => handleStatusChange(assignment._id, e.target.value)}>
+                      <option value='pending'>בהמתנה</option>
+                      <option value='in-progress'>בתהליך</option>
+                      <option value='done'>הושלמה</option>
+                      <option value='delayed'>נדחתה</option>
+                      <option value='missed'>לא בוצעה</option>
+                    </select>
+                  ) : (
+                    translateStatus(assignment.status)
+                  )}
+                </td>
+                <td>
+                  {editable ? (
+                    <input type='text' value={notesMap[assignment._id]} onChange={(e) => handleNotesChange(assignment._id, e.target.value)} />
+                  ) : (
+                    assignment.employeeNotes || '-'
+                  )}
+                </td>
+                {editable && (
+                  <td>
+                    <button onClick={() => onSave(assignment._id)}>💾 שמור</button>
+                  </td>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </>
+  )
 
   return (
     <section className='task-assign main-layout'>
       <h1>המשימות שלי</h1>
 
-      <h2>משימות פעילות</h2>
-      {activeTasks.length === 0 ? (
-        <p>לא שובצת למשימות פעילות</p>
-      ) : (
-        <table className='my-task-table'>
-          <thead>
-            <tr>
-              <th>תיאור פעולה</th>
-              <th>שדה</th>
-              <th>תאריך התחלה</th>
-              <th>שעת התחלה</th>
-              <th>תאריך סיום</th>
-              <th>שעת סיום</th>
-              <th>סטטוס</th>
-              <th>הערות</th>
-              <th>עדכון</th>
-            </tr>
-          </thead>
-          <tbody>
-            {activeTasks.map(({ task, assignment }) => (
-              <tr key={assignment._id}>
-                <td>{task.taskDescription}</td>
-                <td>{getFieldName(task.fieldId)}</td>
-                <td>{formatDate(task.startDate)}</td>
-                <td>{task.startTime}</td>
-                <td>{formatDate(task.endDate)}</td>
-                <td>{task.endTime}</td>
-                <td>
-                  <select value={statusMap[assignment._id]} onChange={(e) => handleStatusChange(assignment._id, e.target.value)}>
-                    <option value='pending'>בהמתנה</option>
-                    <option value='in-progress'>בתהליך</option>
-                    <option value='done'>הושלמה</option>
-                    <option value='delayed'>נדחתה</option>
-                    <option value='missed'>לא בוצעה</option>
-                  </select>
-                </td>
-                <td>
-                  <input type='text' value={notesMap[assignment._id]} onChange={(e) => handleNotesChange(assignment._id, e.target.value)} />
-                </td>
-                <td>
-                  <button onClick={() => onSave(assignment._id)}>💾 שמור</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+      <h2>🚚 משימות משלוח</h2>
+      {renderDeliveryTable('משימות משלוח פעילות', activeDelivery, true)}
+      {renderDeliveryTable('משימות משלוח שהושלמו / נדחו / לא בוצעו', finishedDelivery)}
 
-      <h2>משימות שהושלמו / נדחו / לא בוצעו</h2>
-      {finishedTasks.length === 0 ? (
-        <p>אין משימות שהושלמו או נדחו</p>
-      ) : (
-        <table className='my-task-table'>
-          <thead>
-            <tr>
-              <th>תיאור פעולה</th>
-              <th>שדה</th>
-              <th>תאריך התחלה</th>
-              <th>שעת התחלה</th>
-              <th>תאריך סיום</th>
-              <th>שעת סיום</th>
-              <th>סטטוס</th>
-              <th>הערות</th>
-            </tr>
-          </thead>
-          <tbody>
-            {finishedTasks.map(({ task, assignment }) => (
-              <tr key={assignment._id}>
-                <td>{task.taskDescription}</td>
-                <td>{getFieldName(task.fieldId)}</td>
-                <td>{formatDate(task.startDate)}</td>
-                <td>{task.startTime}</td>
-                <td>{formatDate(task.endDate)}</td>
-                <td>{task.endTime}</td>
-                <td>{translateStatus(assignment.status)}</td>
-                <td>{assignment.employeeNotes || '-'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+      <h2>🌿 משימות רגילות</h2>
+      {renderRegularTable('משימות פעילות', activeRegular, true)}
+      {renderRegularTable('משימות שהושלמו / נדחו / לא בוצעו', finishedRegular)}
     </section>
   )
 }

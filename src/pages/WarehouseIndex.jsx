@@ -25,7 +25,6 @@ export function WarehouseIndex() {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
     libraries: GOOGLE_MAP_LIBRARIES,
-    id: 'shared-google-loader',
   })
 
   useEffect(() => {

@@ -14,11 +14,14 @@ export function TaskIndex() {
   const [isLoading, setIsLoading] = useState(true)
   const navigate = useNavigate()
 
+  const DELIVERY_OPERATION_ID = '68354fa1d29fa199e95c04d8'
+
   const statusMap = {
     pending: 'בהמתנה',
     'in-progress': 'בתהליך',
     done: 'הושלמה',
     delayed: 'נדחתה',
+    missed: 'לא בוצעה',
   }
 
   useEffect(() => {
@@ -105,7 +108,7 @@ export function TaskIndex() {
     return d.toLocaleDateString('he-IL')
   }
 
-  const filteredTasks = tasks
+  const filteredAllTasks = tasks
     .filter((task) => {
       const statusMatch = filter.status === 'all' || task.status === filter.status
       const filterDate = filter.filterDate ? new Date(filter.filterDate) : null
@@ -121,6 +124,9 @@ export function TaskIndex() {
       return 0
     })
 
+  const deliveryTasks = filteredAllTasks.filter((t) => t.operationId?.toString() === DELIVERY_OPERATION_ID)
+  const regularTasks = filteredAllTasks.filter((t) => t.operationId?.toString() !== DELIVERY_OPERATION_ID)
+
   return (
     <section className='task-index main-layout'>
       <h1>רשימת משימות</h1>
@@ -132,6 +138,7 @@ export function TaskIndex() {
           <option value='in-progress'>בתהליך</option>
           <option value='done'>הושלמה</option>
           <option value='delayed'>נדחתה</option>
+          <option value='missed'>לא בוצעה</option>
         </select>
         <input type='date' value={filter.filterDate} onChange={(e) => setFilter((prev) => ({ ...prev, filterDate: e.target.value }))} />
         <select value={filter.sortBy} onChange={(e) => setFilter((prev) => ({ ...prev, sortBy: e.target.value }))}>
@@ -148,58 +155,93 @@ export function TaskIndex() {
         </button>
       </div>
 
+      {deliveryTasks.length > 0 && (
+        <>
+          <h2>🚚 משימות משלוח ללקוח</h2>
+          <table className='delivery-task-table'>
+            <thead>
+              <tr>
+                <th>שם הלקוח</th>
+                <th>מספר הזמנה</th>
+                <th>תאריך הספקה</th>
+                <th>כמות עובדים נדרשים</th>
+                <th>סטטוס</th>
+                <th>לפרטי ההזמנה</th>
+              </tr>
+            </thead>
+            <tbody>
+              {deliveryTasks.map((task) => (
+                <tr key={task._id}>
+                  <td>{task.taskDescription?.replace('משלוח ללקוח: ', '')}</td>
+                  <td>{task.fieldId}</td>
+                  <td>{formatDate(task.startDate)}</td>
+                  <td>{task.requiredEmployees}</td>
+                  <td className={`status ${task.status}`}>{statusMap[task.status]}</td>
+                  <td>
+                    <button onClick={() => navigate(`/order/${task.fieldId}`)}>📦 לפרטי ההזמנה</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
+
       {isLoading ? (
         <p>טוען נתונים...</p>
-      ) : filteredTasks.length === 0 ? (
+      ) : regularTasks.length === 0 ? (
         <p>לא נמצאו משימות תואמות</p>
       ) : (
-        <table className='task-table'>
-          <thead>
-            <tr>
-              <th>שם פעולה</th>
-              <th>שדה</th>
-              <th>יבול</th>
-              <th>תאריך התחלה</th>
-              <th>שעת התחלה</th>
-              <th>תאריך סיום</th>
-              <th>שעת סיום</th>
-              <th>כמות עובדים נדרשים</th>
-              <th>כמות עובדים שובצו</th>
-              <th>סטטוס</th>
-              <th>📄 פרטים</th>
-              <th>🛠️ פעולות</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredTasks.map((task) => (
-              <tr key={task._id}>
-                <td>{task.taskDescription}</td>
-                <td>{task.fieldName}</td>
-                <td>{task.cropName}</td>
-                <td>{formatDate(task.startDate)}</td>
-                <td>{task.startTime}</td>
-                <td>{formatDate(task.endDate)}</td>
-                <td>{task.endTime}</td>
-                <td>{task.requiredEmployees}</td>
-                <td>{assignedMap[task._id] || 0}</td>
-                <td className={`status ${task.status}`}>{statusMap[task.status] || task.status}</td>
-                <td>
-                  <button title='פרטים' onClick={() => onViewDetails(task._id)}>
-                    📄
-                  </button>
-                </td>
-                <td>
-                  <button title='עריכה' onClick={() => onEdit(task._id)}>
-                    ✏️
-                  </button>
-                  <button className='danger' title='מחיקה' onClick={() => onDelete(task._id)}>
-                    🗑️
-                  </button>
-                </td>
+        <>
+          <h2>🌿 משימות רגילות</h2>
+          <table className='task-table'>
+            <thead>
+              <tr>
+                <th>שם פעולה</th>
+                <th>שדה</th>
+                <th>יבול</th>
+                <th>תאריך התחלה</th>
+                <th>שעת התחלה</th>
+                <th>תאריך סיום</th>
+                <th>שעת סיום</th>
+                <th>כמות עובדים נדרשים</th>
+                <th>כמות עובדים שובצו</th>
+                <th>סטטוס</th>
+                <th>📄 פרטים</th>
+                <th>🛠️ פעולות</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {regularTasks.map((task) => (
+                <tr key={task._id}>
+                  <td>{task.taskDescription}</td>
+                  <td>{task.fieldName}</td>
+                  <td>{task.cropName}</td>
+                  <td>{formatDate(task.startDate)}</td>
+                  <td>{task.startTime}</td>
+                  <td>{formatDate(task.endDate)}</td>
+                  <td>{task.endTime}</td>
+                  <td>{task.requiredEmployees}</td>
+                  <td>{assignedMap[task._id] || 0}</td>
+                  <td className={`status ${task.status}`}>{statusMap[task.status] || task.status}</td>
+                  <td>
+                    <button title='פרטים' onClick={() => onViewDetails(task._id)}>
+                      📄
+                    </button>
+                  </td>
+                  <td>
+                    <button title='עריכה' onClick={() => onEdit(task._id)}>
+                      ✏️
+                    </button>
+                    <button className='danger' title='מחיקה' onClick={() => onDelete(task._id)}>
+                      🗑️
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
       )}
     </section>
   )

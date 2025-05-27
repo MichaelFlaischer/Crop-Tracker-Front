@@ -1,0 +1,91 @@
+.order-index {
+  padding: 2rem;
+
+  h1 {
+    text-align: center;
+    color: #2c3e50;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  button {
+    margin: 0 0.25rem;
+    padding: 0.4rem 0.8rem;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: #2196f3;
+    color: white;
+    transition: background-color 0.2s;
+  }
+
+  .filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    label {
+      font-weight: bold;
+    }
+
+    select {
+      padding: 0.5rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    th,
+    td {
+      padding: 0.75rem;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #f0f0f0;
+      color: #333;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    tr {
+      &.status-טיוטה {
+        background-color: #f0f0f0;
+      }
+      &.status-מאושרת {
+        background-color: #e3f2fd;
+      }
+      &.status-סופקה {
+        background-color: #e8f5e9;
+      }
+      &.status-מבוטלת {
+        background-color: #ffebee;
+      }
+    }
+
+    button {
+      &:hover {
+        background-color: #1976d2;
+      }
+
+      &:last-child {
+        background-color: #f44336;
+
+        &:hover {
+          background-color: #d32f2f;
+        }
+      }
+    }
+  }
+}

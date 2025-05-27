@@ -146,28 +146,32 @@ export function AppHeader() {
                     )}
                   </ul>
                 </li>
-
                 {isAdmin && (
                   <li>
-                    <span className='non-clickable'>משלוחים ושיווק</span>
+                    <span className='non-clickable'>🚛 משלוחים ושיווק</span>
                     <ul className='dropdown'>
                       <li>
-                        <NavLink to='/client'>רשימת לקוחות</NavLink>
+                        <span className='non-clickable'>לקוחות</span>
+                        <ul className='dropdown'>
+                          <li>
+                            <NavLink to='/client'> רשימת לקוחות</NavLink>
+                          </li>
+                          <li>
+                            <NavLink to='/client/add'>➕ הוספת לקוח</NavLink>
+                          </li>
+                        </ul>
                       </li>
+
                       <li>
-                        <NavLink to='/client/add'>הוספת לקוח</NavLink>
-                      </li>
-                      <li>
-                        <NavLink to='/orders/view'>צפייה בהזמנות</NavLink>
-                      </li>
-                      <li>
-                        <NavLink to='/order/add'>הזמנה חדשה</NavLink>
-                      </li>
-                      <li>
-                        <NavLink to='/truck/add'>הוספת משאית</NavLink>
-                      </li>
-                      <li>
-                        <NavLink to='/delivery/assign'>שיבוץ משלוחים</NavLink>
+                        <span className='non-clickable'>הזמנות</span>
+                        <ul className='dropdown'>
+                          <li>
+                            <NavLink to='/orders/view'> צפייה בהזמנות</NavLink>
+                          </li>
+                          <li>
+                            <NavLink to='/order/add'>📝 הזמנה חדשה</NavLink>
+                          </li>
+                        </ul>
                       </li>
                     </ul>
                   </li>
