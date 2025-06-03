@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { warehouseService } from '../services/warehouse.service.js'
 import { cropService } from '../services/crop.service.js'
 import { sowingAndHarvestService } from '../services/sowing-and-harvest.service.js'
 import { fieldService } from '../services/field.service.js'
+import { customerOrderItemService } from '../services/customer-order-item.service.js'
 
 export function InventoryList() {
   const [inventoryData, setInventoryData] = useState([])
+  const navigate = useNavigate()
 
   useEffect(() => {
     loadInventory()
@@ -41,8 +44,11 @@ export function InventoryList() {
               total: 0,
               warehouses: [],
               fields: [],
+              reserved: 0,
+              available: 0,
               status: '',
               statusColor: '',
+              recommendation: '',
             }
           }
           cropInventory[cropId].total += item.quantity
@@ -51,6 +57,24 @@ export function InventoryList() {
             quantity: item.quantity,
           })
         })
+      })
+
+      const allCropIds = Object.keys(cropInventory)
+
+      const reservedByCrop = await Promise.all(
+        allCropIds.map(async (cropId) => {
+          const draftItems = await customerOrderItemService.queryByCropAndStatus(cropId, 'טיוטה')
+          const approvedItems = await customerOrderItemService.queryByCropAndStatus(cropId, 'מאושרת')
+          const reserved = [...draftItems, ...approvedItems].reduce((sum, item) => sum + (item.quantity || 0), 0)
+          return { cropId, reserved }
+        })
+      )
+
+      reservedByCrop.forEach(({ cropId, reserved }) => {
+        if (cropInventory[cropId]) {
+          cropInventory[cropId].reserved = reserved
+          cropInventory[cropId].available = cropInventory[cropId].total - reserved
+        }
       })
 
       records.forEach((record) => {
@@ -70,9 +94,8 @@ export function InventoryList() {
         })
       })
 
-      // קביעת סטטוס מלאי
       Object.values(cropInventory).forEach((entry) => {
-        const { crop, total } = entry
+        const { crop, total, reserved, available } = entry
         const min = crop.businessMinValue || 0
         const max = crop.businessMaxValue || 100000
 
@@ -95,6 +118,19 @@ export function InventoryList() {
           entry.status = '❌ עודף חריג'
           entry.statusColor = 'danger'
         }
+
+        // DSS Recommendation
+        if (available < min * 0.8) {
+          entry.recommendation = 'שקול שתילה של יבול נוסף'
+          entry.recommendationAction = () => navigate('/field')
+          entry.recommendationLabel = 'מעבר לשדות'
+        } else if (available > max * 1.2) {
+          entry.recommendation = 'כדאי למכור את המלאי בעודף'
+          entry.recommendationAction = () => navigate('/orders/view')
+          entry.recommendationLabel = 'מעבר להזמנות'
+        } else {
+          entry.recommendation = ''
+        }
       })
 
       setInventoryData(Object.values(cropInventory))
@@ -105,13 +141,19 @@ export function InventoryList() {
 
   return (
     <section className='inventory-list main-layout'>
-      <h1>רשימת מלאי - יבולים</h1>
+      <h1>מלאי יבול והמלצות DSS</h1>
       <div className='inventory-cards'>
         {inventoryData.map((entry) => (
           <div className={`inventory-card ${entry.statusColor}`} key={entry.crop._id}>
             <h2>{entry.crop.cropName}</h2>
             <p>
               <strong>סה"כ במלאי:</strong> {entry.total.toLocaleString('he-IL')} ק"ג
+            </p>
+            <p>
+              <strong>שובץ להזמנות:</strong> {entry.reserved.toLocaleString('he-IL')} ק"ג
+            </p>
+            <p>
+              <strong>זמין לשיבוץ:</strong> {entry.available.toLocaleString('he-IL')} ק"ג
             </p>
             <p>
               <strong>טווח כמות נדרש לעסק:</strong>
@@ -121,6 +163,15 @@ export function InventoryList() {
             <p>
               <strong>סטטוס:</strong> <span className='status-label'>{entry.status}</span>
             </p>
+
+            {entry.recommendation && (
+              <div className='recommendation-box'>
+                <p>
+                  <strong>📌 המלצה:</strong> {entry.recommendation}
+                </p>
+                <button onClick={entry.recommendationAction}>{entry.recommendationLabel}</button>
+              </div>
+            )}
 
             <div>
               <h4>📦 פירוט לפי מחסנים:</h4>

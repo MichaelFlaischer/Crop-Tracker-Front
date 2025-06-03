@@ -21,7 +21,7 @@
     padding: 1.5rem;
     transition: transform 0.2s ease;
     border-right: 8px solid #ddd;
-    max-height: 460px;
+    max-height: 700px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -85,6 +85,29 @@
 
       .status-label {
         color: #f44336;
+      }
+    }
+
+    .recommendation-box {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      background-color: #f0f8ff;
+      border-radius: 6px;
+      border: 1px solid #cfe3ff;
+
+      button {
+        margin-top: 0.5rem;
+        padding: 0.4rem 0.8rem;
+        border: none;
+        border-radius: 4px;
+        background-color: #1976d2;
+        color: white;
+        font-size: 0.9rem;
+        cursor: pointer;
+
+        &:hover {
+          background-color: #125ea3;
+        }
       }
     }
   }

@@ -68,14 +68,13 @@ import { OrderUpdateQty } from './pages/OrderUpdateQty'
 import { DeliveryAssign } from './pages/DeliveryAssign'
 
 // Reports
-// import { ReportIndex } from './pages/ReportIndex'
-// import { ReportInventory } from './pages/ReportInventory'
-// import { ReportDeliveries } from './pages/ReportDeliveries'
-// import { CropForecast } from './pages/CropForecast'
-// import { IrrigationFertilization } from './pages/IrrigationFertilization'
-// import { WeatherForecast } from './pages/WeatherForecast'
-// import { ProfitAnalysis } from './pages/ProfitAnalysis'
-// import { GraphInsights } from './pages/GraphInsights'
+import { ReportIndex } from './pages/ReportIndex'
+import { WeatherForecast } from './pages/WeatherForecast'
+import { DashboardDSS } from './pages/DashboardDSS'
+import { InventoryHistoryReport } from './pages/InventoryHistoryReport'
+import { CustomerOrderHistoryReport } from './pages/CustomerOrderHistoryReport'
+import { CropPriceHistoryReport } from './pages/CropPriceHistoryReport'
+import { EmployeeTaskHistoryReport } from './pages/EmployeeTaskHistoryReport'
 
 // Static
 import { About } from './pages/About'
@@ -150,18 +149,13 @@ export function App() {
               <Route path='/order/edit/:orderId' element={<OrderEdit />} />
 
               {/* Reports */}
-              {/*
               <Route path='/reports' element={<ReportIndex />} />
-              <Route path='/reports/inventory' element={<ReportInventory />} />
-              <Route path='/reports/deliveries' element={<ReportDeliveries />} />
-              <Route path='/reports/crop-forecast' element={<CropForecast />} />
-              <Route path='/reports/irrigation' element={<IrrigationFertilization />} />
+              <Route path='/reports/inventory-history' element={<InventoryHistoryReport />} />
+              <Route path='/reports/customer-order-history' element={<CustomerOrderHistoryReport />} />
+              <Route path='/reports/crop-price-history' element={<CropPriceHistoryReport />} />
+              <Route path='/reports/employee-task-history' element={<EmployeeTaskHistoryReport />} />
               <Route path='/reports/weather' element={<WeatherForecast />} />
-              <Route path='/reports/profit' element={<ProfitAnalysis />} />
-              <Route path='/inventory/alerts' element={<InventoryAlerts />} />
-              <Route path='/reports/insights' element={<GraphInsights />} />
-
-              /}
+              <Route path='/dashboarddss' element={<DashboardDSS />} />
 
               {/* Static */}
               <Route path='/about' element={<About />} />

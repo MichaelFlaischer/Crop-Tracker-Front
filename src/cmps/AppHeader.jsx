@@ -100,14 +100,6 @@ export function AppHeader() {
                         )}
                       </ul>
                     </li>
-                    <li>
-                      <span className='non-clickable'>מלאי</span>
-                      <ul className='dropdown'>
-                        <li>
-                          <NavLink to='/inventory'>צפייה במלאי</NavLink>
-                        </li>
-                      </ul>
-                    </li>
                   </ul>
                 </li>
 
@@ -178,36 +170,49 @@ export function AppHeader() {
                 )}
 
                 <li>
-                  <span className='non-clickable'>דוחות וניתוחים</span>
+                  <span className='non-clickable'>📊 דוחות וניתוחים</span>
                   <ul className='dropdown'>
                     {isAdmin && (
                       <>
                         <li>
                           <NavLink to='/reports'>סקירה כללית</NavLink>
                         </li>
+
                         <li>
-                          <NavLink to='/reports/inventory'>דוחות מלאי</NavLink>
+                          <span className='non-clickable'>דוחות מערכת</span>
+                          <ul className='dropdown'>
+                            <li>
+                              <NavLink to='/reports/inventory-history'>היסטוריית מלאי</NavLink>
+                            </li>
+                            <li>
+                              <NavLink to='/reports/customer-order-history'>היסטוריית הזמנות לקוח</NavLink>
+                            </li>
+                            <li>
+                              <NavLink to='/reports/crop-price-history'>היסטוריית מחירי יבול</NavLink>
+                            </li>{' '}
+                            <li>
+                              <NavLink to='/reports/employee-task-history'>היסטוריית משימות עובדים</NavLink>
+                            </li>
+                          </ul>
                         </li>
+
                         <li>
-                          <NavLink to='/reports/deliveries'>דוחות משלוחים</NavLink>
-                        </li>
-                        <li>
-                          <NavLink to='/reports/crop-forecast'>תחזית גידול</NavLink>
-                        </li>
-                        <li>
-                          <NavLink to='/reports/irrigation'>המלצות השקיה ודישון</NavLink>
-                        </li>
-                        <li>
-                          <NavLink to='/reports/insights'>גרפים ותובנות</NavLink>
-                        </li>
-                        <li>
-                          <NavLink to='/inventory/alerts'>התראות מלאי</NavLink>
+                          <span className='non-clickable'>תובנות תומכות החלטה (DSS)</span>
+                          <ul className='dropdown'>
+                            <li>
+                              <NavLink to='/reports/weather'>מזג אוויר והמלצות גידול</NavLink>
+                            </li>
+                            <li>
+                              <NavLink to='/inventory'>צפייה במלאי והמלצות</NavLink>
+                            </li>
+
+                            <li>
+                              <NavLink to='/dashboarddss'>גרפים, תובנות והמלצות</NavLink>
+                            </li>
+                          </ul>
                         </li>
                       </>
                     )}
-                    <li>
-                      <NavLink to='/reports/weather'>תחזית מזג אוויר</NavLink>
-                    </li>
                   </ul>
                 </li>
               </>

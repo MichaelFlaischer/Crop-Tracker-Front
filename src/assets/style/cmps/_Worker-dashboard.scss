@@ -54,15 +54,19 @@
       padding: 0;
 
       li {
-        margin-bottom: 0.3em;
+        margin-bottom: 0.6em;
         padding-inline-start: 1em;
         position: relative;
+        background-color: #ffffff;
+        padding: 0.5em 0.75em;
+        border-radius: 6px;
+        border-right: 3px solid #3a8dff;
 
-        &::before {
-          content: '•';
-          position: absolute;
-          right: 0;
-          color: #3a8dff;
+        a {
+          margin-right: 0.5em;
+          font-size: 0.9rem;
+          text-decoration: underline;
+          color: #2c3e50;
         }
       }
     }

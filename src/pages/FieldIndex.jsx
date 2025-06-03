@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { fieldService } from '../services/field.service.js'
 import { sowingAndHarvestService } from '../services/sowing-and-harvest.service.js'
 import { cropService } from '../services/crop.service.js'
+import { getDailyWeatherSummary } from '../services/weather.service.js'
 import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api'
 
 const GOOGLE_LIBRARIES = ['drawing', 'places', 'geometry']
@@ -24,30 +25,47 @@ export function FieldIndex() {
       try {
         const [fieldsData, records, crops] = await Promise.all([fieldService.query(), sowingAndHarvestService.query(), cropService.query()])
 
-        const enrichedFields = fieldsData.map((field) => {
-          const record = records.find((rec) => rec.fieldId === field._id && rec.isActive)
-          const crop = record ? crops.find((c) => c._id.toString() === record.cropId.toString()) : null
-          const harvestedAmount = record ? record.harvestLogs.reduce((acc, log) => acc + Number(log.amount), 0) : 0
+        const enrichedFields = await Promise.all(
+          fieldsData.map(async (field) => {
+            const record = records.find((rec) => rec.fieldId === field._id && rec.isActive)
+            const crop = record ? crops.find((c) => c._id.toString() === record.cropId.toString()) : null
+            const harvestedAmount = record ? record.harvestLogs.reduce((acc, log) => acc + Number(log.amount), 0) : 0
 
-          let expectedEndDate = null
-          if (record && crop?.growthTime) {
-            const sowingDate = new Date(record.sowingDate)
-            expectedEndDate = new Date(sowingDate)
-            expectedEndDate.setDate(sowingDate.getDate() + crop.growthTime)
-          }
+            let expectedEndDate = null
+            if (record && crop?.growthTime) {
+              const sowingDate = new Date(record.sowingDate)
+              expectedEndDate = new Date(sowingDate)
+              expectedEndDate.setDate(sowingDate.getDate() + crop.growthTime)
+            }
 
-          return {
-            ...field,
-            isActive: !!record,
-            cropName: crop?.cropName || null,
-            growthTime: crop?.growthTime || null,
-            sowingDate: record?.sowingDate || null,
-            expectedEndDate,
-            harvestLogs: record?.harvestLogs || [],
-            harvestedAmount,
-            sowingId: record?._id,
-          }
-        })
+            // ✨ שינוי כאן – רק אם יש גידול פעיל
+            let weather = null
+            let weatherOk = true
+            if (record && crop && field.location?.lat && field.location?.lng) {
+              try {
+                weather = await getDailyWeatherSummary(field.location.lat, field.location.lng)
+                weatherOk =
+                  weather.temp >= crop.minTemp && weather.temp <= crop.maxTemp && weather.humidity >= crop.minHumidity && weather.humidity <= crop.maxHumidity
+              } catch (err) {
+                console.error('שגיאה בתחזית:', field.fieldName, err)
+              }
+            }
+
+            return {
+              ...field,
+              isActive: !!record,
+              cropName: crop?.cropName || null,
+              growthTime: crop?.growthTime || null,
+              sowingDate: record?.sowingDate || null,
+              expectedEndDate,
+              harvestLogs: record?.harvestLogs || [],
+              harvestedAmount,
+              sowingId: record?._id,
+              weather,
+              weatherOk,
+            }
+          })
+        )
 
         setFields(enrichedFields)
       } catch (err) {
@@ -86,7 +104,6 @@ export function FieldIndex() {
   async function onRemove(fieldId) {
     const isConfirmed = window.confirm('האם אתה בטוח שברצונך למחוק את השדה?')
     if (!isConfirmed) return
-
     try {
       await fieldService.remove(fieldId)
       setFields((prev) => prev.filter((f) => f._id !== fieldId))
@@ -141,8 +158,6 @@ export function FieldIndex() {
                 border: '1px solid #ddd',
                 borderRadius: '8px',
                 backgroundColor: activeFieldId === field._id ? '#e0f2fe' : field.isActive ? '#ecfdf5' : '#f9fafb',
-                boxShadow: field.isActive ? '0 0 0 2px #22c55e40' : 'none',
-                transition: 'background-color 0.3s ease',
               }}
             >
               <p style={{ fontWeight: 'bold', color: field.isActive ? '#16a34a' : '#9ca3af', marginBottom: '0.5rem' }}>
@@ -188,6 +203,22 @@ export function FieldIndex() {
                 >
                   שתול יבול
                 </button>
+              )}
+              {field.weather && (
+                <div style={{ marginTop: '0.75rem', backgroundColor: '#f0f9ff', padding: '0.5rem', borderRadius: '6px' }}>
+                  <p>
+                    <strong>🌤️ תחזית מזג אוויר:</strong>
+                  </p>
+                  <p>
+                    טמפ׳: {field.weather.temp}°C | לחות: {field.weather.humidity}% | UV: {field.weather.uvi}
+                  </p>
+                  <p>
+                    🧠 הערכת התאמה ליבול:
+                    <span style={{ color: field.weatherOk ? 'green' : 'red', fontWeight: 'bold' }}>
+                      {field.weatherOk ? ' תנאים מתאימים ✅' : ' תנאים לא מתאימים ⚠️'}
+                    </span>
+                  </p>
+                </div>
               )}
               <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
                 <button
