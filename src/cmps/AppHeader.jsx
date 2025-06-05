@@ -202,6 +202,12 @@ export function AppHeader() {
                             <li>
                               <NavLink to='/reports/employee-task-history'>היסטוריית משימות עובדים</NavLink>
                             </li>
+                            <li>
+                              <NavLink to='/reports/SowingAndHarvestTimeline'>לוח פעילות חקלאית</NavLink>
+                            </li>
+                            <li>
+                              <NavLink to='/reports/CropSeasonSummary'>דוח קציר בפילוח עונתי</NavLink>
+                            </li>
                           </ul>
                         </li>
 
@@ -234,7 +240,7 @@ export function AppHeader() {
       </section>
 
       <section className='bottom flex justify-between'>
-        <div className='logo'>Farm-ERP</div>
+        <div className='logo'>Crop-Tracker</div>
         <div className='user-section'>
           {user ? (
             <section>

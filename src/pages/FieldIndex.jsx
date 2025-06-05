@@ -1,9 +1,11 @@
+// FieldIndex.jsx - כולל סטטוס חכם + ימים מומלצים לקציר לפי תחזית
+
 import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { fieldService } from '../services/field.service.js'
 import { sowingAndHarvestService } from '../services/sowing-and-harvest.service.js'
 import { cropService } from '../services/crop.service.js'
-import { getDailyWeatherSummary } from '../services/weather.service.js'
+import { getDailyWeatherSummary, getRecommendedHarvestDays } from '../services/weather.service.js'
 import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api'
 
 const GOOGLE_LIBRARIES = ['drawing', 'places', 'geometry']
@@ -32,13 +34,34 @@ export function FieldIndex() {
             const harvestedAmount = record ? record.harvestLogs.reduce((acc, log) => acc + Number(log.amount), 0) : 0
 
             let expectedEndDate = null
+            let smartStatus = null
+            let harvestRecommendations = []
+
             if (record && crop?.growthTime) {
               const sowingDate = new Date(record.sowingDate)
               expectedEndDate = new Date(sowingDate)
               expectedEndDate.setDate(sowingDate.getDate() + crop.growthTime)
+
+              const today = new Date()
+              const totalDays = (expectedEndDate - sowingDate) / (1000 * 60 * 60 * 24)
+              const elapsedDays = (today - sowingDate) / (1000 * 60 * 60 * 24)
+              const percentage = (elapsedDays / totalDays) * 100
+
+              if (percentage < 50) smartStatus = '📈 מוקדם לקצירה'
+              else if (percentage < 85) smartStatus = '⏳ מתקרב לקצירה'
+              else if (percentage <= 105) smartStatus = '✅ זמן קציר אופטימלי'
+              else smartStatus = '⚠️ עבר זמן קציר'
+
+              if (smartStatus === '✅ זמן קציר אופטימלי' && field.location?.lat && field.location?.lng) {
+                try {
+                  const recommendedDays = await getRecommendedHarvestDays(field.location.lat, field.location.lng, crop)
+                  harvestRecommendations = recommendedDays.map((day) => day.date)
+                } catch (err) {
+                  console.error('שגיאה בתחזית ימים לקציר:', err)
+                }
+              }
             }
 
-            // ✨ שינוי כאן – רק אם יש גידול פעיל
             let weather = null
             let weatherOk = true
             if (record && crop && field.location?.lat && field.location?.lng) {
@@ -63,6 +86,8 @@ export function FieldIndex() {
               sowingId: record?._id,
               weather,
               weatherOk,
+              smartStatus,
+              harvestRecommendations,
             }
           })
         )
@@ -169,7 +194,7 @@ export function FieldIndex() {
               <p>📍 {field.location.name}</p>
               <p>📐 גודל: {field.size} קמ"ר</p>
               <p>📋 {field.notes || '---'}</p>
-              {field.isActive ? (
+              {field.isActive && (
                 <>
                   <p>
                     🌾 גידול: <strong>{field.cropName}</strong>
@@ -187,6 +212,19 @@ export function FieldIndex() {
                   <p title={field.harvestLogs.map((log) => `${formatDate(log.date)} - ${log.amount} ק"ג`).join('\n')}>
                     🍃 עד כה נקצר: {Number(field.harvestedAmount ?? 0).toFixed(2)} ק"ג
                   </p>
+                  <p>
+                    🧠 סטטוס גידול: <strong>{field.smartStatus}</strong>
+                  </p>
+                  {field.smartStatus === '✅ זמן קציר אופטימלי' && field.harvestRecommendations.length > 0 && (
+                    <p>
+                      📅 ימים מומלצים לקציר לפי תחזית:
+                      <ul>
+                        {field.harvestRecommendations.map((d, i) => (
+                          <li key={i}>{formatDate(d)}</li>
+                        ))}
+                      </ul>
+                    </p>
+                  )}
                   <button
                     onClick={() => navigate(`/harvest/${field.sowingId}`)}
                     title='בצע קציר'
@@ -195,7 +233,8 @@ export function FieldIndex() {
                     בצע קציר
                   </button>
                 </>
-              ) : (
+              )}
+              {!field.isActive && (
                 <button
                   onClick={() => navigate(`/sowing/add?fieldId=${field._id}`)}
                   title='שתול יבול'

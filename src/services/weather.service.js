@@ -95,3 +95,35 @@ export async function getWeeklyWeatherSummary(lat, lon, units = 'metric') {
     pop: +(stats.popSum / stats.count).toFixed(2),
   }))
 }
+
+/**
+ * Get recommended harvest days based on crop conditions
+ * @param {number} lat
+ * @param {number} lon
+ * @param {object} crop - crop with minTemp, maxTemp, minHumidity, maxHumidity
+ */
+export async function getRecommendedHarvestDays(lat, lon, crop, units = 'metric') {
+  if (!crop?.minTemp || !crop?.maxTemp || !crop?.minHumidity || !crop?.maxHumidity) throw new Error('Missing crop threshold parameters')
+
+  const forecast = await getForecastByCoords(lat, lon, units)
+  const days = {}
+
+  forecast.list.forEach((entry) => {
+    const date = entry.dt_txt.split(' ')[0]
+    if (!days[date]) days[date] = { tempArr: [], humidityArr: [] }
+
+    days[date].tempArr.push(entry.main.temp)
+    days[date].humidityArr.push(entry.main.humidity)
+  })
+
+  return Object.entries(days)
+    .map(([date, { tempArr, humidityArr }]) => {
+      const avgTemp = tempArr.reduce((a, b) => a + b, 0) / tempArr.length
+      const avgHumidity = humidityArr.reduce((a, b) => a + b, 0) / humidityArr.length
+
+      const isSuitable = avgTemp >= crop.minTemp && avgTemp <= crop.maxTemp && avgHumidity >= crop.minHumidity && avgHumidity <= crop.maxHumidity
+
+      return { date, avgTemp: avgTemp.toFixed(1), avgHumidity: avgHumidity.toFixed(1), isSuitable }
+    })
+    .filter((day) => day.isSuitable)
+}

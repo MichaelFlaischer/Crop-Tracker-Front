@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { sowingAndHarvestService } from '../services/sowing-and-harvest.service.js'
 import { fieldService } from '../services/field.service.js'
 import { cropService } from '../services/crop.service.js'
 import { warehouseService } from '../services/warehouse.service.js'
+import { getWeeklyWeatherSummary } from '../services/weather.service.js'
 import { Switch } from '@headlessui/react'
 
 export function HarvestAdd() {
@@ -13,7 +14,12 @@ export function HarvestAdd() {
   const [cropName, setCropName] = useState('')
   const [estimatedHarvestDate, setEstimatedHarvestDate] = useState('')
   const [daysLeft, setDaysLeft] = useState(0)
-  const [log, setLog] = useState({ date: '', amount: '', notes: '', completeHarvest: false, warehouseId: '' })
+  const [smartStatus, setSmartStatus] = useState('')
+  const [recommendedDays, setRecommendedDays] = useState([])
+  const [weatherSuitabilityMsg, setWeatherSuitabilityMsg] = useState('')
+  const [weatherIssues, setWeatherIssues] = useState([])
+  const [timeline, setTimeline] = useState([])
+  const [log, setLog] = useState({ date: new Date().toISOString().slice(0, 10), amount: '', notes: '', completeHarvest: false, warehouseId: '' })
   const [warehouses, setWarehouses] = useState([])
   const [warehouseCapacities, setWarehouseCapacities] = useState({})
   const navigate = useNavigate()
@@ -23,7 +29,6 @@ export function HarvestAdd() {
       try {
         const record = await sowingAndHarvestService.getById(sowingId)
         setSowingRecord(record)
-        setLog((prev) => ({ ...prev, date: new Date().toISOString().slice(0, 10) }))
 
         const [field, crop, allWarehouses] = await Promise.all([
           fieldService.getById(record.fieldId),
@@ -42,23 +47,78 @@ export function HarvestAdd() {
         })
         setWarehouseCapacities(capacityInfo)
 
-        if (record.sowingDate && crop?.growthTime) {
+        if (record.sowingDate && crop?.growthTime && field?.location) {
           const sowingDate = new Date(record.sowingDate)
+          const now = new Date()
           const harvestEstimate = new Date(sowingDate)
           harvestEstimate.setDate(sowingDate.getDate() + crop.growthTime)
           setEstimatedHarvestDate(harvestEstimate.toLocaleDateString('he-IL'))
 
-          const now = new Date()
           const msPerDay = 1000 * 60 * 60 * 24
           const diff = Math.ceil((harvestEstimate - now) / msPerDay)
           setDaysLeft(diff > 0 ? diff : 0)
+
+          const totalDays = crop.growthTime
+          const elapsedDays = Math.ceil((now - sowingDate) / msPerDay)
+          const percentage = (elapsedDays / totalDays) * 100
+          let status = '⏳'
+          if (percentage < 50) status = '📈 מוקדם לקצירה'
+          else if (percentage < 85) status = '⏳ מתקרב לקצירה'
+          else if (percentage <= 105) status = '✅ זמן קציר אופטימלי'
+          else status = '⚠️ עבר זמן קציר'
+          setSmartStatus(status)
+
+          const earlyDate = new Date(sowingDate)
+          earlyDate.setDate(sowingDate.getDate() + totalDays * 0.5)
+          const approachingDate = new Date(sowingDate)
+          approachingDate.setDate(sowingDate.getDate() + totalDays * 0.85)
+          const optimalDateEnd = new Date(sowingDate)
+          optimalDateEnd.setDate(sowingDate.getDate() + totalDays * 1.05)
+          const pastDate = new Date(optimalDateEnd)
+          pastDate.setDate(pastDate.getDate() + 7)
+
+          setTimeline([
+            { label: '📈 מוקדם לקצירה', start: sowingDate, end: earlyDate },
+            { label: '⏳ מתקרב לקצירה', start: earlyDate, end: approachingDate },
+            { label: '✅ זמן קציר אופטימלי', start: approachingDate, end: optimalDateEnd },
+            { label: '⚠️ עבר זמן קציר', start: optimalDateEnd, end: pastDate },
+          ])
+
+          const weather = await getWeeklyWeatherSummary(field.location.lat, field.location.lng)
+
+          const suitableDays = weather
+            .filter((d) => d.tempMin >= crop.minTemp && d.tempMax <= crop.maxTemp && d.humidity >= crop.minHumidity && d.humidity <= crop.maxHumidity)
+            .map((d) => new Date(d.date))
+
+          setRecommendedDays(suitableDays)
+
+          const selectedHarvestDate = new Date(log.date)
+          const weatherForDate = weather.find((d) => new Date(d.date).toDateString() === selectedHarvestDate.toDateString())
+
+          if (!weatherForDate) {
+            setWeatherSuitabilityMsg('⚠️ אין תחזית זמינה לתאריך זה. לא ניתן לקבוע אם התנאים מתאימים.')
+            setWeatherIssues([])
+          } else {
+            const issues = []
+            if (weatherForDate.tempMin < crop.minTemp) issues.push(`טמפ' מינימלית נמוכה (${weatherForDate.tempMin}° < ${crop.minTemp}°)`)
+            if (weatherForDate.tempMax > crop.maxTemp) issues.push(`טמפ' מקסימלית גבוהה (${weatherForDate.tempMax}° > ${crop.maxTemp}°)`)
+            if (weatherForDate.humidity < crop.minHumidity) issues.push(`לחות נמוכה (${weatherForDate.humidity}% < ${crop.minHumidity}%)`)
+            if (weatherForDate.humidity > crop.maxHumidity) issues.push(`לחות גבוהה (${weatherForDate.humidity}% > ${crop.maxHumidity}%)`)
+
+            if (issues.length === 0) {
+              setWeatherSuitabilityMsg('✅ תנאי מזג האוויר מתאימים לביצוע קציר בתאריך זה.')
+            } else {
+              setWeatherSuitabilityMsg('⚠️ תנאי מזג האוויר אינם אידיאליים לקציר בתאריך שנבחר:')
+            }
+            setWeatherIssues(issues)
+          }
         }
       } catch (err) {
         console.error('שגיאה בטעינת נתוני שתילה:', err)
       }
     }
     loadRecord()
-  }, [sowingId])
+  }, [sowingId, log.date])
 
   function handleChange(ev) {
     const { name, value } = ev.target
@@ -117,9 +177,49 @@ export function HarvestAdd() {
         </p>
         {estimatedHarvestDate && (
           <p>
-            🗓️ תאריך קציר משוער: <strong>{estimatedHarvestDate}</strong>
-            <span style={{ fontSize: '0.85rem', color: '#6b7280' }}> ({daysLeft} ימים נותרו)</span>
+            🗓️ תאריך קציר משוער: <strong>{estimatedHarvestDate}</strong> <span style={{ fontSize: '0.85rem', color: '#6b7280' }}> ({daysLeft} ימים נותרו)</span>
           </p>
+        )}
+        {smartStatus && (
+          <p>
+            🧠 סטטוס חכם: <strong>{smartStatus}</strong>
+          </p>
+        )}
+        {timeline.length > 0 && (
+          <div style={{ marginTop: '1rem' }}>
+            <h3>📅 טבלת תקופות קציר:</h3>
+            <table style={{ width: '100%', textAlign: 'center', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr>
+                  {timeline.map((item, idx) => (
+                    <th key={idx} style={{ borderBottom: '1px solid #ccc', padding: '8px' }}>
+                      {item.label}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  {timeline.map((item, idx) => {
+                    const now = new Date()
+                    const isActive = now >= item.start && now <= item.end
+                    return (
+                      <td
+                        key={idx}
+                        style={{
+                          backgroundColor: isActive ? '#d1fae5' : '#fff',
+                          fontWeight: isActive ? 'bold' : 'normal',
+                          padding: '8px',
+                        }}
+                      >
+                        {item.start.toLocaleDateString('he-IL')} - {item.end.toLocaleDateString('he-IL')}
+                      </td>
+                    )
+                  })}
+                </tr>
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
@@ -128,6 +228,15 @@ export function HarvestAdd() {
           תאריך קציר:
           <input type='date' name='date' value={log.date} onChange={handleChange} required />
         </label>
+        {weatherSuitabilityMsg && <p>{weatherSuitabilityMsg}</p>}
+
+        {weatherIssues.length > 0 && (
+          <ul style={{ color: '#b91c1c', fontSize: '0.9rem' }}>
+            {weatherIssues.map((issue, idx) => (
+              <li key={idx}>• {issue}</li>
+            ))}
+          </ul>
+        )}
 
         <label>
           כמות שנקצרה (בק"ג):

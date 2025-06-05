@@ -3,6 +3,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { fieldService } from '../services/field.service.js'
 import { cropService } from '../services/crop.service.js'
 import { sowingAndHarvestService } from '../services/sowing-and-harvest.service.js'
+import { seasonService } from '../services/seasons.service.js'
+import { getWeeklyWeatherSummary } from '../services/weather.service.js'
 
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
@@ -19,23 +21,41 @@ function formatDateToServer(date) {
   return `${year}-${month}-${day}`
 }
 
+function isDateInRange(date, startStr, endStr) {
+  const d = new Date(date)
+  d.setHours(0, 0, 0, 0)
+  const start = new Date(startStr)
+  const end = new Date(endStr)
+  start.setHours(0, 0, 0, 0)
+  end.setHours(23, 59, 59, 999)
+  return d >= start && d <= end
+}
+
 export function SowingAdd() {
   const [fields, setFields] = useState([])
   const [crops, setCrops] = useState([])
+  const [seasons, setSeasons] = useState([])
   const [formData, setFormData] = useState({ fieldId: '', cropId: '', sowingDate: null, notes: '' })
   const [selectedFieldName, setSelectedFieldName] = useState('')
   const [selectedCropDays, setSelectedCropDays] = useState(null)
   const [selectedCropNotes, setSelectedCropNotes] = useState('')
   const [selectedCropDescription, setSelectedCropDescription] = useState('')
+  const [selectedCropSeasons, setSelectedCropSeasons] = useState([])
+  const [seasonRecommendation, setSeasonRecommendation] = useState('')
+  const [weatherRecommendation, setWeatherRecommendation] = useState('')
+  const [weatherAlternatives, setWeatherAlternatives] = useState([])
+  const [preferredSeasonInfo, setPreferredSeasonInfo] = useState(null)
+  const [recommendedSeasonsInfo, setRecommendedSeasonsInfo] = useState([])
   const [errors, setErrors] = useState({})
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
 
   useEffect(() => {
     async function loadData() {
-      const [fetchedFields, fetchedCrops] = await Promise.all([fieldService.query(), cropService.query()])
+      const [fetchedFields, fetchedCrops, fetchedSeasons] = await Promise.all([fieldService.query(), cropService.query(), seasonService.query()])
       setFields(fetchedFields)
       setCrops(fetchedCrops)
+      setSeasons(fetchedSeasons)
 
       const prefillFieldId = searchParams.get('fieldId')
       if (prefillFieldId) {
@@ -56,8 +76,70 @@ export function SowingAdd() {
       setSelectedCropDays(crop?.growthTime || null)
       setSelectedCropNotes(crop?.notes || '')
       setSelectedCropDescription(crop?.description || '')
+      setSelectedCropSeasons(crop?.recommendedSeasons || [])
+      setPreferredSeasonInfo(seasons.find((s) => s._id === crop?.preferredSeasonId))
+      const seasonObjs = crop?.recommendedSeasons?.map((s) => seasons.find((season) => season._id === s._id)).filter(Boolean) || []
+      setRecommendedSeasonsInfo(seasonObjs)
+      setSeasonRecommendation('')
+      setWeatherRecommendation('')
+      setWeatherAlternatives([])
     }
   }
+
+  useEffect(() => {
+    async function analyzeDate() {
+      if (!formData.sowingDate || !formData.cropId) return
+
+      const crop = crops.find((c) => c._id.toString() === formData.cropId)
+      if (!crop) return
+
+      const sowingDate = new Date(formData.sowingDate)
+      sowingDate.setHours(0, 0, 0, 0)
+      const today = new Date()
+
+      const matchingSeason = recommendedSeasonsInfo.find((season) => {
+        const inRange = isDateInRange(sowingDate, season.startDate, season.endDate)
+        return inRange
+      })
+
+      try {
+        const field = fields.find((f) => f._id === formData.fieldId)
+        if (!field || !field.location) return
+
+        const weather = await getWeeklyWeatherSummary(field.location.lat, field.location.lng)
+
+        const selectedDay = weather.find((day) => new Date(day.date).toDateString() === sowingDate.toDateString())
+
+        if (selectedDay) {
+          const isSuitable =
+            selectedDay.tempMin >= crop.minTemp &&
+            selectedDay.tempMax <= crop.maxTemp &&
+            selectedDay.humidity >= crop.minHumidity &&
+            selectedDay.humidity <= crop.maxHumidity
+
+          setWeatherRecommendation(isSuitable ? '✅ תנאי מזג האוויר מתאימים לשתילה.' : '⚠️ תנאי מזג האוויר פחות מתאימים לשתילה.')
+        } else {
+          setWeatherRecommendation('⚠️ לא נמצאה תחזית עבור תאריך זה.')
+        }
+
+        const alternatives = weather
+          .filter((day) => {
+            const date = new Date(day.date)
+            const diff = Math.abs((date - sowingDate) / (1000 * 60 * 60 * 24))
+            const isSuitable =
+              day.tempMin >= crop.minTemp && day.tempMax <= crop.maxTemp && day.humidity >= crop.minHumidity && day.humidity <= crop.maxHumidity
+            return diff <= 7 && isSuitable && date >= today
+          })
+          .map((d) => d.date.toISOString())
+
+        setWeatherAlternatives(alternatives)
+      } catch (err) {
+        console.error('שגיאה בבדיקת תחזית:', err)
+      }
+    }
+
+    analyzeDate()
+  }, [formData.sowingDate, formData.cropId])
 
   function validateForm() {
     const newErrors = {}
@@ -107,23 +189,21 @@ export function SowingAdd() {
             ))}
           </select>
           {errors.cropId && <span style={{ color: 'red', fontSize: '0.8rem' }}>{errors.cropId}</span>}
-          {(selectedCropDays !== null || selectedCropNotes || selectedCropDescription) && (
+          {(selectedCropDays !== null || selectedCropNotes || selectedCropDescription || selectedCropSeasons.length > 0 || preferredSeasonInfo) && (
             <div style={{ marginTop: '0.5rem' }}>
-              {selectedCropDays !== null && (
-                <div style={{ fontSize: '0.9rem', color: '#374151' }}>
-                  ⏱️ זמן גידול צפוי: {selectedCropDays} ימים <span title='מספר הימים עד לקציר בהתאם לסוג היבול'>❔</span>
+              {selectedCropDays !== null && <div style={{ fontSize: '0.9rem', color: '#374151' }}>⏱️ זמן גידול צפוי: {selectedCropDays} ימים ❔</div>}
+              {preferredSeasonInfo && (
+                <div style={{ fontSize: '0.9rem', color: '#0d9488' }}>
+                  ⭐ עונה מועדפת לשתילה: {preferredSeasonInfo.name} ({preferredSeasonInfo.startDate} - {preferredSeasonInfo.endDate})
                 </div>
               )}
-              {selectedCropNotes && (
-                <div style={{ fontSize: '0.9rem', color: '#6b7280' }}>
-                  📝 הערות: {selectedCropNotes} <span title='הערות כלליות על הגידול או על תנאים מומלצים'>🛈</span>
+              {recommendedSeasonsInfo.length > 0 && (
+                <div style={{ fontSize: '0.9rem', color: '#2563eb' }}>
+                  📅 עונות מומלצות לשתילה: {recommendedSeasonsInfo.map((s) => `${s.name} (${s.startDate} - ${s.endDate})`).join(', ')}
                 </div>
               )}
-              {selectedCropDescription && (
-                <div style={{ fontSize: '0.9rem', color: '#4b5563' }}>
-                  📘 תיאור: {selectedCropDescription} <span title='מידע כללי על סוג היבול'>ℹ️</span>
-                </div>
-              )}
+              {selectedCropNotes && <div style={{ fontSize: '0.9rem', color: '#6b7280' }}>📝 הערות: {selectedCropNotes}</div>}
+              {selectedCropDescription && <div style={{ fontSize: '0.9rem', color: '#4b5563' }}>📘 תיאור: {selectedCropDescription}</div>}
             </div>
           )}
         </label>
@@ -139,6 +219,18 @@ export function SowingAdd() {
             className='datepicker-input'
           />
           {errors.sowingDate && <span style={{ color: 'red', fontSize: '0.8rem' }}>{errors.sowingDate}</span>}
+          {seasonRecommendation && <p style={{ color: '#0d9488', fontWeight: 'bold' }}>{seasonRecommendation}</p>}
+          {weatherRecommendation && <p style={{ color: '#2563eb' }}>{weatherRecommendation}</p>}
+          {weatherAlternatives.length > 0 && (
+            <div>
+              <p style={{ fontWeight: 'bold' }}>תאריכים חלופיים לשתילה:</p>
+              <ul>
+                {weatherAlternatives.map((dateStr, idx) => (
+                  <li key={idx}>{new Date(dateStr).toLocaleDateString('he-IL')}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </label>
 
         <label>

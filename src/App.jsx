@@ -78,6 +78,8 @@ import { InventoryHistoryReport } from './pages/InventoryHistoryReport'
 import { CustomerOrderHistoryReport } from './pages/CustomerOrderHistoryReport'
 import { CropPriceHistoryReport } from './pages/CropPriceHistoryReport'
 import { EmployeeTaskHistoryReport } from './pages/EmployeeTaskHistoryReport'
+import { SowingAndHarvestTimeline } from './pages/SowingAndHarvestTimeline'
+import { CropSeasonSummary } from './pages/CropSeasonSummary'
 
 // Static
 import { About } from './pages/About'
@@ -163,6 +165,8 @@ export function App() {
               <Route path='/reports/crop-price-history' element={<CropPriceHistoryReport />} />
               <Route path='/reports/employee-task-history' element={<EmployeeTaskHistoryReport />} />
               <Route path='/reports/weather' element={<WeatherForecast />} />
+              <Route path='/reports/SowingAndHarvestTimeline' element={<SowingAndHarvestTimeline />} />
+              <Route path='/reports/CropSeasonSummary' element={<CropSeasonSummary />} />
               <Route path='/dashboarddss' element={<DashboardDSS />} />
 
               {/* Static */}

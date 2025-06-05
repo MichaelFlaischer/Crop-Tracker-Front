@@ -1,0 +1,94 @@
+.sowing-harvest-timeline {
+  padding: 1rem;
+  background: #f9f9f9;
+
+  .page-title {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 2rem;
+  }
+
+  .timeline-group {
+    margin-bottom: 2rem;
+
+    .timeline-group-summary {
+      font-size: 1.2rem;
+      font-weight: bold;
+      background: #ddd;
+      padding: 0.5rem;
+      cursor: pointer;
+    }
+  }
+
+  .record-details {
+    margin: 1rem 0;
+    padding: 1rem;
+    border: 1px solid #ccc;
+
+    &[open] {
+      background-color: #fff;
+    }
+
+    .record-summary {
+      cursor: pointer;
+      font-weight: bold;
+      color: #34495e;
+    }
+
+    p {
+      margin: 0.5rem 0;
+    }
+
+    .timeline-title {
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-top: 1rem;
+    }
+
+    .timeline-chart-container {
+      margin-top: 2rem;
+    }
+  }
+
+  .record-details[open] {
+    background-color: #e8f5e9;
+
+    &.inactive {
+      background-color: #fce4ec;
+    }
+  }
+
+  .timeline-table {
+    margin-bottom: 1rem;
+  }
+
+  .timeline-continue-label {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+
+  .timeline-events-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+
+    th {
+      background-color: #ecf0f1;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+    }
+
+    td {
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+    }
+
+    .event-start-end {
+      background-color: #d4edda;
+    }
+
+    .event-partial-harvest {
+      background-color: #fff3cd;
+    }
+  }
+}
