@@ -62,42 +62,50 @@ export function AppHeader() {
                   <span className='non-clickable'>🌾 ניהול חקלאי</span>
                   <ul className='dropdown'>
                     <li>
-                      <span className='non-clickable'>שדות</span>
+                      <span className='non-clickable'>חלקות גידול</span>
                       <ul className='dropdown'>
                         <li>
-                          <NavLink to='/field'>תצוגת שדות</NavLink>
+                          <NavLink to='/field'>רשימת חלקות גידול</NavLink>
                         </li>
                         {isAdmin && (
                           <li>
-                            <NavLink to='/field/add'>➕ הוספת שדה</NavLink>
+                            <NavLink to='/field/add'>➕ הוספת חלקה חדשה</NavLink>
                           </li>
                         )}
                       </ul>
                     </li>
                     <li>
-                      <span className='non-clickable'>יבולים</span>
+                      <span className='non-clickable'>סוגי יבול</span>
                       <ul className='dropdown'>
                         <li>
-                          <NavLink to='/crop'>תצוגת יבולים</NavLink>
+                          <NavLink to='/crop'>רשימת סוגי יבול</NavLink>
                         </li>
                         {isAdmin && (
                           <li>
-                            <NavLink to='/crop/add'>➕ הוספת יבול</NavLink>
+                            <NavLink to='/crop/add'>➕ הוספת סוג יבול</NavLink>
                           </li>
                         )}
                       </ul>
                     </li>
                     <li>
-                      <span className='non-clickable'>מחסנים</span>
+                      <span className='non-clickable'>מחסני מלאי</span>
                       <ul className='dropdown'>
                         <li>
-                          <NavLink to='/Warehouse'>תצוגת מחסנים</NavLink>
+                          <NavLink to='/Warehouse'>רשימת מחסני מלאי</NavLink>
                         </li>
                         {isAdmin && (
                           <li>
                             <NavLink to='/warehouse/add'>➕ הוספת מחסן</NavLink>
                           </li>
                         )}
+                      </ul>
+                    </li>
+                    <li>
+                      <span className='non-clickable'>עונות חקלאיות</span>
+                      <ul className='dropdown'>
+                        <li>
+                          <NavLink to='/seasons'>תצוגת עונות</NavLink>
+                        </li>
                       </ul>
                     </li>
                   </ul>
@@ -116,7 +124,7 @@ export function AppHeader() {
                           <span className='non-clickable'>ניהול משימות</span>
                           <ul className='dropdown'>
                             <li>
-                              <NavLink to='/tasks/'>צפייה בכל המשימות </NavLink>
+                              <NavLink to='/tasks/'>צפייה בכל המשימות</NavLink>
                             </li>
                             <li>
                               <NavLink to='/tasks/add'>➕ הוספת משימה חדשה</NavLink>
@@ -138,6 +146,7 @@ export function AppHeader() {
                     )}
                   </ul>
                 </li>
+
                 {isAdmin && (
                   <li>
                     <span className='non-clickable'>🚛 משלוחים ושיווק</span>
@@ -146,7 +155,7 @@ export function AppHeader() {
                         <span className='non-clickable'>לקוחות</span>
                         <ul className='dropdown'>
                           <li>
-                            <NavLink to='/client'> רשימת לקוחות</NavLink>
+                            <NavLink to='/client'>רשימת לקוחות</NavLink>
                           </li>
                           <li>
                             <NavLink to='/client/add'>➕ הוספת לקוח</NavLink>
@@ -158,7 +167,7 @@ export function AppHeader() {
                         <span className='non-clickable'>הזמנות</span>
                         <ul className='dropdown'>
                           <li>
-                            <NavLink to='/orders/view'> צפייה בהזמנות</NavLink>
+                            <NavLink to='/orders/view'>צפייה בהזמנות</NavLink>
                           </li>
                           <li>
                             <NavLink to='/order/add'>📝 הזמנה חדשה</NavLink>
@@ -189,7 +198,7 @@ export function AppHeader() {
                             </li>
                             <li>
                               <NavLink to='/reports/crop-price-history'>היסטוריית מחירי יבול</NavLink>
-                            </li>{' '}
+                            </li>
                             <li>
                               <NavLink to='/reports/employee-task-history'>היסטוריית משימות עובדים</NavLink>
                             </li>
@@ -205,9 +214,8 @@ export function AppHeader() {
                             <li>
                               <NavLink to='/inventory'>צפייה במלאי והמלצות</NavLink>
                             </li>
-
                             <li>
-                              <NavLink to='/dashboarddss'>גרפים, תובנות והמלצות</NavLink>
+                              <NavLink to='/dashboarddss'>לוח תובנות חקלאיות</NavLink>
                             </li>
                           </ul>
                         </li>

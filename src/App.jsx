@@ -22,6 +22,9 @@ import { RoleIndex } from './pages/RoleIndex'
 import { RoleAdd } from './pages/RoleAdd'
 import { RoleEdit } from './pages/RoleEdit'
 
+import { SeasonIndex } from './pages/SeasonIndex'
+import { SeasonEdit } from './pages/SeasonEdit'
+
 //  Crops
 import { CropIndex } from './pages/CropIndex'
 import { CropDetails } from './pages/CropDetails'
@@ -109,6 +112,11 @@ export function App() {
               <Route path='/roles' element={<RoleIndex />} />
               <Route path='/roles/add' element={<RoleAdd />} />
               <Route path='/roles/edit/:roleId' element={<RoleEdit />} />
+
+              {/* Seasons */}
+              <Route path='/seasons' element={<SeasonIndex />} />
+              <Route path='/seasons/edit/:seasonId' element={<SeasonEdit />} />
+
               {/* Crops */}
               <Route path='/crop' element={<CropIndex />} />
               <Route path='/crop/:cropId' element={<CropDetails />} />
