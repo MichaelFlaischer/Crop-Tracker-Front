@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { cropService } from '../services/crop.service.js'
+import { seasonService } from '../services/seasons.service.js'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service.js'
 
 export function CropDetails() {
   const [crop, setCrop] = useState(null)
+  const [preferredSeasonName, setPreferredSeasonName] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const { cropId } = useParams()
   const navigate = useNavigate()
@@ -18,6 +20,10 @@ export function CropDetails() {
     try {
       const data = await cropService.getById(cropId)
       setCrop(data)
+      if (data.preferredSeasonId) {
+        const season = await seasonService.getById(data.preferredSeasonId)
+        setPreferredSeasonName(season?.name || data.preferredSeasonId)
+      }
     } catch (err) {
       console.error('שגיאה בטעינת היבול', err)
       showErrorMsg('שגיאה בטעינת היבול')
@@ -85,6 +91,19 @@ export function CropDetails() {
             </td>
           </tr>
           <tr>
+            <td>🌦️ טווח משקעים אידיאלי</td>
+            <td className='rain-range'>
+              <span className='min'>{crop.minRainfall} מ"מ</span>
+              <span style={{ margin: '0 6px', color: '#999' }}>⬅</span>
+              <span className='max'>{crop.maxRainfall} מ"מ</span>
+            </td>
+          </tr>
+
+          <tr>
+            <td>🌞 מינימום שעות אור</td>
+            <td>{crop.minSunlightHours} שעות ביום</td>
+          </tr>
+          <tr>
             <td>📈 ערך עסקי רצוי (ק"ג)</td>
             <td>
               <span style={{ color: '#1976d2', fontWeight: 'bold' }}>{formatNumber(crop.businessMinValue)}</span>
@@ -99,6 +118,14 @@ export function CropDetails() {
           <tr>
             <td>🧪 דישון מומלץ</td>
             <td>{formatNumber(crop.fertilizerRecommendation)} גרם למ"ר</td>
+          </tr>
+          <tr>
+            <td>☔ רגישות לגשם בקציר</td>
+            <td>{crop.isSensitiveToRain ? 'רגיש לגשם – יש להיזהר' : 'לא רגיש לגשם'}</td>
+          </tr>
+          <tr>
+            <td>📅 עונה מועדפת</td>
+            <td>{preferredSeasonName || '—'}</td>
           </tr>
           <tr>
             <td>📝 תנאים נוספים</td>
