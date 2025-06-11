@@ -218,6 +218,9 @@ export function AppHeader() {
                               <NavLink to='/reports/weather'>מזג אוויר והמלצות גידול</NavLink>
                             </li>
                             <li>
+                              <NavLink to='/weather-simulation'>סימולציית תנאי גידול</NavLink>
+                            </li>
+                            <li>
                               <NavLink to='/inventory'>צפייה במלאי והמלצות</NavLink>
                             </li>
                             <li>
