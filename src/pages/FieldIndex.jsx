@@ -1,5 +1,3 @@
-// FieldIndex.jsx - כולל סטטוס חכם + ימים מומלצים לקציר לפי תחזית
-
 import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { fieldService } from '../services/field.service.js'
@@ -127,19 +125,19 @@ export function FieldIndex() {
   }
 
   async function onRemove(fieldId) {
-    const isConfirmed = window.confirm('האם אתה בטוח שברצונך למחוק את השדה?')
+    const isConfirmed = window.confirm('האם אתה בטוח שברצונך למחוק את החלקה?')
     if (!isConfirmed) return
     try {
       await fieldService.remove(fieldId)
       setFields((prev) => prev.filter((f) => f._id !== fieldId))
     } catch (err) {
-      console.error('שגיאה במחיקת שדה:', err)
+      console.error('שגיאה במחיקת חלקה:', err)
     }
   }
 
   function formatDate(dateStr) {
     const date = new Date(dateStr)
-    return date.toLocaleDateString('he-IL')
+    return date.toLocaleDateString('he-IL', { day: '2-digit', month: '2-digit', year: 'numeric' })
   }
 
   const filteredFields = fields.filter((field) => {
@@ -153,7 +151,7 @@ export function FieldIndex() {
   return (
     <div className='field-index' style={{ display: 'flex', gap: '1.5rem' }}>
       <div className='field-list' style={{ flex: '1', maxHeight: '80vh', overflowY: 'auto' }}>
-        <h2>רשימת שדות</h2>
+        <h2>רשימת חלקות לגידול יבולים</h2>
         <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
           <button
             onClick={centerAllFields}
@@ -165,7 +163,7 @@ export function FieldIndex() {
             onClick={onAdd}
             style={{ padding: '0.5rem 1rem', backgroundColor: '#6366f1', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}
           >
-            הוסף שדה
+            הוסף חלקה
           </button>
           <select value={filter} onChange={(e) => setFilter(e.target.value)} style={{ padding: '0.5rem', borderRadius: '6px' }}>
             <option value='all'>הצג הכל</option>
@@ -186,13 +184,13 @@ export function FieldIndex() {
               }}
             >
               <p style={{ fontWeight: 'bold', color: field.isActive ? '#16a34a' : '#9ca3af', marginBottom: '0.5rem' }}>
-                {field.isActive ? '🟢 שדה פעיל – גידול בעיצומו' : '⚪ שדה פנוי – אין גידול פעיל'}
+                {field.isActive ? '🟢 חלקה פעילה – גידול בעיצומו' : '⚪ חלקה פנויה – אין גידול פעיל'}
               </p>
               <strong>
                 {idx + 1}. {field.fieldName}
               </strong>
               <p>📍 {field.location.name}</p>
-              <p>📐 גודל: {field.size} קמ"ר</p>
+              <p>📐 שטח החלקה: {field.size} דונם</p>
               <p>📋 {field.notes || '---'}</p>
               {field.isActive && (
                 <>
@@ -270,7 +268,7 @@ export function FieldIndex() {
                 <button
                   onClick={() => onEdit(field._id)}
                   disabled={field.isActive}
-                  title={field.isActive ? 'לא ניתן לערוך שדה שבו מתנהל גידול פעיל' : 'ערוך את השדה'}
+                  title={field.isActive ? 'לא ניתן לערוך חלקה שבה מתנהל גידול פעיל' : 'ערוך את החלקה'}
                   style={{
                     backgroundColor: field.isActive ? '#fcd34d80' : '#facc15',
                     color: '#1f2937',
@@ -285,7 +283,7 @@ export function FieldIndex() {
                 <button
                   onClick={() => onRemove(field._id)}
                   disabled={field.isActive}
-                  title={field.isActive ? 'לא ניתן למחוק שדה שבו מתנהל גידול פעיל' : 'מחק את השדה'}
+                  title={field.isActive ? 'לא ניתן למחוק חלקה שבה מתנהל גידול פעיל' : 'מחק את החלקה'}
                   style={{
                     backgroundColor: field.isActive ? '#f8717180' : '#ef4444',
                     color: 'white',
@@ -302,7 +300,7 @@ export function FieldIndex() {
           ))}
         </ul>
         <p style={{ marginTop: '1rem', fontWeight: 'bold' }}>
-          סה"כ שדות: {fields.length} | שדות פעילים: {fields.filter((f) => f.isActive).length}
+          סה"כ חלקות: {fields.length} | חלקות פעילות: {fields.filter((f) => f.isActive).length}
         </p>
       </div>
       <div className='map-container' style={{ flex: '2', height: '80vh', borderRadius: '12px', overflow: 'hidden' }}>

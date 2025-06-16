@@ -39,7 +39,7 @@ export function EmployeeTaskHistoryReport() {
 
   function formatDate(dateStr) {
     const d = new Date(dateStr)
-    return isNaN(d) ? '—' : d.toLocaleDateString('he-IL')
+    return isNaN(d) ? '—' : d.toLocaleDateString('he-IL', { day: '2-digit', month: '2-digit', year: 'numeric' })
   }
 
   function translateStatus(status) {
@@ -130,7 +130,7 @@ export function EmployeeTaskHistoryReport() {
               )
             }
           >
-            📤 ייצוא לאקסל
+            📤 הורד קובץ אקסל
           </button>
           <table>
             <thead>
@@ -154,12 +154,40 @@ export function EmployeeTaskHistoryReport() {
               ))}
             </tbody>
           </table>
+
+          {/* כרטיסי משלוחים */}
+          <div className='record-cards'>
+            {sortedDelivery.map((task, idx) => (
+              <div className='record-card' key={task._id}>
+                <div className='field'>
+                  <span className='label'>מס"ד:</span>
+                  <span className='value'>{idx + 1}</span>
+                </div>
+                <div className='field'>
+                  <span className='label'>שם לקוח:</span>
+                  <span className='value'>{task.taskDescription?.replace('משלוח ללקוח: ', '')}</span>
+                </div>
+                <div className='field'>
+                  <span className='label'>מספר הזמנה:</span>
+                  <span className='value'>{task.fieldId}</span>
+                </div>
+                <div className='field'>
+                  <span className='label'>תאריך הספקה:</span>
+                  <span className='value'>{formatDate(task.startDate)}</span>
+                </div>
+                <div className='field'>
+                  <span className='label'>סטטוס:</span>
+                  <span className='value'>{translateStatus(task.status)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
         </>
       )}
 
       {regularTasks.length > 0 && (
         <>
-          <h3>🌿 משימות רגילות</h3>
+          <h3>🌿 משימות שוטפות</h3>
           <button
             onClick={() =>
               exportToExcel(
@@ -178,7 +206,7 @@ export function EmployeeTaskHistoryReport() {
               )
             }
           >
-            📤 ייצוא לאקסל
+            📤 הורד קובץ אקסל
           </button>
           <table>
             <thead>
@@ -208,10 +236,54 @@ export function EmployeeTaskHistoryReport() {
               ))}
             </tbody>
           </table>
+
+          {/* כרטיסי משימות שוטפות */}
+          <div className='record-cards'>
+            {sortedRegular.map((task, idx) => (
+              <div className='record-card' key={task._id}>
+                <div className='field'>
+                  <span className='label'>מס"ד:</span>
+                  <span className='value'>{idx + 1}</span>
+                </div>
+                <div className='field'>
+                  <span className='label'>שם פעולה:</span>
+                  <span className='value'>{task.taskDescription}</span>
+                </div>
+                <div className='field'>
+                  <span className='label'>שדה:</span>
+                  <span className='value'>{fieldMap[task.fieldId] || '—'}</span>
+                </div>
+                <div className='field'>
+                  <span className='label'>יבול:</span>
+                  <span className='value'>{cropMap[task.cropId] || '—'}</span>
+                </div>
+                <div className='field'>
+                  <span className='label'>תאריך התחלה:</span>
+                  <span className='value'>{formatDate(task.startDate)}</span>
+                </div>
+                <div className='field'>
+                  <span className='label'>שעת התחלה:</span>
+                  <span className='value'>{task.startTime}</span>
+                </div>
+                <div className='field'>
+                  <span className='label'>תאריך סיום:</span>
+                  <span className='value'>{formatDate(task.endDate)}</span>
+                </div>
+                <div className='field'>
+                  <span className='label'>שעת סיום:</span>
+                  <span className='value'>{task.endTime}</span>
+                </div>
+                <div className='field'>
+                  <span className='label'>סטטוס:</span>
+                  <span className='value'>{translateStatus(task.status)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
         </>
       )}
 
-      {deliveryTasks.length === 0 && regularTasks.length === 0 && <p>לא נמצאו משימות או משלוחים.</p>}
+      {deliveryTasks.length === 0 && regularTasks.length === 0 && <p>אין משימות או משלוחים להצגה.</p>}
     </section>
   )
 }

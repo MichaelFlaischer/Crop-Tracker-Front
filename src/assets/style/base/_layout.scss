@@ -2,7 +2,7 @@
   display: grid;
   grid-template-columns: $layoutPadding 1fr $layoutPadding;
   grid-template-rows: auto 1fr auto;
-  min-height: 100vh;
+  height: 100vh; // גובה של 80% מהגובה הכולל של החלון
   box-sizing: border-box;
 
   // כל האלמנטים שמקבלים class="full" יתפרסו על כל הרוחב

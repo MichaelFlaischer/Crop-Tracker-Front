@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { customerOrderService } from '../services/customer-order.service.js'
 import { clientService } from '../services/client.service.js'
+import { taskService } from '../services/task.service.js'
 import { format, isValid } from 'date-fns'
 
 export function OrderIndex() {
   const [orders, setOrders] = useState([])
   const [clients, setClients] = useState([])
+  const [tasks, setTasks] = useState([])
   const [filterBy, setFilterBy] = useState({
     status: 'טיוטה',
     sort: '',
@@ -21,6 +23,7 @@ export function OrderIndex() {
   useEffect(() => {
     loadOrders()
     loadClients()
+    loadTasks()
   }, [])
 
   async function loadOrders() {
@@ -39,6 +42,22 @@ export function OrderIndex() {
     } catch (err) {
       console.error('שגיאה בטעינת לקוחות:', err)
     }
+  }
+
+  async function loadTasks() {
+    try {
+      const allTasks = await taskService.query()
+      setTasks(allTasks)
+    } catch (err) {
+      console.error('שגיאה בטעינת משימות:', err)
+    }
+  }
+
+  const DELIVERY_OPERATION_ID = '68354fa1d29fa199e95c04d8'
+
+  function getDeliveryTaskIdByOrderId(orderId) {
+    const task = tasks.find((t) => String(t.fieldId) === String(orderId) && String(t.operationId) === DELIVERY_OPERATION_ID)
+    return task?._id || null
   }
 
   function getClientName(customerId) {
@@ -109,7 +128,7 @@ export function OrderIndex() {
   return (
     <section className='order-index'>
       <div className='header-bar'>
-        <h1>רשימת הזמנות</h1>
+        <h1>📋 רשימת הזמנות במערכת Crop-Tracker</h1>
         <button className='add-btn' onClick={() => navigate('/order/add')}>
           ➕ יצירת הזמנה חדשה
         </button>
@@ -121,16 +140,16 @@ export function OrderIndex() {
             <th>
               לקוח
               <br />
-              <input name='customerName' placeholder='סינון לפי שם לקוח' onChange={handleFilterChange} />
+              <input name='customerName' placeholder='חפש לפי שם לקוח' onChange={handleFilterChange} />
             </th>
             <th>
-              תאריך הספקה
+              טווח תאריך הספקה
               <br />
               <input name='deliveryFrom' type='date' onChange={handleFilterChange} />
               <input name='deliveryTo' type='date' onChange={handleFilterChange} />
             </th>
             <th>
-              סטטוס
+              סטטוס הזמנה
               <br />
               <select name='status' value={filterBy.status} onChange={handleFilterChange}>
                 <option value=''>כל הסטטוסים</option>
@@ -141,13 +160,13 @@ export function OrderIndex() {
               </select>
             </th>
             <th>
-              סכום הזמנה
+              סכום הזמנה (₪)
               <br />
               <input name='totalMin' type='number' placeholder='מינימום' onChange={handleFilterChange} />
               <input name='totalMax' type='number' placeholder='מקסימום' onChange={handleFilterChange} />
             </th>
             <th>
-              מיון
+              מיון לפי
               <br />
               <select name='sort' value={filterBy.sort} onChange={handleFilterChange}>
                 <option value=''>ללא מיון</option>
@@ -164,12 +183,12 @@ export function OrderIndex() {
             <th>#</th>
             <th>לקוח</th>
             <th>תאריך הספקה</th>
-            <th>נותרו ימים</th>
+            <th>נותרו ימים להספקה</th>
             <th>סטטוס</th>
-            <th>סכום הזמנה</th>
-            <th>הערות</th>
+            <th>סכום (₪)</th>
+            <th>הערות להזמנה</th>
             <th>פעולות</th>
-            <th>פרטים</th>
+            <th>פרטי הזמנה</th>
           </tr>
 
           {filteredOrders().map((order, idx) => {
@@ -178,27 +197,27 @@ export function OrderIndex() {
             const formattedDate =
               order.desiredDeliveryDate && isValid(new Date(order.desiredDeliveryDate)) && new Date(order.desiredDeliveryDate).getFullYear() > 1971
                 ? format(new Date(order.desiredDeliveryDate), 'dd/MM/yyyy')
-                : ''
+                : 'לא הוזן תאריך'
 
             return (
               <tr key={order._id} className={`status-${order.status}`}>
                 <td>{idx + 1}</td>
                 <td>{getClientName(order.customerId)}</td>
                 <td>{formattedDate}</td>
-                <td className={colorClass}>{daysLeft !== null ? `${daysLeft} ימים` : ''}</td>
+                <td className={colorClass}>{daysLeft !== null ? `${daysLeft} ימים` : 'לא הוזן תאריך'}</td>
                 <td>{order.status}</td>
                 <td>{order.totalAmount} ₪</td>
-                <td>{order.notes}</td>
+                <td>{order.notes || '—'}</td>
                 <td>
                   {order.status === 'טיוטה' && (
                     <>
-                      <button onClick={() => navigate(`/order/edit/${order._id}`)}>✏️ עריכה</button>
+                      <button onClick={() => navigate(`/order/edit/${order._id}`)}>✏️ עריכת הזמנה</button>
                       <button
                         onClick={() => {
-                          if (window.confirm('האם אתה בטוח שברצונך להקים משלוח בפועל עבור הזמנה זו?')) navigate(`/order/update-qty/${order._id}`)
+                          if (window.confirm('האם אתה בטוח שברצונך להקים משלוח בפועל להזמנה זו?')) navigate(`/order/update-qty/${order._id}`)
                         }}
                       >
-                        🚚 הקמת משלוח בפועל
+                        🚚 הקמת משלוח בפועל להזמנה
                       </button>
                       <button
                         onClick={() => {
@@ -214,17 +233,21 @@ export function OrderIndex() {
                     <>
                       <button
                         onClick={() => {
-                          if (window.confirm('האם אתה בטוח שברצונך לאשר הספקת משלוח להזמנה זו?')) updateOrderStatus(order._id, 'הושלמה')
+                          if (window.confirm('האם אתה בטוח שברצונך לאשר הספקת משלוח להזמנה זו?')) {
+                            updateOrderStatus(order._id, 'סופקה')
+                          }
                         }}
                       >
                         ✔️ אישור הספקת משלוח
                       </button>
+
+                      <button onClick={() => navigate(`/tasks/${getDeliveryTaskIdByOrderId(order._id)}`)}>👷 עריכת משימת המשלוח להזמנה זו</button>
                     </>
                   )}
                 </td>
                 <td>
                   <button className='blue-btn' onClick={() => navigate(`/order/${order._id}`)}>
-                    🔍 פרטים
+                    🔍 צפיה בפרטי הזמנה
                   </button>
                 </td>
               </tr>

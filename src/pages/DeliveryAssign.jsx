@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react'
 import { customerOrderService } from '../services/customer-order.service.js'
+import { clientService } from '../services/client.service.js'
+import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service.js'
 
 export function DeliveryAssign() {
   const [orders, setOrders] = useState([])
+  const [clients, setClients] = useState([])
+  const [clientMap, setClientMap] = useState({})
   const [assignments, setAssignments] = useState({}) // { orderId: { driver: '', date: '' } }
 
   useEffect(() => {
@@ -11,11 +15,18 @@ export function DeliveryAssign() {
 
   async function loadOrders() {
     try {
-      const allOrders = await customerOrderService.query()
+      const [allOrders, allClients] = await Promise.all([customerOrderService.query(), clientService.query()])
       const approved = allOrders.filter((order) => order.status === 'מאושרת')
       setOrders(approved)
+      setClients(allClients)
+      const map = allClients.reduce((map, client) => {
+        map[client._id] = client.customerName
+        return map
+      }, {})
+      setClientMap(map)
     } catch (err) {
       console.error('שגיאה בטעינת הזמנות:', err)
+      showErrorMsg('שגיאה בטעינת הזמנות')
     }
   }
 
@@ -32,7 +43,7 @@ export function DeliveryAssign() {
   async function assignDelivery(orderId) {
     const assignment = assignments[orderId]
     if (!assignment?.driver || !assignment?.date) {
-      alert('יש למלא נהג ותאריך משלוח')
+      showErrorMsg('יש למלא נהג ותאריך משלוח')
       return
     }
 
@@ -46,15 +57,16 @@ export function DeliveryAssign() {
         },
       }
       await customerOrderService.update(orderId, updatedOrder)
-      alert('המשלוח שובץ בהצלחה')
+      showSuccessMsg('המשלוח שובץ בהצלחה 🎉')
       loadOrders()
     } catch (err) {
       console.error('שגיאה בשיבוץ משלוח:', err)
+      showErrorMsg('שגיאה בשיבוץ משלוח')
     }
   }
 
   return (
-    <section className='delivery-assign'>
+    <section className='delivery-assign main-layout'>
       <h1>🚛 שיבוץ משלוחים להזמנות מאושרות</h1>
 
       {orders.length === 0 ? (
@@ -65,7 +77,7 @@ export function DeliveryAssign() {
             <tr>
               <th>מס׳ הזמנה</th>
               <th>לקוח</th>
-              <th>תאריך</th>
+              <th>תאריך הזמנה</th>
               <th>סה״כ</th>
               <th>נהג</th>
               <th>תאריך משלוח</th>
@@ -76,8 +88,8 @@ export function DeliveryAssign() {
             {orders.map((order) => (
               <tr key={order._id}>
                 <td>{order._id}</td>
-                <td>{order.customerId}</td>
-                <td>{order.orderDate?.slice(0, 10)}</td>
+                <td>{clientMap[order.customerId] || order.customerId}</td>
+                <td>{order.orderDate ? new Date(order.orderDate).toLocaleDateString('he-IL') : '—'}</td>
                 <td>{order.totalAmount?.toFixed(2)} ₪</td>
                 <td>
                   <input

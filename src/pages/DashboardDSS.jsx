@@ -145,7 +145,7 @@ export function DashboardDSS() {
 
   return (
     <section className='dashboard-dss main-layout'>
-      <h1>דשבורד גרפים ותובנות</h1>
+      <h1>📊 לוח תובנות חקלאיות</h1>
 
       <h2>📊 כמות זמינה לפי יבול</h2>
       <ResponsiveContainer width='100%' height={300}>

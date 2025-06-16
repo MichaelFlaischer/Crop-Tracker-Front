@@ -32,15 +32,25 @@
     }
   }
 
+  .desktop-table {
+    display: block;
+
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
+
   .forecast-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 1rem;
 
-    th, td {
+    th,
+    td {
       border: 1px solid #ddd;
       padding: 0.6rem;
       text-align: center;
+      font-size: 0.9rem;
     }
 
     th {
@@ -69,6 +79,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 0.5rem;
     }
 
     .create-task-btn {
@@ -89,6 +100,67 @@
       font-size: 0.85rem;
       color: #888;
       margin-right: 0.5rem;
+    }
+  }
+
+  .mobile-cards {
+    display: none;
+
+    @media (max-width: 768px) {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .forecast-card {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 1rem;
+      background-color: #f9f9f9;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      font-size: 0.95rem;
+
+      h4 {
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+        color: #333;
+      }
+
+      p {
+        margin: 0.3rem 0;
+      }
+
+      .suitable {
+        color: #2e7d32;
+        font-weight: bold;
+      }
+
+      .not-suitable {
+        color: #ef6c00;
+        font-weight: bold;
+      }
+
+      .recommendation-list {
+        margin-top: 0.5rem;
+
+        li {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 0.4rem;
+
+          .create-task-btn {
+            padding: 4px 6px;
+            font-size: 0.8rem;
+          }
+
+          .task-exists {
+            font-size: 0.8rem;
+            color: #888;
+          }
+        }
+      }
     }
   }
 }

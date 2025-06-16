@@ -127,4 +127,33 @@
       padding: 0.75em;
     }
   }
+  @media (max-width: 500px) {
+    .admin-dashboard {
+      padding: 0.5rem;
+
+      h1 {
+        font-size: 1.3rem;
+      }
+
+      .stat-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .charts-container {
+        grid-template-columns: 1fr;
+      }
+
+      .today-section {
+        padding: 1rem;
+
+        h3 {
+          font-size: 1.1rem;
+        }
+
+        ul li {
+          font-size: 0.9rem;
+        }
+      }
+    }
+  }
 }

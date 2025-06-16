@@ -52,7 +52,7 @@ export function HarvestAdd() {
           const now = new Date()
           const harvestEstimate = new Date(sowingDate)
           harvestEstimate.setDate(sowingDate.getDate() + crop.growthTime)
-          setEstimatedHarvestDate(harvestEstimate.toLocaleDateString('he-IL'))
+          setEstimatedHarvestDate(harvestEstimate.toLocaleDateString('he-IL', { day: '2-digit', month: '2-digit', year: 'numeric' }))
 
           const msPerDay = 1000 * 60 * 60 * 24
           const diff = Math.ceil((harvestEstimate - now) / msPerDay)
@@ -167,13 +167,14 @@ export function HarvestAdd() {
 
       <div className='info-box'>
         <p>
-          🧑‍🌾 שדה: <strong>{fieldName}</strong>
+          🧑‍🌾 חלקה: <strong>{fieldName}</strong>
         </p>
         <p>
           🌾 יבול: <strong>{cropName}</strong>
         </p>
         <p>
-          📅 תאריך שתילה: <strong>{new Date(sowingRecord.sowingDate).toLocaleDateString('he-IL')}</strong>
+          📅 תאריך שתילה:{' '}
+          <strong>{new Date(sowingRecord.sowingDate).toLocaleDateString('he-IL', { day: '2-digit', month: '2-digit', year: 'numeric' })}</strong>
         </p>
         {estimatedHarvestDate && (
           <p>
@@ -212,7 +213,8 @@ export function HarvestAdd() {
                           padding: '8px',
                         }}
                       >
-                        {item.start.toLocaleDateString('he-IL')} - {item.end.toLocaleDateString('he-IL')}
+                        {item.start.toLocaleDateString('he-IL', { day: '2-digit', month: '2-digit', year: 'numeric' })} -{' '}
+                        {item.end.toLocaleDateString('he-IL', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                       </td>
                     )
                   })}
@@ -240,18 +242,14 @@ export function HarvestAdd() {
 
         <label>
           כמות שנקצרה (בק"ג):
-          <input
-            type='number'
-            name='amount'
-            value={log.amount}
-            onChange={handleChange}
-            required
-            placeholder={`מקסימום למחסן שנבחר: ${warehouseCapacities[log.warehouseId] || 0} ק"ג`}
-          />
+          <input type='number' name='amount' value={log.amount} onChange={handleChange} required />
         </label>
+        <p style={{ fontSize: '0.85rem', color: '#374151', margin: '0.25rem 0 0.75rem' }}>
+          מקסימום להעברה למחסן: {warehouseCapacities[log.warehouseId] || 0} ק"ג
+        </p>
 
         <label>
-          מחסן להעברה (קיבולת פנויה תוצג):
+          מחסן להעברה:
           <select name='warehouseId' value={log.warehouseId} onChange={handleChange} required>
             <option value=''>בחר מחסן</option>
             {warehouses.map((wh) => (
@@ -268,7 +266,7 @@ export function HarvestAdd() {
         </label>
 
         <div className='toggle-box'>
-          <span>סיום גידול – השדה מוכן לשתילה חדשה</span>
+          <span>סיום גידול – החלקה מוכנה לשתילה חדשה</span>
           <Switch
             checked={log.completeHarvest}
             onChange={toggleCompleteHarvest}

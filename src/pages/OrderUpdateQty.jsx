@@ -1,4 +1,3 @@
-// OrderUpdateQty.jsx
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { customerOrderService } from '../services/customer-order.service.js'
@@ -82,31 +81,34 @@ export function OrderUpdateQty() {
   async function onSave() {
     try {
       if (!assignments.length) {
-        return alert('יש להוסיף לפחות עובד אחד לשיבוץ המשלוח')
+        return alert('יש להוסיף לפחות עובד אחד לשיבוץ המשלוח.')
       }
 
       for (const item of items) {
         const totalFromWarehouses = item.warehousesUsed.reduce((sum, w) => sum + w.quantity, 0)
         if (totalFromWarehouses !== item.actualDelivery) {
-          return alert(`סה"כ הכמות שסופקה ליבול ${cropsMap[item.cropId]} שונה מהכמות בפועל.`)
+          return alert(`סה״כ הכמות שסופקה ליבול "${cropsMap[item.cropId]}" שונה מהכמות שסומנה כסופקה בפועל.`)
         }
       }
 
       if (assignments.some((a) => !a.userId)) {
-        return alert('אנא בחר עובד לכל שיבוץ')
+        return alert('אנא בחר עובד לכל שיבוץ.')
       }
 
+      // עדכון פריטי הזמנה
       for (const item of items) {
         await customerOrderItemService.update(item._id, {
           deliveredQuantity: item.actualDelivery,
           warehouseBreakdown: item.warehouseBreakdown,
         })
 
+        // עדכון כמות במחסנים
         for (const w of item.warehousesUsed) {
           await warehouseService.updateCropQuantity(w.warehouseId, item.cropId, -w.quantity)
         }
       }
 
+      // עדכון סטטוס הזמנה
       const updatedOrder = {
         ...order,
         status: 'מאושרת',
@@ -116,6 +118,7 @@ export function OrderUpdateQty() {
       }
       await customerOrderService.update(orderId, updatedOrder)
 
+      // יצירת משימה חדשה
       const task = await taskService.add({
         operationId: '68354fa1d29fa199e95c04d8',
         fieldId: order._id,
@@ -129,6 +132,7 @@ export function OrderUpdateQty() {
         taskDescription: `משלוח ללקוח: ${client.customerName}`,
       })
 
+      // שיוך עובדים למשימה
       for (const assignment of assignments) {
         await employeesInTaskService.add({
           taskId: task._id,
@@ -154,7 +158,7 @@ export function OrderUpdateQty() {
   return (
     <section className='order-update-qty'>
       <h1>
-        📦 אישור הזמנה #{orderId} - {client.customerName}
+        📦 אישור ואספקת הזמנה #{orderId} - {client.customerName}
       </h1>
 
       <div className='client-details'>
@@ -177,10 +181,10 @@ export function OrderUpdateQty() {
           <tr>
             <th>יבול</th>
             <th>כמות מוזמנת</th>
-            <th>מחיר</th>
-            <th>כמות בפועל</th>
-            <th>סה"כ</th>
-            <th>מחסנים זמינים</th>
+            <th>מחיר ליח׳</th>
+            <th>כמות בפועל לאספקה</th>
+            <th>סה״כ שורה</th>
+            <th>פירוט חלוקה למחסנים</th>
           </tr>
         </thead>
         <tbody>
@@ -204,8 +208,14 @@ export function OrderUpdateQty() {
               <td>
                 {warehousesMap[item.cropId]?.map((wh) => (
                   <div key={wh.warehouseId}>
-                    {wh.warehouseName} ({wh.quantity})
-                    <input type='number' min='0' max={wh.quantity} onChange={(e) => handleWarehouseQtyChange(idx, wh.warehouseId, +e.target.value)} />
+                    {wh.warehouseName} (יתרה: {wh.quantity} ק״ג)
+                    <input
+                      type='number'
+                      min='0'
+                      max={wh.quantity}
+                      onChange={(e) => handleWarehouseQtyChange(idx, wh.warehouseId, +e.target.value)}
+                      placeholder='כמות למחסן זה'
+                    />
                   </div>
                 ))}
               </td>
@@ -215,14 +225,14 @@ export function OrderUpdateQty() {
       </table>
 
       <div className='summary'>
-        <strong>סה"כ להזמנה: {items.reduce((sum, i) => sum + i.actualDelivery * i.price, 0).toFixed(2)} ₪</strong>
+        <strong>סה״כ הזמנה לאספקה: {items.reduce((sum, i) => sum + i.actualDelivery * i.price, 0).toFixed(2)} ₪</strong>
       </div>
 
       <h3>שיבוץ עובדים לביצוע המשלוח</h3>
       {assignments.map((a, idx) => (
         <div key={idx} className='assignment-row'>
           <select value={a.userId} onChange={(e) => handleAssignmentChange(idx, 'userId', e.target.value)}>
-            <option value=''>בחר עובד</option>
+            <option value=''>בחר עובד לשיבוץ</option>
             {users.map((u) => (
               <option key={u._id} value={u._id}>
                 {u.FullName}
@@ -230,10 +240,10 @@ export function OrderUpdateQty() {
             ))}
           </select>
           <input type='text' placeholder='הערה לעובד' value={a.note} onChange={(e) => handleAssignmentChange(idx, 'note', e.target.value)} />
-          <button onClick={() => removeAssignment(idx)}>❌</button>
+          <button onClick={() => removeAssignment(idx)}>❌ הסרה</button>
         </div>
       ))}
-      <button onClick={addAssignment}>➕ הוסף עובד</button>
+      <button onClick={addAssignment}>➕ הוסף עובד לשיבוץ</button>
 
       <div className='delivery-date'>
         <label>
@@ -243,7 +253,7 @@ export function OrderUpdateQty() {
       </div>
 
       <div className='actions'>
-        <button onClick={onSave}>✔️ אשר הזמנה</button>
+        <button onClick={onSave}>✔️ אישור ואספקת ההזמנה</button>
         <button onClick={() => navigate('/orders/view')}>ביטול</button>
       </div>
     </section>

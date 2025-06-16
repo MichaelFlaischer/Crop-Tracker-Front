@@ -68,10 +68,16 @@ export function ReportIndex() {
 
   return (
     <section className='report-index main-layout'>
-      <h1>סקירה כללית</h1>
+      <h1>📊 סקירה כללית של המערכת</h1>
+
+      <p style={{ marginBottom: '1.5rem' }}>
+        עמוד זה מציג מבט כולל על מצב המערכת: כמות היבולים, מלאי במחסנים, היקף הפריטים בהזמנות וחלקות שבהן מתבצע גידול פעיל.
+      </p>
+
       <ul className='report-summary'>
         <li>
-          🌱 מספר גידולים במערכת: <strong>{report.totalCrops}</strong> (כולל כל סוגי הגידולים הפעילים והלא פעילים)
+          🌱 <strong>מספר היבולים במערכת:</strong> {report.totalCrops} <br />
+          (כולל כל סוגי היבולים - פעילים ולא פעילים)
           <ul>
             {report.cropNames?.map((name, idx) => (
               <li key={idx}>{name}</li>
@@ -80,7 +86,9 @@ export function ReportIndex() {
         </li>
 
         <li>
-          📦 סך כל המלאי במחסנים: <strong>{report.totalInventoryKg?.toLocaleString('he-IL')}</strong> ק"ג (סיכום כל הכמויות מכל הגידולים בכל המחסנים)
+          📦 <strong>סה"כ מלאי נוכחי בכל המחסנים:</strong> {report.totalInventoryKg?.toLocaleString('he-IL')} ק"ג
+          <br />
+          (כולל כלל הכמויות מכל היבולים בכל המחסנים)
           <ul>
             {report.warehouseBreakdown?.map((wh, idx) => (
               <li key={idx}>
@@ -98,11 +106,12 @@ export function ReportIndex() {
         </li>
 
         <li>
-          📋 מספר פריטים בהזמנות: <strong>{report.totalOrderItems}</strong>
+          📋 <strong>סה"כ פריטים בכל ההזמנות:</strong> {report.totalOrderItems}
         </li>
 
         <li>
-          🧑‍🌾 שדות עם גידול פעיל: <strong>{report.activeFields}</strong> (מספר שדות שבהם מתבצע גידול פעיל לפי רשומות זריעה)
+          🧑‍🌾 <strong>חלקות לגידול יבולים עם גידול פעיל:</strong> {report.activeFields} <br />
+          (מספר החלקות שבהן מתבצע גידול פעיל לפי רשומות זריעה)
           <ul>
             {report.activeFieldsList?.map((fieldName, idx) => (
               <li key={idx}>{fieldName}</li>

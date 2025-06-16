@@ -62,8 +62,8 @@ export function CropPriceHistoryReport() {
 
   if (sortConfig.key) {
     rows.sort((a, b) => {
-      const valA = a[`sort${sortConfig.key}`] ?? a[sortConfig.key]
-      const valB = b[`sort${sortConfig.key}`] ?? b[sortConfig.key]
+      const valA = a[sortConfig.key] ?? a[sortConfig.key]
+      const valB = b[sortConfig.key] ?? b[sortConfig.key]
       if (valA === '—') return 1
       if (valB === '—') return -1
       if (valA < valB) return sortConfig.direction === 'asc' ? -1 : 1
@@ -85,7 +85,7 @@ export function CropPriceHistoryReport() {
       יבול: row.cropName,
       'תאריך הזמנה': row.orderDate,
       'מחיר ליחידה (ש"ח)': row.price,
-      'כמות מוזמנת': row.quantity,
+      'כמות מוזמנת (ק"ג)': row.quantity,
     }))
     const worksheet = XLSX.utils.json_to_sheet(data)
     const workbook = XLSX.utils.book_new()
@@ -97,26 +97,26 @@ export function CropPriceHistoryReport() {
 
   return (
     <section className='crop-price-history'>
-      <h2>🌾 היסטוריית מחירי יבולים</h2>
+      <h2>📈 היסטוריית מחירי יבול (לפי הזמנות)</h2>
       <button onClick={exportToExcel}>📤 ייצוא לאקסל</button>
       <table>
         <thead>
           <tr>
             <th onClick={() => handleSort('serial')}>מס"ד</th>
             <th onClick={() => handleSort('cropName')}>שם יבול</th>
-            <th onClick={() => handleSort('Date')}>תאריך הזמנה</th>
-            <th onClick={() => handleSort('Price')}>מחיר ליחידה (ש"ח)</th>
-            <th onClick={() => handleSort('Quantity')}>כמות מוזמנת</th>
+            <th onClick={() => handleSort('sortDate')}>תאריך הזמנה</th>
+            <th onClick={() => handleSort('sortPrice')}>מחיר ליחידה (ש"ח)</th>
+            <th onClick={() => handleSort('sortQuantity')}>כמות מוזמנת (ק"ג)</th>
           </tr>
         </thead>
         <tbody>
           {rows.map((row) => (
             <tr key={row.id}>
-              <td>{row.serial}</td>
-              <td>{row.cropName}</td>
-              <td>{row.orderDate}</td>
-              <td>{row.price}</td>
-              <td>{row.quantity}</td>
+              <td data-label='מס"ד'>{row.serial}</td>
+              <td data-label='שם יבול'>{row.cropName}</td>
+              <td data-label='תאריך הזמנה'>{row.orderDate}</td>
+              <td data-label='מחיר ליחידה (ש"ח)'>{row.price}</td>
+              <td data-label='כמות מוזמנת (ק"ג)'>{row.quantity}</td>
             </tr>
           ))}
         </tbody>

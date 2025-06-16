@@ -11,14 +11,14 @@ const schema = yup.object().shape({
   FullName: yup.string().required('יש להזין שם מלא'),
   Username: yup.string().required('יש להזין שם משתמש'),
   Password: yup.string().min(6, 'סיסמה חייבת להיות לפחות 6 תווים').required('יש להזין סיסמה'),
-  Email: yup.string().email('אימייל לא תקין').optional(),
+  Email: yup.string().email('אימייל לא תקין').notRequired(),
   PhoneNumber: yup
     .string()
     .matches(/^05\d{8}$/, 'מספר טלפון לא תקין')
-    .optional(),
-  StartDate: yup.date().typeError('יש להזין תאריך תקין').optional(),
-  Salary: yup.number().typeError('יש להזין מספר').min(0, 'שכר לא יכול להיות שלילי').optional(),
-  Address: yup.string().optional(),
+    .notRequired(),
+  StartDate: yup.date().typeError('יש להזין תאריך תקין').notRequired(),
+  Salary: yup.number().typeError('יש להזין מספר').min(0, 'שכר לא יכול להיות שלילי').notRequired(),
+  Address: yup.string().notRequired(),
   RoleID: yup.number().required('יש לבחור תפקיד'),
   RoleName: yup.string().required('שם תפקיד נדרש'),
   isAdmin: yup.string().oneOf(['true', 'false']),
@@ -180,7 +180,7 @@ export function UserAdd() {
 
         <label>
           האם אדמין:
-          <input type='text' value={watch('isAdmin') === 'true' ? 'כן' : 'לא'} readOnly disabled />
+          <span>{watch('isAdmin') === 'true' ? 'כן' : 'לא'}</span>
         </label>
 
         {/* מוסתרים אך דרושים לשמירה */}

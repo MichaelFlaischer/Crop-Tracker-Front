@@ -3,11 +3,17 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
+import { registerLocale } from 'react-datepicker'
+import he from 'date-fns/locale/he'
 
 import { taskService } from '../services/task.service.js'
 import { fieldService } from '../services/field.service.js'
 import { operationService } from '../services/operation.service.js'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service.js'
+
+registerLocale('he', he)
 
 const schema = yup.object().shape({
   taskDescription: yup.string().required('יש להזין תיאור פעולה'),
@@ -33,46 +39,20 @@ export function TaskEdit() {
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
     mode: 'onTouched',
   })
 
+  const startDate = watch('startDate')
+  const endDate = watch('endDate')
+
   useEffect(() => {
     loadFormData()
   }, [])
-
-  useEffect(() => {
-    async function loadFormData() {
-      try {
-        const [task, fields, operations] = await Promise.all([taskService.getById(taskId), fieldService.query(), operationService.query()])
-
-        if (!task) throw new Error('לא נמצאה משימה')
-
-        setFields(fields)
-        setOperations(operations)
-
-        // ודא ש-operationId שמור בתוך task
-        if (!operations.find((op) => op._id === task.operationId)) {
-          console.warn('הפעולה שנשמרה לא קיימת יותר ברשימה')
-        }
-
-        reset({
-          ...task,
-          fieldId: task.fieldId || '',
-          operationId: task.operationId || '',
-        })
-      } catch (err) {
-        console.error('שגיאה בטעינת משימה:', err)
-        showErrorMsg('שגיאה בטעינת הנתונים')
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    loadFormData()
-  }, [taskId, reset])
 
   async function loadFormData() {
     try {
@@ -82,7 +62,12 @@ export function TaskEdit() {
 
       setFields(fields)
       setOperations(operations)
-      reset(task)
+
+      reset({
+        ...task,
+        startDate: task.startDate ? new Date(task.startDate) : null,
+        endDate: task.endDate ? new Date(task.endDate) : null,
+      })
     } catch (err) {
       console.error('שגיאה בטעינת משימה:', err)
       showErrorMsg('שגיאה בטעינת הנתונים')
@@ -116,9 +101,9 @@ export function TaskEdit() {
           </label>
 
           <label>
-            שדה
+            חלקה
             <select {...register('fieldId')}>
-              <option value=''>בחר שדה</option>
+              <option value=''>בחר חלקה</option>
               {fields.map((f) => (
                 <option key={f._id} value={f._id}>
                   {f.fieldName}
@@ -143,7 +128,14 @@ export function TaskEdit() {
 
           <label>
             תאריך התחלה
-            <input type='date' {...register('startDate')} />
+            <DatePicker
+              selected={startDate}
+              onChange={(date) => setValue('startDate', date)}
+              dateFormat='dd/MM/yyyy'
+              locale='he'
+              className='date-input'
+              placeholderText='בחר תאריך התחלה'
+            />
             {errors.startDate && <span className='error'>{errors.startDate.message}</span>}
           </label>
 
@@ -155,7 +147,14 @@ export function TaskEdit() {
 
           <label>
             תאריך סיום
-            <input type='date' {...register('endDate')} />
+            <DatePicker
+              selected={endDate}
+              onChange={(date) => setValue('endDate', date)}
+              dateFormat='dd/MM/yyyy'
+              locale='he'
+              className='date-input'
+              placeholderText='בחר תאריך סיום'
+            />
             {errors.endDate && <span className='error'>{errors.endDate.message}</span>}
           </label>
 
@@ -166,7 +165,7 @@ export function TaskEdit() {
           </label>
 
           <label>
-            כמות עובדים נדרשת
+            מספר עובדים נדרש
             <input type='number' {...register('requiredEmployees')} />
             {errors.requiredEmployees && <span className='error'>{errors.requiredEmployees.message}</span>}
           </label>
@@ -184,7 +183,7 @@ export function TaskEdit() {
           </label>
 
           <label>
-            הערות
+            הערות למשימה
             <textarea {...register('notes')} />
           </label>
 

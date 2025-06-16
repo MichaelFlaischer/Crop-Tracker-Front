@@ -102,56 +102,89 @@ export function CropIndex() {
     <section className='crop-index main-layout'>
       <h1>רשימת יבולים</h1>
       <button className='btn-add' onClick={onAddCrop}>
-        ➕ הוספת יבול חדש
+        ➕ הוספת יבול
       </button>
 
       {crops.length === 0 ? (
         <p>לא נמצאו יבולים.</p>
       ) : (
-        <table className='crop-table'>
-          <thead>
-            <tr>
-              <th>שם היבול</th>
-              <th>תיאור</th>
-              <th>כמות במחסן (ק״ג)</th>
-              <th>גידול פעיל</th>
-              <th>פעולות</th>
-            </tr>
-          </thead>
-          <tbody>
+        <>
+          <table className='crop-table'>
+            <thead>
+              <tr>
+                <th>שם היבול</th>
+                <th>תיאור</th>
+                <th>כמות במחסן (ק״ג)</th>
+                <th>גידול פעיל בחלקות</th>
+                <th>פעולות</th>
+              </tr>
+            </thead>
+            <tbody>
+              {crops.map((crop) => {
+                const summary = getCropSummary(crop._id)
+                return (
+                  <tr key={crop._id}>
+                    <td>{crop.cropName}</td>
+                    <td>{crop.description}</td>
+                    <td>{summary.inWarehouses.toLocaleString('he-IL')}</td>
+                    <td>
+                      {summary.growingInFields.length === 0 ? (
+                        '—'
+                      ) : (
+                        <ul>
+                          {summary.growingInFields.map((f, idx) => (
+                            <li key={idx}>
+                              <strong>{f.fieldName}</strong> | שתילה: {f.sowingDate.toLocaleDateString('he-IL')} | קציר צפוי:{' '}
+                              {typeof f.expectedHarvest === 'string' ? f.expectedHarvest : f.expectedHarvest.toLocaleDateString('he-IL')}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </td>
+                    <td className='actions'>
+                      <button onClick={() => onViewDetails(crop._id)}>צפייה</button>
+                      <button onClick={() => onEditCrop(crop._id)}>עריכה</button>
+                      <button className='danger' onClick={() => onDeleteCrop(crop._id)}>
+                        מחיקה
+                      </button>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+
+          <div className='crop-cards'>
             {crops.map((crop) => {
               const summary = getCropSummary(crop._id)
               return (
-                <tr key={crop._id}>
-                  <td>{crop.cropName}</td>
-                  <td>{crop.description}</td>
-                  <td>{summary.inWarehouses.toLocaleString('he-IL')}</td>
-                  <td>
-                    {summary.growingInFields.length === 0 ? (
-                      '—'
-                    ) : (
-                      <ul>
-                        {summary.growingInFields.map((f, idx) => (
-                          <li key={idx}>
+                <div className='crop-card' key={crop._id}>
+                  <h3>{crop.cropName}</h3>
+                  <div className='field-info'>📝 {crop.description}</div>
+                  <div className='field-info'>📦 במלאי: {summary.inWarehouses.toLocaleString('he-IL')} ק״ג</div>
+                  <div className='field-info'>
+                    🌱{' '}
+                    {summary.growingInFields.length > 0
+                      ? summary.growingInFields.map((f, idx) => (
+                          <div key={idx}>
                             <strong>{f.fieldName}</strong> | שתילה: {f.sowingDate.toLocaleDateString('he-IL')} | קציר צפוי:{' '}
                             {typeof f.expectedHarvest === 'string' ? f.expectedHarvest : f.expectedHarvest.toLocaleDateString('he-IL')}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </td>
-                  <td className='actions'>
+                          </div>
+                        ))
+                      : 'אין גידולים פעילים'}
+                  </div>
+                  <div className='actions'>
                     <button onClick={() => onViewDetails(crop._id)}>צפייה</button>
                     <button onClick={() => onEditCrop(crop._id)}>עריכה</button>
                     <button className='danger' onClick={() => onDeleteCrop(crop._id)}>
                       מחיקה
                     </button>
-                  </td>
-                </tr>
+                  </div>
+                </div>
               )
             })}
-          </tbody>
-        </table>
+          </div>
+        </>
       )}
     </section>
   )

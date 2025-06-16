@@ -71,4 +71,36 @@
       }
     }
   }
+
+  @media (max-width: 768px) {
+    .dashboard-dss {
+      padding: 1rem;
+
+      h1 {
+        font-size: 1.6rem;
+      }
+
+      h2 {
+        font-size: 1.2rem;
+      }
+
+      .dss-recommendations li {
+        padding: 0.8rem;
+        font-size: 0.95rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        button {
+          width: fit-content;
+          align-self: flex-start;
+        }
+      }
+
+      .recharts-wrapper {
+        max-width: 100%;
+        overflow-x: auto;
+      }
+    }
+  }
 }

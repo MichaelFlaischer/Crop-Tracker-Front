@@ -43,48 +43,104 @@ export function EmployeesInTaskIndex() {
       {isLoading ? (
         <p>טוען נתונים...</p>
       ) : (
-        <table className='employees-task-table'>
-          <thead>
-            <tr>
-              <th>שם העובד</th>
-              <th>משימה</th>
-              <th>שובץ בתאריך</th>
-              <th>סטטוס</th>
-              <th>שעת התחלה</th>
-              <th>שעת סיום</th>
-              <th>הערות</th>
-            </tr>
-          </thead>
-          <tbody>
-            {records.map((rec) => (
-              <tr key={rec._id}>
-                <td>{usersMap[rec.employeeId]?.FullName || 'לא ידוע'}</td>
-                <td>{tasksMap[rec.taskId]?.title || 'לא ידוע'}</td>
-                <td>{new Date(rec.assignedAt).toLocaleString('he-IL')}</td>
-                <td>{translateStatus(rec.status)}</td>
-                <td>{rec.actualStart ? new Date(rec.actualStart).toLocaleTimeString('he-IL') : '-'}</td>
-                <td>{rec.actualEnd ? new Date(rec.actualEnd).toLocaleTimeString('he-IL') : '-'}</td>
-                <td>{rec.employeeNotes || '-'}</td>
+        <>
+          <table className='employees-task-table'>
+            <thead>
+              <tr>
+                <th>שם העובד</th>
+                <th>משימה</th>
+                <th>שובץ בתאריך</th>
+                <th>סטטוס</th>
+                <th>שעת התחלה</th>
+                <th>שעת סיום</th>
+                <th>הערות</th>
               </tr>
+            </thead>
+            <tbody>
+              {records.length === 0 ? (
+                <tr>
+                  <td colSpan='7' style={{ textAlign: 'center', color: '#999' }}>
+                    אין רשומות שיבוץ להצגה
+                  </td>
+                </tr>
+              ) : (
+                records.map((rec) => (
+                  <tr key={rec._id}>
+                    <td>{usersMap[rec.employeeId]?.FullName || 'לא ידוע'}</td>
+                    <td>{tasksMap[rec.taskId]?.title || 'לא ידוע'}</td>
+                    <td>{new Date(rec.assignedAt).toLocaleDateString('he-IL')}</td>
+                    <td>{translateStatus(rec.status)}</td>
+                    <td>
+                      {rec.actualStart && !isNaN(new Date(rec.actualStart))
+                        ? new Date(rec.actualStart).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
+                        : '-'}
+                    </td>
+                    <td>
+                      {rec.actualEnd && !isNaN(new Date(rec.actualEnd))
+                        ? new Date(rec.actualEnd).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
+                        : '-'}
+                    </td>
+                    <td>{rec.employeeNotes || '-'}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+          <section className='records-cards'>
+            {records.map((rec) => (
+              <div className='record-card' key={rec._id}>
+                <div className='field'>
+                  <span>שם העובד:</span>
+                  <span className='value'>{usersMap[rec.employeeId]?.FullName || 'לא ידוע'}</span>
+                </div>
+                <div className='field'>
+                  <span>משימה:</span>
+                  <span className='value'>{tasksMap[rec.taskId]?.title || 'לא ידוע'}</span>
+                </div>
+                <div className='field'>
+                  <span>שובץ בתאריך:</span>
+                  <span className='value'>{new Date(rec.assignedAt).toLocaleDateString('he-IL')}</span>
+                </div>
+                <div className='field'>
+                  <span>סטטוס:</span>
+                  <span className='value'>{translateStatus(rec.status)}</span>
+                </div>
+                <div className='field'>
+                  <span>שעת התחלה:</span>
+                  <span className='value'>
+                    {rec.actualStart && !isNaN(new Date(rec.actualStart))
+                      ? new Date(rec.actualStart).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
+                      : '-'}
+                  </span>
+                </div>
+                <div className='field'>
+                  <span>שעת סיום:</span>
+                  <span className='value'>
+                    {rec.actualEnd && !isNaN(new Date(rec.actualEnd))
+                      ? new Date(rec.actualEnd).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
+                      : '-'}
+                  </span>
+                </div>
+                <div className='field'>
+                  <span>הערות:</span>
+                  <span className='value'>{rec.employeeNotes || '-'}</span>
+                </div>
+              </div>
             ))}
-          </tbody>
-        </table>
+          </section>
+        </>
       )}
     </section>
   )
 }
 
+const statusMap = {
+  waiting: 'בהמתנה',
+  'in-progress': 'בתהליך',
+  completed: 'הושלם',
+  missed: 'הוחמץ',
+}
+
 function translateStatus(status) {
-  switch (status) {
-    case 'waiting':
-      return 'בהמתנה'
-    case 'in-progress':
-      return 'בתהליך'
-    case 'completed':
-      return 'הושלם'
-    case 'missed':
-      return 'הוחמץ'
-    default:
-      return status
-  }
+  return statusMap[status] || status
 }

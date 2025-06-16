@@ -1,4 +1,5 @@
 .crop-details {
+  direction: rtl;
   padding: 2rem;
 
   h1 {
@@ -39,25 +40,12 @@
         word-break: break-word;
       }
 
-      // טווח משקעים מעוצב
       &.rain-range span.min {
         color: #1976d2;
         font-weight: bold;
       }
 
       &.rain-range span.max {
-        color: #d32f2f;
-        font-weight: bold;
-      }
-
-      // עונה מועדפת
-      &:last-child .season-name {
-        color: #388e3c;
-        font-weight: bold;
-      }
-
-      // רגישות לגשם
-      &:last-child.critical {
         color: #d32f2f;
         font-weight: bold;
       }
@@ -81,7 +69,7 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: background-color 0.3s ease;
 
       &:nth-child(1) {
         background-color: #e0e0e0;
@@ -117,5 +105,26 @@
     font-size: 1.2rem;
     padding: 2rem;
     color: #555;
+  }
+
+  @media (max-width: 600px) {
+    padding: 1rem;
+
+    h1 {
+      font-size: 1.6rem;
+    }
+
+    .crop-details-table td {
+      padding: 0.8rem 1rem;
+      font-size: 0.95rem;
+    }
+
+    .actions {
+      flex-direction: column;
+
+      button {
+        width: 100%;
+      }
+    }
   }
 }

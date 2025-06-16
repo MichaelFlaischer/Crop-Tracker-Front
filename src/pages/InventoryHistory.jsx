@@ -37,7 +37,11 @@ export function InventoryHistory() {
             cropName: crop.cropName,
             fieldName: field.fieldName,
             fieldSize: field.size,
-            harvestDate: new Date(harvest.date).toLocaleDateString('he-IL'),
+            harvestDate: new Date(harvest.date).toLocaleDateString('he-IL', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric',
+            }),
             amount: harvest.amount,
             isFinal: harvest.isFinal,
             notes: harvest.notes || '-',
@@ -55,7 +59,7 @@ export function InventoryHistory() {
 
   return (
     <section className='inventory-history main-layout'>
-      <h1>היסטוריית קציר לפי יבול</h1>
+      <h1>היסטוריית קציר לפי חלקות ויבולים</h1>
       {isLoading ? (
         <p>טוען נתונים...</p>
       ) : history.length === 0 ? (
@@ -65,8 +69,8 @@ export function InventoryHistory() {
           <thead>
             <tr>
               <th>יבול</th>
-              <th>שדה</th>
-              <th>גודל השדה (דונם)</th>
+              <th>חלקה</th>
+              <th>שטח החלקה (בדונם)</th>
               <th>תאריך קציר</th>
               <th>כמות</th>
               <th>קציר סופי</th>
@@ -76,13 +80,13 @@ export function InventoryHistory() {
           <tbody>
             {history.map((entry, idx) => (
               <tr key={idx}>
-                <td>{entry.cropName}</td>
-                <td>{entry.fieldName}</td>
-                <td>{entry.fieldSize}</td>
-                <td>{entry.harvestDate}</td>
-                <td>{entry.amount.toLocaleString('he-IL')} ק"ג</td>
-                <td>{entry.isFinal ? '✔️' : '⏳'}</td>
-                <td>{entry.notes}</td>
+                <td data-label='יבול'>{entry.cropName}</td>
+                <td data-label='חלקה'>{entry.fieldName}</td>
+                <td data-label='שטח החלקה (בדונם)'>{entry.fieldSize}</td>
+                <td data-label='תאריך קציר'>{entry.harvestDate}</td>
+                <td data-label='כמות'>{entry.amount.toLocaleString('he-IL')} ק"ג</td>
+                <td data-label='קציר סופי'>{entry.isFinal ? '✔️' : '⏳'}</td>
+                <td data-label='הערות'>{entry.notes}</td>
               </tr>
             ))}
           </tbody>

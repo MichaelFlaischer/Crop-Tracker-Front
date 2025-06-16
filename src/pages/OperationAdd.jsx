@@ -38,6 +38,7 @@ export function OperationAdd() {
   return (
     <section className='operation-add main-layout'>
       <h1>הוספת פעולה חדשה</h1>
+      <p className='form-note'>* שדות חובה</p>
       <form onSubmit={handleSubmit(onSubmit)} className='form'>
         <label>
           שם פעולה *
@@ -46,14 +47,14 @@ export function OperationAdd() {
         </label>
 
         <label>
-          עלות ליחידה *
-          <input type='number' step='0.01' {...register('costPerUnit')} />
+          עלות ליחידה (₪) *
+          <input type='number' step='0.01' placeholder='₪ ליחידת מידה' {...register('costPerUnit')} />
           {errors.costPerUnit && <span className='error'>{errors.costPerUnit.message}</span>}
         </label>
 
         <label>
           יחידת מידה *
-          <input type='text' {...register('unitDescription')} />
+          <input type='text' placeholder='ק״ג, מ״ר, שעה עבודה וכו׳' {...register('unitDescription')} />
           {errors.unitDescription && <span className='error'>{errors.unitDescription.message}</span>}
         </label>
 

@@ -1,130 +1,240 @@
 .season-index {
+  direction: rtl;
   padding: 2rem;
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  h1 {
+    text-align: center;
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+  }
 
-    th,
-    td {
-      padding: 10px 12px;
-      border: 1px solid #ddd;
-      text-align: center;
-      font-size: 0.95rem;
-    }
+  .page-description {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #4a5568;
+  }
 
-    th {
-      background-color: #f8f9fa;
-      font-weight: 600;
-    }
+  .no-seasons {
+    text-align: center;
+    font-weight: 500;
+    font-size: 1.1rem;
+    color: #718096;
+  }
 
-    .past-season {
-      background-color: #fff3cd;
-      animation: fadeIn 1s ease-in;
-    }
+  // טבלה למסכים רחבים
+  .season-table-wrapper {
+    overflow-x: auto;
 
-    @keyframes fadeIn {
-      from {
-        background-color: #f8d7da;
+    .season-table {
+      width: 100%;
+      border-collapse: collapse;
+
+      th,
+      td {
+        padding: 0.75rem;
+        text-align: center;
+        border: 1px solid #e2e8f0;
       }
-      to {
-        background-color: #fff3cd;
+
+      th {
+        background-color: #edf2f7;
+        color: #2d3748;
+        font-weight: 600;
+      }
+
+      td {
+        font-size: 0.95rem;
+        color: #4a5568;
+      }
+
+      .edit-btn {
+        background-color: #3182ce;
+        color: white;
+        border: none;
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+          background-color: #2b6cb0;
+        }
+      }
+
+      .past-season {
+        background-color: #fff5f5;
+
+        td {
+          color: #c53030;
+          font-weight: 500;
+        }
       }
     }
+  }
 
-    button {
-      background-color: #007bff;
-      color: #fff;
-      padding: 6px 12px;
-      border: none;
-      border-radius: 4px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
+  // כרטיסים למסכים קטנים
+  .season-cards {
+    display: none;
+  }
 
-      &:hover {
-        background-color: #0056b3;
+  @media (max-width: 768px) {
+    .season-table-wrapper {
+      display: none;
+    }
+
+    .season-cards {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+
+      .season-card {
+        padding: 1.25rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        background-color: #f7fafc;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+
+        h3 {
+          font-size: 1.3rem;
+          margin-bottom: 0.75rem;
+          color: #2d3748;
+        }
+
+        p {
+          margin: 0.3rem 0;
+          font-size: 0.95rem;
+          color: #4a5568;
+
+          strong {
+            color: #2d3748;
+          }
+
+          &.note {
+            font-weight: 600;
+            color: #c53030;
+            margin-top: 0.75rem;
+          }
+        }
+
+        &.past {
+          background-color: #fff5f5;
+
+          p,
+          h3 {
+            color: #c53030;
+          }
+        }
+
+        .edit-btn {
+          margin-top: 1rem;
+          background-color: #3182ce;
+          color: white;
+          border: none;
+          padding: 0.5rem 1rem;
+          border-radius: 6px;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+
+          &:hover {
+            background-color: #2b6cb0;
+          }
+        }
       }
     }
   }
 }
 
 .season-edit {
+  direction: rtl;
   max-width: 600px;
   margin: 2rem auto;
+  padding: 2rem;
+  background-color: #fdfdfd;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+
+  h1 {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .page-description {
+    text-align: center;
+    color: #4a5568;
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+  }
 
   form {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: 1.2rem;
-    padding: 1rem;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
 
     label {
-      display: flex;
-      flex-direction: column;
-      font-weight: bold;
+      font-weight: 600;
+      color: #2d3748;
       font-size: 0.95rem;
 
       input,
       textarea {
-        margin-top: 0.3rem;
-        padding: 0.6rem;
-        border: 1px solid #ccc;
-        border-radius: 4px;
+        margin-top: 0.4rem;
+        padding: 0.7rem;
+        border: 1px solid #cbd5e0;
+        border-radius: 8px;
         font-size: 1rem;
         background-color: #fff;
+        width: 100%;
       }
 
       textarea {
         resize: vertical;
-        min-height: 80px;
+        min-height: 100px;
       }
     }
 
     .btns {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
+      gap: 1rem;
       flex-wrap: wrap;
-      gap: 0.5rem;
+      margin-top: 1rem;
+
+      button {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
 
       .btn-save {
-        background-color: #28a745;
-        color: #fff;
+        background-color: #38a169;
+        color: white;
 
         &:hover {
-          background-color: #218838;
+          background-color: #2f855a;
         }
       }
 
       .btn-update-dates {
-        background-color: #ffc107;
-        color: #212529;
+        background-color: #ed8936;
+        color: white;
 
         &:hover {
-          background-color: #e0a800;
+          background-color: #dd6b20;
         }
       }
 
       .btn-cancel {
-        background-color: #dc3545;
-        color: #fff;
+        background-color: #e53e3e;
+        color: white;
 
         &:hover {
-          background-color: #c82333;
+          background-color: #c53030;
         }
-      }
-
-      button {
-        padding: 0.6rem 1.2rem;
-        font-size: 1rem;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-weight: 500;
-        transition: all 0.2s ease-in-out;
       }
     }
   }

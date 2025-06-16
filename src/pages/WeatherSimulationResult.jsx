@@ -151,19 +151,19 @@ export function WeatherSimulationResult() {
   }
 
   return (
-    <section className='weather-simulation-result' style={{ maxWidth: '1000px', margin: 'auto', padding: '2rem' }}>
-      <h1 style={{ textAlign: 'center', marginBottom: '2rem' }}>תוצאות - סימולציית מזג אוויר</h1>
+    <section className='weather-simulation-result'>
+      <h1>תוצאות - סימולציית מזג אוויר עבור חלקת יבול</h1>
 
-      <section style={{ background: '#f9f9f9', padding: '1rem', borderRadius: '8px', marginBottom: '2rem' }}>
+      <section>
         <h2>פרטי הסימולציה:</h2>
         <p>
-          <strong>שדה:</strong> {selectedFieldName || 'לא נבחר'}
+          <strong>חלקת יבול:</strong> {selectedFieldName || 'לא נבחרה'}
         </p>
         <p>
-          <strong>יבול:</strong> {selectedCropName || 'על פי נתונים שהוזנו ידנית'}
+          <strong>יבול:</strong> {selectedCropName || 'נתונים ידניים'}
         </p>
         <p>
-          <strong>טמפ׳ מינימלית:</strong> {minTemperature}°C | <strong>טמפ׳ מקסימלית:</strong> {maxTemperature}°C
+          <strong>טמפ׳:</strong> {minTemperature}°C - {maxTemperature}°C
         </p>
         {isRainfallConditionUsed && (
           <p>
@@ -172,7 +172,7 @@ export function WeatherSimulationResult() {
         )}
         {growthPeriodInDays && (
           <p>
-            <strong>מס׳ ימי גידול ממוצע:</strong> {growthPeriodInDays} ימים
+            <strong>מס׳ ימי גידול:</strong> {growthPeriodInDays} ימים
           </p>
         )}
       </section>
@@ -185,72 +185,83 @@ export function WeatherSimulationResult() {
       </p>
 
       {optimalSowing && (
-        <p style={{ marginTop: '1rem' }}>
-          <strong>תאריך זריעה מיטבי:</strong> {formatDate(optimalSowing.bestStartDate)} — {(optimalSowing.bestScore * 100).toFixed(1)}% ימים מתאימים בתקופת
-          הגידול
+        <p>
+          <strong>תאריך זריעה מיטבי:</strong> {formatDate(optimalSowing.bestStartDate)} — {(optimalSowing.bestScore * 100).toFixed(1)}%
         </p>
       )}
 
-      <p style={{ marginTop: '1rem', fontStyle: 'italic', color: '#555' }}>
-        {isRainfallConditionUsed
-          ? 'תנאי משקעים נלקחו בחשבון (לצורך ניתוח השקיה וניקוז), אך לא משפיעים על התאמה הכללית.'
-          : 'תנאי משקעים לא הופעלו — ניתן להשקות/לנקז במידת הצורך.'}
+      <p className='note'>
+        {isRainfallConditionUsed ? 'תנאי משקעים שימשו לחישוב השקיה/ניקוז, לא להתאמה כללית.' : 'תנאי משקעים לא הופעלו — ניתן להשקות או לנקז במידת הצורך.'}
       </p>
 
-      {topSowingDates && topSowingDates.length > 0 && (
-        <section style={{ marginTop: '2rem' }}>
-          <h3>תאריכים מומלצים לזריעה</h3>
-          <table border='1' cellPadding='5' style={{ borderCollapse: 'collapse', width: '100%' }}>
-            <thead>
-              <tr>
-                <th>תאריך זריעה</th>
-                <th>אחוז ימים מתאימים בתקופת גידול</th>
-                {isRainfallConditionUsed && (
-                  <>
-                    <th>ימי השקייה</th>
-                    <th>ימי ניקוז</th>
-                  </>
-                )}
-              </tr>
-            </thead>
-            <tbody>
-              {topSowingDates.map((item, idx) => (
-                <tr key={idx}>
-                  <td>{formatDate(item.startDate)}</td>
-                  <td>{(item.suitableRatio * 100).toFixed(1)}%</td>
+      {topSowingDates?.length > 0 && (
+        <>
+          <section className='desktop-table'>
+            <h3>תאריכים מומלצים לזריעה</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>תאריך</th>
+                  <th>אחוז ימים מתאימים</th>
                   {isRainfallConditionUsed && (
                     <>
-                      <td>{item.irrigationDays}</td>
-                      <td>{item.drainageDays}</td>
+                      <th>ימי השקיה</th>
+                      <th>ימי ניקוז</th>
                     </>
                   )}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
+              </thead>
+              <tbody>
+                {topSowingDates.map((item, idx) => (
+                  <tr key={idx}>
+                    <td>{formatDate(item.startDate)}</td>
+                    <td>{(item.suitableRatio * 100).toFixed(1)}%</td>
+                    {isRainfallConditionUsed && (
+                      <>
+                        <td>{item.irrigationDays}</td>
+                        <td>{item.drainageDays}</td>
+                      </>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+
+          <section className='mobile-cards'>
+            {topSowingDates.map((item, idx) => (
+              <div key={idx} className='forecast-card'>
+                <h4>{formatDate(item.startDate)}</h4>
+                <p>אחוז ימים מתאימים: {(item.suitableRatio * 100).toFixed(1)}%</p>
+                {isRainfallConditionUsed && (
+                  <p>
+                    השקיה: {item.irrigationDays} | ניקוז: {item.drainageDays}
+                  </p>
+                )}
+              </div>
+            ))}
+          </section>
+        </>
       )}
 
       <div className='charts'>
-        <div style={{ marginTop: '2rem' }}>
+        <div>
           <h3>גרף התאמת ימים</h3>
           <Bar data={barChartData} options={barChartOptions} />
         </div>
 
-        <div style={{ marginTop: '2rem' }}>
-          <h3>גרף טמפ' מקסימלית ומינימלית לאורך הימים</h3>
+        <div>
+          <h3>גרף טמפרטורות</h3>
           <Line data={tempChartData} options={tempChartOptions} />
         </div>
 
-        <div style={{ marginTop: '2rem' }}>
-          <h3>גרף משקעים יומיים לאורך הימים</h3>
+        <div>
+          <h3>גרף משקעים</h3>
           <Line data={precipitationChartData} options={precipitationChartOptions} />
         </div>
       </div>
 
-      <button style={{ marginTop: '2rem', padding: '0.5rem 1rem', fontSize: '1rem' }} onClick={() => navigate('/weather-simulation')}>
-        חזור
-      </button>
+      <button onClick={() => navigate('/weather-simulation')}>חזור</button>
     </section>
   )
 }

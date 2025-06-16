@@ -1,16 +1,24 @@
 import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { useNavigate, useParams } from 'react-router-dom'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
+import { registerLocale } from 'react-datepicker'
+import he from 'date-fns/locale/he'
+
 import { operationService } from '../services/operation.service.js'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service.js'
+
+registerLocale('he', he)
 
 const schema = yup.object().shape({
   operationName: yup.string().required('יש להזין שם פעולה'),
   costPerUnit: yup.number().required('יש להזין עלות').min(0, 'הערך חייב להיות חיובי'),
   unitDescription: yup.string().required('יש להזין יחידת מידה'),
   executionNotes: yup.string(),
+  executionDate: yup.date().required('יש לבחור תאריך ביצוע'),
 })
 
 export function OperationEdit() {
@@ -22,6 +30,7 @@ export function OperationEdit() {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
@@ -36,7 +45,11 @@ export function OperationEdit() {
     try {
       const operation = await operationService.getById(operationId)
       if (!operation) throw new Error('פעולה לא נמצאה')
-      reset(operation)
+
+      reset({
+        ...operation,
+        executionDate: operation.executionDate ? new Date(operation.executionDate) : null,
+      })
     } catch (err) {
       console.error(err)
       showErrorMsg('שגיאה בטעינת פעולה לעריכה')
@@ -58,7 +71,11 @@ export function OperationEdit() {
 
   return (
     <section className='operation-edit main-layout'>
-      <h1>עריכת פעולה</h1>
+      <h1>עריכת פעולה במערכת Crop-Tracker</h1>
+      <p className='form-note'>
+        כאן ניתן לעדכן את פרטי הפעולה לשיבוץ במשימות השונות. <br />* שדות חובה
+      </p>
+
       {isLoading ? (
         <p>טוען נתונים...</p>
       ) : (
@@ -70,15 +87,35 @@ export function OperationEdit() {
           </label>
 
           <label>
-            עלות ליחידה *
-            <input type='number' step='0.01' {...register('costPerUnit')} />
+            עלות ליחידה (₪) *
+            <input type='number' step='0.01' placeholder='₪ ליחידת מידה' {...register('costPerUnit')} />
             {errors.costPerUnit && <span className='error'>{errors.costPerUnit.message}</span>}
           </label>
 
           <label>
             יחידת מידה *
-            <input type='text' {...register('unitDescription')} />
+            <input type='text' placeholder='ק״ג, מ״ר, שעה עבודה וכו׳' {...register('unitDescription')} />
             {errors.unitDescription && <span className='error'>{errors.unitDescription.message}</span>}
+          </label>
+
+          <label>
+            תאריך ביצוע *
+            <Controller
+              control={control}
+              name='executionDate'
+              render={({ field }) => (
+                <DatePicker
+                  {...field}
+                  selected={field.value}
+                  onChange={(date) => field.onChange(date)}
+                  dateFormat='dd/MM/yyyy'
+                  locale='he'
+                  placeholderText='בחר תאריך (יום/חודש/שנה)'
+                  className='custom-datepicker'
+                />
+              )}
+            />
+            {errors.executionDate && <span className='error'>{errors.executionDate.message}</span>}
           </label>
 
           <label>

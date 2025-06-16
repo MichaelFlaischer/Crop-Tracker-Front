@@ -94,7 +94,7 @@ export function CropSeasonSummary() {
 
   return (
     <section className='crop-season-summary'>
-      <h2> דוח קציר בפילוח עונתי</h2>
+      <h2>📊 דוח קציר בפילוח עונתי</h2>
       {summaryData.map((crop, idx) => {
         const isOpen = openIndexes.includes(idx)
         return (
@@ -107,7 +107,7 @@ export function CropSeasonSummary() {
               <>
                 {crop.bestSeason && (
                   <p className='recommendation'>
-                    העונה המומלצת לגידול: <strong>{crop.bestSeason}</strong>
+                    העונה המומלצת לגידול (לפי נתוני קציר בפועל): <strong>{crop.bestSeason}</strong>
                   </p>
                 )}
 

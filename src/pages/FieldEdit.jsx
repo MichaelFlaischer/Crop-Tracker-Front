@@ -29,12 +29,12 @@ export function FieldEdit() {
     async function loadField() {
       try {
         const data = await fieldService.getById(fieldId)
-        if (!data) throw new Error('שדה לא נמצא')
+        if (!data) throw new Error('חלקה לא נמצאה')
         setField(data)
         setSearchInput(data.location?.name || '')
         setPolygonCoords(data.polygonPath || [])
       } catch (err) {
-        showErrorMsg('שגיאה בטעינת השדה')
+        showErrorMsg('שגיאה בטעינת החלקה')
         console.error(err)
         navigate('/field')
       }
@@ -86,8 +86,8 @@ export function FieldEdit() {
   }
 
   function calculateArea(path) {
-    const area = window.google.maps.geometry.spherical.computeArea(path.map((p) => new window.google.maps.LatLng(p.lat, p.lng)))
-    return (area / 10000).toFixed(2)
+    const areaInMeters = window.google.maps.geometry.spherical.computeArea(path.map((p) => new window.google.maps.LatLng(p.lat, p.lng)))
+    return (areaInMeters / 1000).toFixed(2)
   }
 
   function onMapDoubleClick(e) {
@@ -109,16 +109,16 @@ export function FieldEdit() {
 
   function isFieldValid() {
     if (!field.fieldName?.trim()) {
-      showErrorMsg('יש להזין שם שדה')
+      showErrorMsg('יש להזין שם חלקה')
       return false
     }
     if (!field.location?.lat || !field.location?.lng) {
-      showErrorMsg('יש לבחור מיקום חוקי')
+      showErrorMsg('יש לבחור מיקום חוקי לחלקה על המפה או באמצעות חיפוש')
       return false
     }
     const sizeVal = parseFloat(field.size)
     if (isNaN(sizeVal) || sizeVal <= 0) {
-      showErrorMsg('יש להזין גודל חוקי')
+      showErrorMsg('יש להזין שטח חלקה חוקי (בדונם)')
       return false
     }
     return true
@@ -129,11 +129,11 @@ export function FieldEdit() {
 
     try {
       await fieldService.save(field)
-      showSuccessMsg('השדה עודכן בהצלחה')
+      showSuccessMsg('החלקה עודכנה בהצלחה')
       navigate('/field')
     } catch (err) {
       console.error('שגיאה בעדכון:', err)
-      showErrorMsg('שגיאה בעדכון שדה')
+      showErrorMsg('שגיאה בעדכון חלקה')
     }
   }
 
@@ -141,31 +141,31 @@ export function FieldEdit() {
     navigate('/field')
   }
 
-  if (!isLoaded || !field) return <p>טוען...</p>
+  if (!isLoaded || !field) return <p>טוען את פרטי החלקה...</p>
 
   return (
     <section className='field-edit-layout' style={{ display: 'flex', gap: '2rem' }}>
       <div className='field-form' style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <h2>עריכת שדה</h2>
+        <h2>עריכת חלקה לגידול יבולים</h2>
 
-        <label>שם השדה:</label>
+        <label>שם החלקה:</label>
         <input type='text' value={field.fieldName} onChange={(e) => setField({ ...field, fieldName: e.target.value })} />
 
-        <label>כתובת או קואורדינטות:</label>
+        <label>כתובת או קואורדינטות (למיקום החלקה):</label>
         <div className='search-box' style={{ display: 'flex', gap: '0.5rem' }}>
           <input type='text' value={searchInput} onChange={(e) => setSearchInput(e.target.value)} />
-          <button onClick={handleSearch}>חפש</button>
+          <button onClick={handleSearch}>🔍 חפש</button>
         </div>
 
         <label>הערות:</label>
         <textarea value={field.notes} onChange={(e) => setField({ ...field, notes: e.target.value })} />
 
-        <label>שטח (קמ"ר):</label>
+        <label>שטח החלקה (בדונם):</label>
         <input type='number' step='0.01' value={field.size} onChange={(e) => setField({ ...field, size: e.target.value })} />
 
         <div style={{ display: 'flex', gap: '1rem' }}>
           <button className='btn-save' onClick={onSaveField}>
-            שמור שדה
+            שמור חלקה
           </button>
           <button className='btn-cancel' onClick={onCancel}>
             בטל

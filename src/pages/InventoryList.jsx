@@ -123,7 +123,7 @@ export function InventoryList() {
         if (available < min * 0.8) {
           entry.recommendation = 'שקול שתילה של יבול נוסף'
           entry.recommendationAction = () => navigate('/field')
-          entry.recommendationLabel = 'מעבר לשדות'
+          entry.recommendationLabel = 'מעבר לחלקות'
         } else if (available > max * 1.2) {
           entry.recommendation = 'כדאי למכור את המלאי בעודף'
           entry.recommendationAction = () => navigate('/orders/view')
@@ -185,7 +185,7 @@ export function InventoryList() {
             </div>
 
             <div>
-              <h4>🌾 שדות פעילים:</h4>
+              <h4>🌾 חלקות פעילות:</h4>
               {entry.fields.length ? (
                 <ul>
                   {entry.fields.map((f, idx) => (
@@ -195,7 +195,7 @@ export function InventoryList() {
                   ))}
                 </ul>
               ) : (
-                <p>אין שדות פעילים</p>
+                <p>אין חלקות פעילות</p>
               )}
             </div>
           </div>

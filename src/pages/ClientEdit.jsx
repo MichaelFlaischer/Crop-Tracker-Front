@@ -73,7 +73,7 @@ export function ClientEdit() {
         </label>
 
         <label>
-          טלפון:
+          טלפון ליצירת קשר:
           <input type='text' name='phoneNumber' value={client.phoneNumber} onChange={handleChange} />
           {errors.phoneNumber && <span className='error'>{errors.phoneNumber}</span>}
         </label>

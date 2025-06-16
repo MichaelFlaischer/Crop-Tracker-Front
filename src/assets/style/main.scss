@@ -8,6 +8,7 @@
 @import 'base/helpers';
 @import 'base/layout';
 @import 'base/forms';
+@import 'base/buttons';
 
 /* Components */
 @import 'cmps/common/ErrorMessage';
@@ -18,24 +19,17 @@
 @import 'cmps/AppHeader';
 @import 'cmps/AppFooter';
 @import 'cmps/HomePage';
-@import 'cmps/ToyIndex';
-@import 'cmps/ToyDetails';
-@import 'cmps/ToyEdit';
-@import 'cmps/ToyList';
-@import 'cmps/ToyPreview';
-@import 'cmps/ToyImg';
-@import 'cmps/ToyFilter';
 @import 'cmps/Popup';
 @import 'cmps/Chat';
-@import 'cmps/ToyMap';
 @import 'cmps/Users';
+@import 'cmps/User-edit';
+@import 'cmps/UserAdd';
 @import 'cmps/Main-dashboard';
 @import 'cmps/Worker-dashboard';
 @import 'cmps/Admin-dashboard';
 @import 'cmps/LoginForm';
 @import 'cmps/RoleIndex';
 @import 'cmps/RoleAdd';
-@import 'cmps/User-edit';
 @import 'cmps/Crop-index';
 @import 'cmps/Crop-details';
 @import 'cmps/Crop-add';
@@ -80,3 +74,4 @@
 @import 'cmps/CropSeasonSummary';
 @import 'cmps/WeatherSimulation';
 @import 'cmps/WeatherSimulationResult';
+@import 'cmps/ResponsiveTable';

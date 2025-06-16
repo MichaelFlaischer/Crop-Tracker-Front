@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { fieldService } from '../services/field.service.js'
 import { sowingAndHarvestService } from '../services/sowing-and-harvest.service.js'
 import { cropService } from '../services/crop.service.js'
@@ -10,6 +11,7 @@ export function WeatherForecast() {
   const [isLoading, setIsLoading] = useState(true)
   const [existingTasks, setExistingTasks] = useState([])
   const [openFieldIds, setOpenFieldIds] = useState([])
+  const navigate = useNavigate()
 
   const toggleFieldOpen = (fieldId) => {
     setOpenFieldIds((prevOpen) => (prevOpen.includes(fieldId) ? prevOpen.filter((id) => id !== fieldId) : [...prevOpen, fieldId]))
@@ -60,6 +62,8 @@ export function WeatherForecast() {
               const crop = record ? crops.find((c) => c._id.toString() === record.cropId.toString()) : null
               const forecast = await getForecastByCoords(field.location.lat, field.location.lng)
 
+              if (!forecast?.list) return null
+
               const groupedByDay = {}
               forecast.list.forEach((entry) => {
                 const rawDate = new Date(entry.dt * 1000)
@@ -93,38 +97,23 @@ export function WeatherForecast() {
                   const isTooHot = tempAvg > crop.maxTemp
                   const isTooCold = tempAvg < crop.minTemp
 
-                  if (isTooDry) {
-                    recommendations.push('💧 יש להגביר השקיה')
-                  }
-
+                  if (isTooDry) recommendations.push('💧 יש להגביר השקיה')
                   if (isTooHumid) {
                     recommendations.push('🚱 יש להפחית השקיה')
                     recommendations.push('💦 יש לנקז מים')
                   }
-
                   if (isTooHot && !isTooHumid) {
-                    // רק אם לא לח מדי, יש הצדקה להשקות יותר
                     recommendations.push('🌡️ שקול הצללה זמנית')
                     recommendations.push('💦 השקיה מרובה בשעות החום')
                   }
-
-                  if (isTooCold) {
-                    recommendations.push('❄️ שקול הגנה תרמית לצמח')
-                  }
-
+                  if (isTooCold) recommendations.push('❄️ שקול הגנה תרמית לצמח')
                   if (windAvg > 8) {
                     recommendations.push('💨 שקול אמצעים לשבירת רוח')
                     recommendations.push('🌬️ שקול הפחתת ריסוס למניעת התנדפות')
                     recommendations.push('💨 שקול חיזוק מבני תמיכה בצמחים')
                   }
-
-                  if (cloudsAvg > 70) {
-                    recommendations.push('☁️ שקול שימוש בדשנים מעודדי פוטוסינתזה')
-                  }
-
-                  if (rain > 10) {
-                    recommendations.push('🌧️ הכן ניקוז נאות למניעת עודף מים')
-                  }
+                  if (cloudsAvg > 70) recommendations.push('☁️ שקול שימוש בדשנים מעודדי פוטוסינתזה')
+                  if (rain > 10) recommendations.push('🌧️ הכן ניקוז נאות למניעת עודף מים')
                 }
 
                 return {
@@ -149,7 +138,7 @@ export function WeatherForecast() {
             })
         )
 
-        setForecastData(activeForecasts)
+        setForecastData(activeForecasts.filter(Boolean))
       } catch (err) {
         console.error('שגיאה בטעינת תחזית:', err)
       } finally {
@@ -176,81 +165,142 @@ export function WeatherForecast() {
               <p>
                 🌾 גידול נוכחי: <strong>{field.cropName}</strong>
               </p>
-              <table className='forecast-table'>
-                <thead>
-                  <tr>
-                    <th>תאריך</th>
-                    <th>טמפ׳ ממוצעת</th>
-                    <th>לחות ממוצעת</th>
-                    <th>רוח ממוצעת</th>
-                    <th>עננות</th>
-                    <th>גשם מצטבר</th>
-                    <th>התאמה</th>
-                    <th>המלצות</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {field.summary.map((day) => (
-                    <tr key={day.date}>
-                      <td>{formatDateForDisplay(day.date)}</td>
-                      <td>{day.tempAvg}°C</td>
-                      <td>{day.humidityAvg}%</td>
-                      <td>{day.windAvg} מ"ש</td>
-                      <td>{day.cloudsAvg}%</td>
-                      <td>{day.totalRain} מ"מ</td>
-                      <td className={day.suitable ? 'suitable' : 'not-suitable'}>{day.suitable ? '✅ מתאים' : '⚠️ לא מתאים'}</td>
-                      <td>
-                        <ul className='recommendation-list'>
-                          {day.recommendations.map((rec, idx) => {
-                            const taskExists = existingTasks.some((task) => task.fieldId === field.fieldId && task.startDate === day.date)
 
-                            const operationId = operationMap[rec]
-                            return (
-                              <li key={idx}>
-                                {rec}
-                                {!taskExists ? (
-                                  <button
-                                    className='create-task-btn'
-                                    onClick={async () => {
-                                      const taskToAdd = {
-                                        taskDescription: rec,
-                                        fieldId: field.fieldId,
-                                        operationId,
-                                        startDate: day.date,
-                                        endDate: day.date,
-                                        startTime: '08:00',
-                                        endTime: '17:00',
-                                        requiredEmployees: 1,
-                                        status: 'pending',
-                                        comments: '',
-                                        notes: 'המשימה נוצרה באמצעות המלצה על פי תחזית',
-                                      }
-
-                                      try {
-                                        const newTask = await taskService.add(taskToAdd)
-                                        if (newTask && newTask._id) {
-                                          window.location.href = `/tasks/${newTask._id}`
-                                        }
-                                      } catch (err) {
-                                        alert('שגיאה ביצירת המשימה')
-                                        console.error(err)
-                                      }
-                                    }}
-                                  >
-                                    צור משימה
-                                  </button>
-                                ) : (
-                                  <span className='task-exists'>📝 קיימת משימה</span>
-                                )}
-                              </li>
-                            )
-                          })}
-                        </ul>
-                      </td>
+              <div className='desktop-table'>
+                <table className='forecast-table'>
+                  <thead>
+                    <tr>
+                      <th>תאריך</th>
+                      <th>טמפ׳ ממוצעת</th>
+                      <th>לחות ממוצעת</th>
+                      <th>רוח ממוצעת</th>
+                      <th>עננות</th>
+                      <th>גשם מצטבר</th>
+                      <th>התאמה</th>
+                      <th>המלצות</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {field.summary.map((day) => (
+                      <tr key={day.date}>
+                        <td>{formatDateForDisplay(day.date)}</td>
+                        <td>{day.tempAvg}°C</td>
+                        <td>{day.humidityAvg}%</td>
+                        <td>{day.windAvg} מ"ש</td>
+                        <td>{day.cloudsAvg}%</td>
+                        <td>{day.totalRain} מ"מ</td>
+                        <td className={day.suitable ? 'suitable' : 'not-suitable'}>{day.suitable ? '✅ מתאים' : '⚠️ לא מתאים'}</td>
+                        <td>
+                          <ul className='recommendation-list'>
+                            {day.recommendations.map((rec, idx) => {
+                              const taskExists = existingTasks.some((task) => task.fieldId === field.fieldId && task.startDate === day.date)
+                              const operationId = operationMap[rec]
+
+                              return (
+                                <li key={idx}>
+                                  {rec}
+                                  {!taskExists ? (
+                                    <button
+                                      className='create-task-btn'
+                                      onClick={async () => {
+                                        const taskToAdd = {
+                                          taskDescription: rec,
+                                          fieldId: field.fieldId,
+                                          operationId,
+                                          startDate: day.date,
+                                          endDate: day.date,
+                                          startTime: '08:00',
+                                          endTime: '17:00',
+                                          requiredEmployees: 1,
+                                          status: 'pending',
+                                          comments: '',
+                                          notes: 'המשימה נוצרה באמצעות המלצה על פי תחזית',
+                                        }
+
+                                        try {
+                                          const newTask = await taskService.add(taskToAdd)
+                                          if (newTask && newTask._id) {
+                                            navigate(`/tasks/${newTask._id}`)
+                                          }
+                                        } catch (err) {
+                                          alert('שגיאה ביצירת המשימה')
+                                        }
+                                      }}
+                                    >
+                                      צור משימה
+                                    </button>
+                                  ) : (
+                                    <span className='task-exists'>📝 קיימת משימה</span>
+                                  )}
+                                </li>
+                              )
+                            })}
+                          </ul>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className='mobile-cards'>
+                {field.summary.map((day) => (
+                  <div className='forecast-card' key={day.date}>
+                    <h4>📅 {formatDateForDisplay(day.date)}</h4>
+                    <p>🌡️ טמפ׳ ממוצעת: {day.tempAvg}°C</p>
+                    <p>💧 לחות ממוצעת: {day.humidityAvg}%</p>
+                    <p>💨 רוח: {day.windAvg} מ"ש</p>
+                    <p>☁️ עננות: {day.cloudsAvg}%</p>
+                    <p>🌧️ גשם מצטבר: {day.totalRain} מ"מ</p>
+                    <p className={day.suitable ? 'suitable' : 'not-suitable'}>{day.suitable ? '✅ מתאים' : '⚠️ לא מתאים'}</p>
+                    <ul className='recommendation-list'>
+                      {day.recommendations.map((rec, idx) => {
+                        const taskExists = existingTasks.some((task) => task.fieldId === field.fieldId && task.startDate === day.date)
+                        const operationId = operationMap[rec]
+
+                        return (
+                          <li key={idx}>
+                            {rec}
+                            {!taskExists ? (
+                              <button
+                                className='create-task-btn'
+                                onClick={async () => {
+                                  const taskToAdd = {
+                                    taskDescription: rec,
+                                    fieldId: field.fieldId,
+                                    operationId,
+                                    startDate: day.date,
+                                    endDate: day.date,
+                                    startTime: '08:00',
+                                    endTime: '17:00',
+                                    requiredEmployees: 1,
+                                    status: 'pending',
+                                    comments: '',
+                                    notes: 'המשימה נוצרה באמצעות המלצה על פי תחזית',
+                                  }
+
+                                  try {
+                                    const newTask = await taskService.add(taskToAdd)
+                                    if (newTask && newTask._id) {
+                                      navigate(`/tasks/${newTask._id}`)
+                                    }
+                                  } catch (err) {
+                                    alert('שגיאה ביצירת המשימה')
+                                  }
+                                }}
+                              >
+                                צור משימה
+                              </button>
+                            ) : (
+                              <span className='task-exists'>📝 קיימת משימה</span>
+                            )}
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

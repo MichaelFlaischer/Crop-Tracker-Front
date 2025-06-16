@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { clientService } from '../services/client.service.js'
+import { ResponsiveTable } from '../cmps/ResponsiveTable.jsx'
 
 export function ClientIndex() {
   const [clients, setClients] = useState([])
@@ -80,52 +81,47 @@ export function ClientIndex() {
     <section className='client-index'>
       <div className='header-bar'>
         <h1>רשימת לקוחות</h1>
-        <button className='add-btn' onClick={() => navigate('/client/add')}>
-          ➕ הוספת לקוח חדש
+        <button className='btn btn-primary' onClick={() => navigate('/client/add')}>
+          ➕ הוספת לקוח
         </button>
       </div>
-      <div className='filter-bar'>
-        <input type='text' name='name' placeholder='סינון לפי שם לקוח' value={filterBy.name} onChange={handleFilterChange} />
-        <input type='text' name='contact' placeholder='סינון לפי איש קשר' value={filterBy.contact} onChange={handleFilterChange} />
-        <select name='sort' value={filterBy.sort} onChange={handleFilterChange}>
-          <option value=''>מיון לפי</option>
-          <option value='name'>שם לקוח</option>
-          <option value='phone'>טלפון</option>
-          <option value='email'>אימייל</option>
-        </select>
-        <button onClick={clearFilters}>איפוס</button>
-      </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th>שם לקוח</th>
-            <th>איש קשר</th>
-            <th>טלפון</th>
-            <th>אימייל</th>
-            <th>כתובת</th>
-            <th>הערות</th>
-            <th>פעולות</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredClients.map((client) => (
-            <tr key={client._id}>
-              <td>{client.customerName}</td>
-              <td>{client.contactPerson}</td>
-              <td>{client.phoneNumber}</td>
-              <td>{client.email}</td>
-              <td>{client.address}</td>
-              <td>{client.notes}</td>
-              <td>
-                <button onClick={() => onViewOrders(client._id)}>📦 צפייה בהזמנות</button>
-                <button onClick={() => onEdit(client._id)}>✏️ עריכה</button>
-                <button onClick={() => onRemove(client._id)}>🗑️ מחיקה</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <ResponsiveTable
+        columns={[
+          { key: 'customerName', label: 'שם לקוח' },
+          { key: 'contactPerson', label: 'איש קשר' },
+          { key: 'phoneNumber', label: 'טלפון ליצירת קשר' },
+          { key: 'email', label: 'אימייל' },
+          { key: 'address', label: 'כתובת' },
+          { key: 'notes', label: 'הערות' },
+        ]}
+        data={filteredClients}
+        filterBy={filterBy}
+        onFilterChange={handleFilterChange}
+        onClearFilters={clearFilters}
+        filterFields={[
+          { name: 'name', label: 'שם לקוח', type: 'text' },
+          { name: 'contact', label: 'איש קשר', type: 'text' },
+        ]}
+        sortOptions={[
+          { value: 'name', label: 'שם לקוח' },
+          { value: 'phone', label: 'טלפון' },
+          { value: 'email', label: 'אימייל' },
+        ]}
+        renderActions={(client) => (
+          <>
+            <button className='btn btn-view' onClick={() => onViewOrders(client._id)}>
+              📦 הזמנות
+            </button>
+            <button className='btn btn-edit' onClick={() => onEdit(client._id)}>
+              ✏️ עריכה
+            </button>
+            <button className='btn btn-delete' onClick={() => onRemove(client._id)}>
+              🗑️ מחיקה
+            </button>
+          </>
+        )}
+      />
     </section>
   )
 }

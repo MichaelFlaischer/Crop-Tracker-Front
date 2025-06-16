@@ -20,7 +20,7 @@ export function RoleEdit() {
         IsAdmin: fetchedRole.IsAdmin === true || fetchedRole.IsAdmin === 'true',
       })
     } catch (err) {
-      showErrorMsg('שגיאה בטעינת התפקיד')
+      showErrorMsg('שגיאה בטעינת פרטי התפקיד')
     }
   }
 
@@ -41,33 +41,37 @@ export function RoleEdit() {
     }
   }
 
-  if (!role) return <p>טוען...</p>
+  if (!role) return <p>טוען נתונים...</p>
 
   return (
     <section className='role-edit main-layout'>
-      <h2>עריכת תפקיד</h2>
+      <h1>✏️ עריכת תפקיד במערכת</h1>
+      <p className='page-description'>
+        כאן ניתן לערוך את שם התפקיד, התיאור שלו, ולהגדיר האם מדובר בתפקיד עם הרשאות מנהל מערכת (גישה מלאה לכל הפונקציות והדוחות).
+      </p>
+
       <form onSubmit={onSave} className='role-form'>
         <label>
-          שם התפקיד:
-          <input type='text' name='RoleName' value={role.RoleName} onChange={handleChange} required />
+          שם התפקיד *<br />
+          <input type='text' name='RoleName' value={role.RoleName} onChange={handleChange} required placeholder='לדוג׳: מנהל רכש, עובד מחסן' />
         </label>
 
         <label>
-          תיאור:
-          <textarea name='Description' value={role.Description} onChange={handleChange} />
+          תיאור התפקיד <br />
+          <textarea name='Description' value={role.Description} onChange={handleChange} placeholder='תיאור קצר של תחומי האחריות של התפקיד' />
         </label>
 
         <label className='checkbox-label'>
           <input type='checkbox' name='IsAdmin' checked={role.IsAdmin} onChange={handleChange} />
-          תפקיד זה מוגדר כאדמין
+          תפקיד זה מעניק הרשאות מנהל מערכת (גישה מלאה לכל המודולים)
         </label>
 
         <div className='form-actions'>
           <button type='submit' className='btn'>
-            שמור
+            💾 שמור שינויים
           </button>
           <button type='button' className='btn cancel-btn' onClick={() => navigate('/roles')}>
-            ביטול
+            ❌ ביטול
           </button>
         </div>
       </form>

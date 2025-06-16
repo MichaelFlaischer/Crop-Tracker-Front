@@ -138,14 +138,15 @@ export function OrderEdit() {
 
   return (
     <section className='order-edit'>
-      <h1>✏️ עריכת הזמנה #{orderId}</h1>
+      <h1>✏️ עריכת הזמנה במערכת Crop-Tracker #{orderId}</h1>
+      <p className='form-note'>כאן תוכל לעדכן את פרטי ההזמנה שנבחרה כולל פריטים, תאריך הספקה והערות.</p>
 
       <form onSubmit={onSave}>
         <div className='form-grid'>
           <label>
-            לקוח:
+            לקוח *:
             <select value={order.customerId} onChange={(e) => handleChange('customerId', e.target.value)} required>
-              <option value=''>בחר לקוח</option>
+              <option value=''>בחר לקוח מהרשימה</option>
               {clients.map((c) => (
                 <option key={c._id} value={c._id}>
                   {c.customerName}
@@ -155,7 +156,7 @@ export function OrderEdit() {
           </label>
 
           <label>
-            תאריך הספקה רצוי:
+            תאריך הספקה רצוי *:
             <DatePicker
               selected={order.desiredDeliveryDate ? new Date(order.desiredDeliveryDate) : null}
               onChange={(date) => {
@@ -163,20 +164,21 @@ export function OrderEdit() {
                 handleChange('desiredDeliveryDate', iso)
               }}
               dateFormat='dd/MM/yyyy'
-              placeholderText='בחר תאריך'
+              placeholderText='בחר תאריך (יום/חודש/שנה)'
               locale='he'
               className='custom-datepicker'
             />
           </label>
 
           <label style={{ flex: '1 1 100%' }}>
-            הערות להזמנה:
-            <textarea value={order.notes || ''} onChange={(e) => handleChange('notes', e.target.value)} placeholder='הערות להזמנה' />
+            הערות להזמנה (לא חובה):
+            <textarea value={order.notes || ''} onChange={(e) => handleChange('notes', e.target.value)} placeholder='הערות להזמנה' rows='3' />
           </label>
         </div>
 
         {selectedClient && (
           <div className='client-info'>
+            <h4>🧑‍💼 פרטי לקוח:</h4>
             <div>
               <strong>איש קשר:</strong> {selectedClient.contactPerson}
             </div>
@@ -189,29 +191,44 @@ export function OrderEdit() {
           </div>
         )}
 
-        <h3>פריטים:</h3>
+        <h3>📝 פרטי פריטים להזמנה:</h3>
+        <p className='form-note'>עדכן את פרטי הפריטים הכלולים בהזמנה (יבול, כמות ומחיר).</p>
+
         {items.map((item, idx) => {
           const stats = cropStats[item.cropId]
           return (
             <div key={idx} className='item-row'>
-              <select value={item.cropId} onChange={(e) => handleItemChange(idx, 'cropId', e.target.value)} required>
-                <option value=''>בחר יבול</option>
-                {crops.map((c) => (
-                  <option key={c._id} value={c._id}>
-                    {c.cropName}
-                  </option>
-                ))}
-              </select>
-              <input type='number' placeholder='כמות' value={item.quantity} onChange={(e) => handleItemChange(idx, 'quantity', +e.target.value)} required />
-              <input type='number' placeholder='מחיר' value={item.price} onChange={(e) => handleItemChange(idx, 'price', +e.target.value)} required />
+              <label>
+                יבול:
+                <select value={item.cropId} onChange={(e) => handleItemChange(idx, 'cropId', e.target.value)} required>
+                  <option value=''>בחר יבול</option>
+                  {crops.map((c) => (
+                    <option key={c._id} value={c._id}>
+                      {c.cropName}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label>
+                כמות (ק״ג):
+                <input type='number' value={item.quantity} onChange={(e) => handleItemChange(idx, 'quantity', e.target.value)} required />
+              </label>
+
+              <label>
+                מחיר ליח׳ (₪):
+                <input type='number' value={item.price} onChange={(e) => handleItemChange(idx, 'price', e.target.value)} required />
+              </label>
+
               <button type='button' onClick={() => removeItemRow(idx)}>
-                ❌
+                ❌ הסר פריט
               </button>
+
               {stats && (
                 <div className='crop-info'>
-                  <div className='inventory-total'>סה״כ במחסנים: {stats.totalInWarehouses}</div>
-                  <div className='reserved'>שובץ להזמנות: {stats.reservedInOrders}</div>
-                  <div className='available'>זמין לשיבוץ: {stats.available}</div>
+                  <div className='inventory-total'>סה״כ במלאי במחסנים: {stats.totalInWarehouses} ק״ג</div>
+                  <div className='reserved'>כמות משוריינת להזמנות קיימות: {stats.reservedInOrders} ק״ג</div>
+                  <div className='available'>כמות זמינה לשיבוץ: {stats.available} ק״ג</div>
                 </div>
               )}
             </div>
@@ -219,17 +236,17 @@ export function OrderEdit() {
         })}
 
         <button type='button' onClick={addItemRow}>
-          ➕ הוסף פריט
+          ➕ הוסף פריט להזמנה
         </button>
 
         <div className='summary'>
-          <strong>סה״כ: {calcTotal().toFixed(2)} ₪</strong>
+          <strong>סה״כ עלות הזמנה: {calcTotal().toFixed(2)} ₪</strong>
         </div>
 
         <div className='actions'>
-          <button type='submit'>💾 שמור</button>
+          <button type='submit'>💾 שמירת שינויים להזמנה</button>
           <button type='button' onClick={() => navigate('/orders/view')}>
-            ביטול
+            ביטול וחזרה לרשימת ההזמנות
           </button>
         </div>
       </form>

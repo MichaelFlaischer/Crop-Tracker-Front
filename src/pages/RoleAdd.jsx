@@ -22,7 +22,7 @@ export function RoleAdd() {
       await roleService.save(role)
       navigate('/roles')
     } catch (err) {
-      console.error('Error saving role:', err)
+      console.error('שגיאה בשמירת תפקיד:', err)
     }
   }
 
@@ -31,26 +31,30 @@ export function RoleAdd() {
   }
 
   return (
-    <section className='role-add'>
-      <h1>הוספת תפקיד חדש</h1>
-      <form onSubmit={onSaveRole}>
+    <section className='role-add main-layout'>
+      <h1>➕ הוספת תפקיד חדש למערכת</h1>
+      <p className='page-description'>
+        כאן ניתן להגדיר תפקיד חדש עבור משתמשים במערכת. ניתן לציין שם תפקיד, תיאור, ולהחליט האם מדובר בתפקיד עם הרשאות מנהל מערכת.
+      </p>
+
+      <form onSubmit={onSaveRole} className='form'>
         <label>
-          שם התפקיד:
-          <input type='text' name='name' value={role.name} onChange={handleChange} required />
+          שם התפקיד *<br />
+          <input type='text' name='name' value={role.name} onChange={handleChange} required placeholder='לדוג׳: מנהל לוגיסטיקה, עובד שדה' />
         </label>
 
         <label>
-          תיאור:
-          <textarea name='description' value={role.description} onChange={handleChange} />
+          תיאור התפקיד <br />
+          <textarea name='description' value={role.description} onChange={handleChange} placeholder='תיאור קצר של תחומי האחריות של התפקיד' />
         </label>
 
         <label className='checkbox-label'>
           <input type='checkbox' name='isAdmin' checked={role.isAdmin} onChange={handleChange} />
-          תפקיד זה מוגדר כמנהל
+          תפקיד זה מעניק הרשאות מנהל מערכת (גישה מלאה לכל הפונקציות והדוחות)
         </label>
 
         <div className='form-actions'>
-          <button type='submit'>💾 שמור</button>
+          <button type='submit'>💾 שמירה</button>
           <button type='button' onClick={onCancel}>
             ❌ ביטול
           </button>

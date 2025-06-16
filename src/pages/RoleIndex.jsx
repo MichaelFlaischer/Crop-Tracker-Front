@@ -17,18 +17,19 @@ export function RoleIndex() {
       const roles = await roleService.query()
       setRoles(roles)
     } catch (err) {
-      console.error('Failed to load roles', err)
-      showErrorMsg('אירעה שגיאה בטעינת התפקידים')
+      console.error('שגיאה בטעינת התפקידים:', err)
+      showErrorMsg('אירעה שגיאה בטעינת רשימת התפקידים')
     }
   }
 
   async function onRemoveRole(roleId) {
+    if (!window.confirm('האם אתה בטוח שברצונך למחוק את התפקיד? פעולה זו אינה ניתנת לשחזור.')) return
     try {
       await roleService.remove(roleId)
       showSuccessMsg('התפקיד נמחק בהצלחה')
       loadRoles()
     } catch (err) {
-      console.error('Failed to remove role', err)
+      console.error('שגיאה במחיקת התפקיד:', err)
       showErrorMsg('אירעה שגיאה במחיקת התפקיד')
     }
   }
@@ -38,14 +39,15 @@ export function RoleIndex() {
   }
 
   return (
-    <section className='role-index'>
-      <h1>ניהול תפקידים</h1>
+    <section className='role-index main-layout'>
+      <h1>📋 ניהול תפקידים במערכת</h1>
+      <div className='page-description'>במסך זה ניתן להוסיף, לערוך ולמחוק תפקידים במערכת. כל תפקיד מגדיר את סוג הגישה וההרשאות עבור המשתמשים שיקושרו אליו.</div>
 
       <Link to='/roles/add'>
-        <button className='add-role-btn'>➕ הוסף תפקיד</button>
+        <button className='add-role-btn'>➕ הוסף תפקיד חדש</button>
       </Link>
 
-      <RoleList roles={roles} onRemoveRole={onRemoveRole} onEditRole={onEditRole} />
+      {roles.length === 0 ? <p>לא קיימים תפקידים במערכת.</p> : <RoleList roles={roles} onRemoveRole={onRemoveRole} onEditRole={onEditRole} />}
     </section>
   )
 }

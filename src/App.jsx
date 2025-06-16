@@ -68,7 +68,6 @@ import { OrderAdd } from './pages/OrderAdd'
 import { OrderDetails } from './pages/OrderDetails'
 import { OrderEdit } from './pages/OrderEdit'
 import { OrderUpdateQty } from './pages/OrderUpdateQty'
-import { DeliveryAssign } from './pages/DeliveryAssign'
 
 // Reports
 import { ReportIndex } from './pages/ReportIndex'
@@ -112,7 +111,7 @@ export function App() {
               {/* Users & Roles */}
               <Route path='/user' element={<UserIndex />} />
               <Route path='/user/edit/:userId?' element={<UserEdit />} />
-              <Route path='/users/add' element={<UserAdd />} />
+              <Route path='/user/add' element={<UserAdd />} />
               <Route path='/roles' element={<RoleIndex />} />
               <Route path='/roles/add' element={<RoleAdd />} />
               <Route path='/roles/edit/:roleId' element={<RoleEdit />} />

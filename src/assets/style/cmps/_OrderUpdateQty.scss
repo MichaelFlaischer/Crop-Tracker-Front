@@ -44,6 +44,12 @@
     }
   }
 
+  .summary {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+  }
+
   .assignment-row {
     display: flex;
     align-items: center;
@@ -78,28 +84,18 @@
     border-radius: 4px;
     font-weight: bold;
     cursor: pointer;
+    background-color: #2196f3;
+    color: white;
+    font-size: 1rem;
 
-    &.approve-btn {
-      background-color: #4caf50;
-      color: white;
-
-      &:hover {
-        background-color: #388e3c;
-      }
-    }
-
-    &.cancel-btn {
-      background-color: #9e9e9e;
-      color: white;
-
-      &:hover {
-        background-color: #757575;
-      }
+    &:hover {
+      background-color: #1976d2;
     }
   }
 
   .delivery-date {
     margin-top: 1.5rem;
+
     label {
       font-weight: bold;
 
@@ -116,5 +112,42 @@
     display: flex;
     gap: 1rem;
     margin-top: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    table,
+    thead,
+    tbody,
+    th,
+    td,
+    tr {
+      display: block;
+    }
+
+    thead {
+      display: none;
+    }
+
+    tr {
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      background-color: #fff;
+      overflow: hidden;
+    }
+
+    td {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem;
+      border-bottom: 1px solid #eee;
+      font-size: 0.9rem;
+    }
+
+    td::before {
+      content: attr(data-label);
+      font-weight: bold;
+    }
   }
 }

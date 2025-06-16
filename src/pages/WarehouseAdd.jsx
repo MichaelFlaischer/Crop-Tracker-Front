@@ -26,7 +26,7 @@ const warehouseSchema = yup.object().shape({
       lng: yup.number().required(),
     }),
   }),
-  capacity: yup.number().required('יש להזין קיבולת').positive('הקיבולת חייבת להיות מספר חיובי'),
+  capacity: yup.number().required('יש להזין קיבולת').min(0, 'הקיבולת חייבת להיות 0 או מספר חיובי'),
   notes: yup.string(),
 })
 

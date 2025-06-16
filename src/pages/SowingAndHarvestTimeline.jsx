@@ -174,10 +174,11 @@ export function SowingAndHarvestTimeline() {
         {groupRecords.map((record, idx) => (
           <details key={idx} className='record-details'>
             <summary className='record-summary'>
-              שדה: {record.fieldName} | יבול: {record.cropName} | תאריך זריעה: {new Date(record.sowingDate).toLocaleDateString('he-IL')} | סטטוס:{' '}
+              חלקה: {record.fieldName} | יבול: {record.cropName} | תאריך זריעה: {new Date(record.sowingDate).toLocaleDateString('he-IL')} | סטטוס:{' '}
               {record.isActive ? 'פעיל' : 'לא פעיל'}
             </summary>
 
+            <p>חלקה: {record.fieldName}</p>
             <p>תאריך זריעה: {new Date(record.sowingDate).toLocaleDateString('he-IL')}</p>
             <p>תאריך קציר: {record.harvestDate ? new Date(record.harvestDate).toLocaleDateString('he-IL') : 'טרם נקצר באופן מלא'}</p>
 
@@ -194,8 +195,8 @@ export function SowingAndHarvestTimeline() {
   return (
     <section className='sowing-harvest-timeline'>
       <h2 className='page-title'>לוח פעילות חקלאית</h2>
-      {renderGroup('🟢 שדות פעילים', activeRecords)}
-      {renderGroup('🔴 שדות לא פעילים', inactiveRecords)}
+      {renderGroup('🟢 חלקות פעילות', activeRecords)}
+      {renderGroup('🔴 חלקות לא פעילות', inactiveRecords)}
     </section>
   )
 }

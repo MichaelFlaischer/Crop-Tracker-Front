@@ -13,7 +13,7 @@ const DELIVERY_TASK_OPERATION_ID = '68354fa1d29fa199e95c04d8'
 
 const schema = yup.object().shape({
   taskDescription: yup.string().required('יש להזין תיאור פעולה'),
-  fieldId: yup.string().required('יש לבחור שדה'),
+  fieldId: yup.string().required('יש לבחור חלקה'),
   operationId: yup.string().required('יש לבחור פעולה'),
   startDate: yup.date().required('יש להזין תאריך התחלה'),
   endDate: yup.date().min(yup.ref('startDate'), 'תאריך הסיום חייב להיות אחרי ההתחלה').required('יש להזין תאריך סיום'),
@@ -48,8 +48,8 @@ export function TaskAdd() {
       setFields(fields)
       setOperations(operations)
     } catch (err) {
-      console.error('שגיאה בטעינת שדות/פעולות:', err)
-      showErrorMsg('שגיאה בטעינת שדות או פעולות')
+      console.error('שגיאה בטעינת חלקות/פעולות:', err)
+      showErrorMsg('שגיאה בטעינת חלקות או פעולות')
     }
   }
 
@@ -75,9 +75,9 @@ export function TaskAdd() {
         </label>
 
         <label>
-          שדה
+          חלקה
           <select {...register('fieldId')}>
-            <option value=''>בחר שדה</option>
+            <option value=''>בחר חלקה</option>
             {fields.map((f) => (
               <option key={f._id} value={f._id}>
                 {f.fieldName}

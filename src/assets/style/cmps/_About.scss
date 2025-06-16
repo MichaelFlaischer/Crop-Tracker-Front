@@ -7,6 +7,8 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
   color: #333;
+  background-color: #f9f9f9;
+  border-radius: 10px;
 
   h2 {
     font-size: 2.2em;
@@ -21,22 +23,24 @@
     font-size: 1.5em;
     color: #388e3c;
     margin-top: 2em;
-    margin-bottom: 0.5em;
+    margin-bottom: 0.6em;
+    border-bottom: 1px solid #c8e6c9;
+    padding-bottom: 0.2em;
   }
 
   p {
-    margin-bottom: 1em;
+    margin-bottom: 1.2em;
     font-size: 1.1em;
   }
 
   ul {
-    padding-right: 1.5em;
+    list-style: none;
+    padding-right: 0;
     margin-bottom: 1.5em;
 
     li {
-      margin-bottom: 0.5em;
+      margin-bottom: 0.6em;
       font-size: 1.05em;
-      list-style-type: disc;
       direction: rtl;
       unicode-bidi: plaintext;
     }
@@ -59,17 +63,35 @@
     margin-inline-start: 0.3em;
   }
 
+  @media (max-width: 900px) {
+    .about {
+      padding: 1.5em 1em;
+    }
+
+    .about h2 {
+      font-size: 1.8em;
+    }
+
+    .about h3 {
+      font-size: 1.4em;
+    }
+  }
+
   @media (max-width: 600px) {
-    h2 {
-      font-size: 1.7em;
+    .about {
+      padding: 1em 0.5em;
     }
 
-    h3 {
-      font-size: 1.3em;
+    .about h2 {
+      font-size: 1.6em;
     }
 
-    p,
-    li {
+    .about h3 {
+      font-size: 1.2em;
+    }
+
+    .about p,
+    .about li {
       font-size: 1em;
     }
   }

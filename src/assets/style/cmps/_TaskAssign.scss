@@ -1,19 +1,33 @@
 .task-assign {
   padding: 2rem;
+  max-width: 1300px;
+  margin: auto;
 
   h1 {
-    font-size: 2.2rem;
-    margin-bottom: 1.5rem;
+    font-size: 2.4rem;
+    margin-bottom: 2rem;
+    text-align: center;
     color: #2c3e50;
   }
 
   h2 {
-    font-size: 1.5rem;
-    margin-top: 2rem;
+    font-size: 1.8rem;
+    margin-top: 3rem;
     margin-bottom: 1rem;
     color: #34495e;
-    border-bottom: 2px solid #ddd;
-    padding-bottom: 0.4rem;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 0.5rem;
+  }
+
+  h3 {
+    font-size: 1.4rem;
+    margin: 1.5rem 0 1rem;
+    color: #3f51b5;
+  }
+
+  .table-container {
+    overflow-x: auto;
+    margin-bottom: 2rem;
   }
 
   .my-task-table {
@@ -22,31 +36,29 @@
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 8px;
-    overflow: hidden;
-    margin-bottom: 2rem;
+    min-width: 900px;
 
     th,
     td {
       padding: 0.8rem 1rem;
       text-align: center;
-      border: 1px solid #e1e4e8;
+      border: 1px solid #e0e0e0;
       font-size: 0.95rem;
+      white-space: nowrap;
     }
 
     th {
-      background-color: #f9f9f9;
-      font-weight: bold;
+      background-color: #f1f1f1;
+      font-weight: 600;
       color: #333;
     }
 
     tr:hover {
-      background-color: #f4f6f8;
+      background-color: #f9f9f9;
     }
 
     .status-row {
-      &.done {
-        background-color: #e8f5e9;
-      }
+      &.done,
       &.completed {
         background-color: #e8f5e9;
       }
@@ -56,14 +68,13 @@
       }
     }
 
-    input[type='text'],
     select,
-    textarea {
-      padding: 0.4rem 0.6rem;
-      border: 1px solid #ccc;
+    input[type='text'] {
+      padding: 0.4rem;
       border-radius: 4px;
       font-size: 0.9rem;
       width: 100%;
+      border: 1px solid #ccc;
       transition: border-color 0.2s;
 
       &:focus {
@@ -80,7 +91,7 @@
       border: none;
       border-radius: 4px;
       cursor: pointer;
-      transition: background-color 0.2s ease-in-out;
+      margin: 0 2px;
 
       &:hover {
         background-color: #388e3c;
@@ -104,74 +115,28 @@
     }
   }
 
-  .form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    padding: 2rem;
-    border-radius: 8px;
-    max-width: 600px;
-    margin: auto;
-
-    label {
-      display: flex;
-      flex-direction: column;
-      font-weight: bold;
-      color: #2c3e50;
-
-      input,
-      select,
-      textarea {
-        margin-top: 0.5rem;
-      }
-    }
-
-    .error {
-      color: #e53935;
-      font-size: 0.85rem;
-      margin-top: 0.2rem;
-    }
-
-    .actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      margin-top: 1rem;
-
-      button {
-        padding: 0.6rem 1.2rem;
-        font-size: 1rem;
-        font-weight: bold;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-
-        &:first-child {
-          background-color: #4caf50;
-          color: white;
-        }
-
-        &.btn-cancel {
-          background-color: #f44336;
-          color: white;
-        }
-      }
-    }
-  }
-
   p {
     font-size: 1rem;
-    color: #666;
-    margin: 1rem 0;
+    color: #777;
+    margin: 0.5rem 0 2rem;
   }
 
-  .my-task-table td:last-child button {
-    white-space: nowrap;
-  }
+  @media (max-width: 768px) {
+    .my-task-table {
+      font-size: 0.85rem;
 
-  .my-task-table td button {
-    min-width: 90px;
+      th,
+      td {
+        padding: 0.5rem;
+      }
+    }
+
+    h1 {
+      font-size: 1.8rem;
+    }
+
+    h2 {
+      font-size: 1.3rem;
+    }
   }
 }

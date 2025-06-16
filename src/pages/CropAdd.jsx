@@ -20,6 +20,7 @@ const schema = yup.object().shape({
   maxHumidity: yup.number().required().moreThan(yup.ref('minHumidity'), 'לחות מקס׳ צריכה להיות גדולה מהמינ׳'),
   minRainfall: yup.number().required(),
   maxRainfall: yup.number().required().moreThan(yup.ref('minRainfall'), 'ערך מקס׳ צריך להיות גדול מהמינ׳'),
+  minSunlightHours: yup.number().required('יש להזין מינימום שעות אור').min(0, 'חייב להיות 0 ומעלה'),
   preferredSeasonId: yup.string().required('יש לבחור עונה מועדפת'),
   isSensitiveToRain: yup.boolean().required(),
   waterRecommendation: yup.number().nullable(),
@@ -162,7 +163,7 @@ export function CropAdd() {
 
   return (
     <section className='crop-add main-layout'>
-      <h1>הוספת יבול חדש</h1>
+      <h1>הוספת יבול</h1>
       <form onSubmit={handleSubmit(onSubmit)} className='form'>
         <label>שם היבול *</label>
         <input type='text' {...register('cropName')} />
@@ -174,6 +175,10 @@ export function CropAdd() {
         <label>⏳ זמן גדילה (ימים) *</label>
         <input type='number' {...register('growthTime')} />
         {errors.growthTime && <span className='error'>{errors.growthTime.message}</span>}
+
+        <label>🌞 מינימום שעות אור (שעות ביום)</label>
+        <input type='number' min='0' step='0.1' {...register('minSunlightHours')} />
+        {errors.minSunlightHours && <span className='error'>{errors.minSunlightHours.message}</span>}
 
         {/* טווח טמפרטורה */}
         <div className='slider-field'>
@@ -312,8 +317,15 @@ export function CropAdd() {
         <textarea {...register('notes')} />
 
         <label>🗓️ עונה מועדפת</label>
-        <select value={selectedSeasonId} onChange={handleSeasonSelect}>
-          <option value=''>בחר עונה</option>
+        <select
+          value={selectedSeasonId}
+          onChange={(e) => {
+            const seasonId = e.target.value
+            setSelectedSeasonId(seasonId)
+            setValue('preferredSeasonId', seasonId)
+          }}
+        >
+          <option value=''>בחר עונה מועדפת</option>
           {seasons.map((s) => (
             <option key={s._id} value={s._id}>
               {s.name}

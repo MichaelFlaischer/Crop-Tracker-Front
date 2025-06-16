@@ -98,13 +98,13 @@ export function OrderDetails() {
 
   return (
     <section className='order-details'>
-      <h1>📦 פרטי הזמנה #{orderId}</h1>
+      <h1>📦 פרטי הזמנה מלאה במערכת Crop-Tracker #{orderId}</h1>
       <button type='button' onClick={() => navigate('/orders/view')} className='back-btn'>
         ⬅ חזרה לרשימת ההזמנות
       </button>
 
       <div className='order-summary'>
-        <h2>🧑‍💼 פרטי לקוח</h2>
+        <h2>🧑‍💼 פרטי לקוח להזמנה זו</h2>
         <p>
           <strong>שם:</strong> {client.customerName}
         </p>
@@ -149,19 +149,19 @@ export function OrderDetails() {
           <strong>סה"כ:</strong> {order.totalAmount} ₪
         </p>
         <p>
-          <strong>הערות:</strong> {order.notes || '—'}
+          <strong>הערות להזמנה:</strong> {order.notes || '—'}
         </p>
       </div>
 
       <div className='order-items'>
-        <h2>📋 פריטים בהזמנה</h2>
+        <h2>📋 פריטים הכלולים בהזמנה</h2>
         <table>
           <thead>
             <tr>
               <th>#</th>
               <th>שם יבול</th>
-              <th>ק"ג</th>
-              <th>מחיר</th>
+              <th>כמות (ק"ג)</th>
+              <th>מחיר ליח׳ (₪)</th>
               <th>סה"כ שורה</th>
               <th>פירוט לפי מחסן</th>
             </tr>
@@ -177,10 +177,11 @@ export function OrderDetails() {
                 <td>
                   {item.warehouseBreakdown?.length ? (
                     <table className='warehouse-breakdown-table'>
+                      <caption>פירוט שיבוץ למחסנים</caption>
                       <thead>
                         <tr>
                           <th>מחסן</th>
-                          <th>ק"ג</th>
+                          <th>כמות (ק"ג)</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -204,7 +205,7 @@ export function OrderDetails() {
 
       {deliveryEmployees.length > 0 && (
         <div className='delivery-employees'>
-          <h2>👷 עובדים ששובצו למשלוח</h2>
+          <h2>👷 עובדים ששובצו למשלוח עבור הזמנה זו</h2>
           <table>
             <thead>
               <tr>
@@ -242,7 +243,7 @@ export function OrderDetails() {
                 if (reason) updateStatus('מבוטלת')
               }}
             >
-              ❌ ביטול הזמנה
+              ❌ ביטול הזמנה (דורש הזנת סיבה)
             </button>
           </>
         )}
@@ -250,7 +251,7 @@ export function OrderDetails() {
           <>
             <button
               onClick={() => {
-                const confirm = window.confirm('האם אתה בטוח שברצונך לאשר את הספקת המשלוח?')
+                const confirm = window.confirm('האם אתה בטוח שברצונך לאשר את הספקת המשלוח עבור הזמנה זו?')
                 if (confirm) updateStatus('סופקה')
               }}
             >

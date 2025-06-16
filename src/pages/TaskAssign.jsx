@@ -212,7 +212,7 @@ export function TaskAssign() {
           <thead>
             <tr>
               <th>תיאור פעולה</th>
-              <th>שדה</th>
+              <th>חלקה</th>
               <th>תאריך התחלה</th>
               <th>שעת התחלה</th>
               <th>תאריך סיום</th>

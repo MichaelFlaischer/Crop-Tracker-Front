@@ -15,7 +15,6 @@ export function OperationIndex() {
   async function loadOperations() {
     try {
       const data = await operationService.query()
-
       setOperations(data)
     } catch (err) {
       console.error('שגיאה בטעינת פעולות:', err)
@@ -47,7 +46,12 @@ export function OperationIndex() {
 
   return (
     <section className='operation-index main-layout'>
-      <h1>רשימת פעולות</h1>
+      <h1>ניהול פעולות במערכת Crop-Tracker</h1>
+      <p className='section-description'>
+        כאן ניתן להוסיף, לערוך ולנהל פעולות שמיועדות לשיבוץ במשימות גידול. <br />
+        כל פעולה מוגדרת עם עלות ליחידה ויחידת מידה מתאימה.
+      </p>
+
       <button className='btn-add' onClick={onAdd}>
         ➕ הוספת פעולה חדשה
       </button>
@@ -55,35 +59,62 @@ export function OperationIndex() {
       {isLoading ? (
         <p>טוען נתונים...</p>
       ) : operations.length === 0 ? (
-        <p>לא קיימות פעולות</p>
+        <p>לא קיימות פעולות במערכת. לחץ על "הוספת פעולה חדשה" כדי להתחיל.</p>
       ) : (
-        <table className='operation-table'>
-          <thead>
-            <tr>
-              <th>שם פעולה</th>
-              <th>עלות ליחידה</th>
-              <th>יחידת מידה</th>
-              <th>הערות</th>
-              <th>פעולות</th>
-            </tr>
-          </thead>
-          <tbody>
-            {operations.map((op) => (
-              <tr key={op._id}>
-                <td>{op.operationName}</td>
-                <td>{op.costPerUnit} ₪</td>
-                <td>{op.unitDescription}</td>
-                <td>{op.executionNotes || '-'}</td>
-                <td className='actions'>
-                  <button onClick={() => onEdit(op._id)}>✏️</button>
-                  <button className='danger' onClick={() => onDelete(op._id)}>
-                    🗑️
-                  </button>
-                </td>
+        <>
+          {/* Desktop Table */}
+          <table className='operation-table'>
+            <thead>
+              <tr>
+                <th>שם פעולה</th>
+                <th>עלות ליחידה</th>
+                <th>יחידת מידה</th>
+                <th>הערות</th>
+                <th>פעולות</th>
               </tr>
+            </thead>
+            <tbody>
+              {operations.map((op) => (
+                <tr key={op._id}>
+                  <td>{op.operationName}</td>
+                  <td>{op.costPerUnit} ₪</td>
+                  <td>{op.unitDescription}</td>
+                  <td>{op.executionNotes || '-'}</td>
+                  <td className='actions'>
+                    <button onClick={() => onEdit(op._id)}>✏️ ערוך</button>
+                    <button className='danger' onClick={() => onDelete(op._id)}>
+                      🗑️ מחק
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {/* Mobile Cards */}
+          <div className='operation-cards'>
+            {operations.map((op) => (
+              <div className='operation-card' key={op._id}>
+                <h4>{op.operationName}</h4>
+                <p>
+                  <strong>עלות:</strong> {op.costPerUnit} ₪
+                </p>
+                <p>
+                  <strong>יחידה:</strong> {op.unitDescription}
+                </p>
+                <p>
+                  <strong>הערות:</strong> {op.executionNotes || '-'}
+                </p>
+                <div className='actions'>
+                  <button onClick={() => onEdit(op._id)}>✏️ ערוך</button>
+                  <button className='danger' onClick={() => onDelete(op._id)}>
+                    🗑️ מחק
+                  </button>
+                </div>
+              </div>
             ))}
-          </tbody>
-        </table>
+          </div>
+        </>
       )}
     </section>
   )

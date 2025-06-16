@@ -40,7 +40,7 @@ export function InventoryHistoryReport() {
   function formatDate(dateStr) {
     const date = new Date(dateStr)
     if (!(date instanceof Date) || isNaN(date)) return '—'
-    return date.toLocaleDateString('he-IL')
+    return date.toLocaleDateString('he-IL', { day: '2-digit', month: '2-digit', year: 'numeric' })
   }
 
   let serialCounter = 1
@@ -106,7 +106,6 @@ export function InventoryHistoryReport() {
       let valA = a[sortConfig.key]
       let valB = b[sortConfig.key]
 
-      // מיון שדות מספריים ותאריכים עם מפתח sort מתאים
       if (['harvestDate', 'sowingDate', 'daysSinceSowing', 'amount'].includes(sortConfig.key)) {
         const keyMap = {
           harvestDate: 'sortHarvestDate',
@@ -138,10 +137,10 @@ export function InventoryHistoryReport() {
     const data = filteredRows.map((row) => ({
       'מס"ד': row.serialNumber,
       יבול: row.cropName,
-      שדה: row.fieldName,
-      'תאריך זריעה': row.sowingDate,
+      חלקה: row.fieldName,
+      'תאריך שתילה': row.sowingDate,
       'תאריך קציר': row.harvestDate,
-      'ימים מהזריעה': row.daysSinceSowing,
+      'ימים מהשתילה': row.daysSinceSowing,
       כמות: row.amount,
       הערות: row.notes,
     }))
@@ -156,7 +155,7 @@ export function InventoryHistoryReport() {
 
   return (
     <section className='inventory-history-report'>
-      <h2>📋 כל רשומות השתילה והקציר</h2>
+      <h2>📋 כל רשומות השתילה והקציר לפי חלקות</h2>
 
       <div className='filters'>
         <label>
@@ -170,15 +169,15 @@ export function InventoryHistoryReport() {
         <button onClick={exportToExcel}>📤 ייצוא לאקסל</button>
       </div>
 
-      <table>
+      <table className='history-table'>
         <thead>
           <tr>
             <th onClick={() => handleSort('serialNumber')}>מס"ד</th>
             <th onClick={() => handleSort('cropName')}>יבול</th>
-            <th onClick={() => handleSort('fieldName')}>שדה</th>
-            <th onClick={() => handleSort('sowingDate')}>תאריך זריעה</th>
+            <th onClick={() => handleSort('fieldName')}>חלקה</th>
+            <th onClick={() => handleSort('sowingDate')}>תאריך שתילה</th>
             <th onClick={() => handleSort('harvestDate')}>תאריך קציר</th>
-            <th onClick={() => handleSort('daysSinceSowing')}>ימים מהזריעה</th>
+            <th onClick={() => handleSort('daysSinceSowing')}>ימים מהשתילה</th>
             <th onClick={() => handleSort('amount')}>כמות</th>
             <th onClick={() => handleSort('notes')}>הערות</th>
           </tr>
@@ -191,14 +190,14 @@ export function InventoryHistoryReport() {
           ) : (
             filteredRows.map((row) => (
               <tr key={row.id}>
-                <td>{row.serialNumber}</td>
-                <td>{row.cropName}</td>
-                <td>{row.fieldName}</td>
-                <td>{row.sowingDate}</td>
-                <td>{row.harvestDate}</td>
-                <td>{row.daysSinceSowing}</td>
-                <td>{row.amount}</td>
-                <td>{row.notes}</td>
+                <td data-label='מס"ד'>{row.serialNumber}</td>
+                <td data-label='יבול'>{row.cropName}</td>
+                <td data-label='חלקה'>{row.fieldName}</td>
+                <td data-label='תאריך שתילה'>{row.sowingDate}</td>
+                <td data-label='תאריך קציר'>{row.harvestDate}</td>
+                <td data-label='ימים מהשתילה'>{row.daysSinceSowing}</td>
+                <td data-label='כמות'>{row.amount}</td>
+                <td data-label='הערות'>{row.notes}</td>
               </tr>
             ))
           )}

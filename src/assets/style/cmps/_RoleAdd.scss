@@ -5,15 +5,23 @@
   max-width: 600px;
   margin: 2rem auto;
   padding: 2rem;
-  background-color: #fdfdfd;
-  border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
 
   h1 {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     font-size: 2rem;
     color: #2d3748;
+  }
+
+  .page-description {
+    font-size: 1.05rem;
+    color: #4a5568;
+    margin-bottom: 2rem;
+    text-align: center;
+    line-height: 1.5;
   }
 
   form {
@@ -24,17 +32,24 @@
     label {
       display: flex;
       flex-direction: column;
-      font-weight: 600;
-      color: #4a5568;
       font-size: 1rem;
+      font-weight: 600;
+      color: #2c3e50;
 
       input[type='text'],
       textarea {
         margin-top: 0.5rem;
-        padding: 0.6em;
+        padding: 0.65rem;
+        font-size: 1rem;
         border: 1px solid #cbd5e0;
         border-radius: 8px;
-        font-size: 1rem;
+        background-color: #f9f9f9;
+        transition: border-color 0.3s ease;
+
+        &:focus {
+          border-color: #3182ce;
+          outline: none;
+        }
       }
 
       textarea {
@@ -47,59 +62,80 @@
         align-items: center;
         gap: 0.5em;
         font-weight: 500;
-        input {
+        margin-top: 0.5rem;
+
+        input[type='checkbox'] {
           width: 18px;
           height: 18px;
         }
       }
     }
 
-    button[type='submit'] {
-      padding: 0.75em 1.5em;
-      background-color: #38a169;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-      align-self: center;
-      transition: background-color 0.3s ease;
+    .form-actions {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 2rem;
 
-      &:hover {
-        background-color: #2f855a;
+      button {
+        padding: 0.75em 1.5em;
+        font-size: 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s ease, box-shadow 0.2s ease;
+        border: none;
+        min-width: 120px;
+
+        &:first-of-type {
+          background-color: #38a169;
+          color: white;
+
+          &:hover {
+            background-color: #2f855a;
+            box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+          }
+        }
+
+        &:last-of-type {
+          background-color: #e53e3e;
+          color: white;
+
+          &:hover {
+            background-color: #c53030;
+            box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+          }
+        }
       }
     }
   }
-  .form-actions {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-top: 1.5rem;
 
-    button {
-      padding: 0.6em 1.2em;
-      border-radius: 8px;
-      font-size: 1rem;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
+  @media (max-width: 600px) {
+    padding: 1.5rem;
 
-      &:first-of-type {
-        background-color: #38a169;
-        color: white;
+    h1 {
+      font-size: 1.6rem;
+    }
 
-        &:hover {
-          background-color: #2f855a;
-        }
+    .page-description {
+      font-size: 0.95rem;
+    }
+
+    form label {
+      font-size: 0.95rem;
+
+      input[type='text'],
+      textarea {
+        font-size: 0.95rem;
       }
+    }
 
-      &:last-of-type {
-        background-color: #e53e3e;
-        color: white;
+    .form-actions {
+      flex-direction: column;
+      gap: 0.75rem;
 
-        &:hover {
-          background-color: #c53030;
-        }
+      button {
+        width: 100%;
       }
     }
   }

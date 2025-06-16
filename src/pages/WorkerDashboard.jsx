@@ -3,7 +3,7 @@ import { FaTasks, FaTruck, FaSeedling } from 'react-icons/fa'
 import { employeesInTaskService } from '../services/employees-in-task.service.js'
 import { taskService } from '../services/task.service.js'
 import { fieldService } from '../services/field.service.js'
-import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service.js'
+import { showErrorMsg } from '../services/event-bus.service.js'
 import { Link } from 'react-router-dom'
 
 export function WorkerDashboard() {
@@ -79,7 +79,7 @@ export function WorkerDashboard() {
           <ul>
             {todayTasks.map((task) => (
               <li key={task._id}>
-                {task.taskDescription} — {task.fieldName} — <Link to={`/tasks/${task._id}`}>[צפה בפרטי המשימה]</Link>
+                {task.taskDescription} — חלקת יבול: {task.fieldName} — <Link to={`/tasks/${task._id}`}>[צפה בפרטי המשימה]</Link>
               </li>
             ))}
           </ul>

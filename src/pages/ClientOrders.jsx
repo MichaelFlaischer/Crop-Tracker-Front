@@ -146,7 +146,7 @@ export function ClientOrders() {
 
   return (
     <section className='client-orders'>
-      <h1>הזמנות של {client?.customerName || `לקוח ${clientId}`}</h1>
+      <h1>הזמנות לקוח: {client?.customerName || `מס' ${clientId}`}</h1>
       {renderTable('טיוטה', 'טיוטה')}
       {renderTable('מאושרת', 'מאושרת')}
       {renderTable('סופקה', 'סופקה')}

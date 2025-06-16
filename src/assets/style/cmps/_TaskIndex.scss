@@ -3,7 +3,7 @@
 
   h1 {
     margin-bottom: 1.5rem;
-    font-size: 2rem;
+    font-size: 2.2rem;
     color: #2c3e50;
     text-align: center;
   }
@@ -40,8 +40,7 @@
       min-width: 180px;
     }
 
-    .btn-add,
-    .btn-reset {
+    button {
       height: 42px;
       padding: 0 16px;
       border: none;
@@ -52,23 +51,23 @@
       display: flex;
       align-items: center;
       justify-content: center;
-    }
 
-    .btn-add {
-      background-color: #4caf50;
-      color: white;
+      &.btn-primary {
+        background-color: #1976d2;
+        color: white;
 
-      &:hover {
-        background-color: #388e3c;
+        &:hover {
+          background-color: #115293;
+        }
       }
-    }
 
-    .btn-reset {
-      background-color: #e0e0e0;
-      color: #333;
+      &.btn-secondary {
+        background-color: #e0e0e0;
+        color: #333;
 
-      &:hover {
-        background-color: #d6d6d6;
+        &:hover {
+          background-color: #d6d6d6;
+        }
       }
     }
   }
@@ -116,30 +115,16 @@
         opacity: 0.8;
       }
 
-      &.danger {
+      &.btn-delete {
         color: #d9534f;
       }
-    }
 
-    .status {
-      font-weight: bold;
-
-      &.pending {
-        color: #f0ad4e;
-      }
-
-      &.in-progress {
+      &.btn-edit {
         color: #0275d8;
       }
 
-      &.done,
-      &.completed {
+      &.btn-view {
         color: #5cb85c;
-      }
-
-      &.delayed,
-      &.missed {
-        color: #d9534f;
       }
     }
   }
@@ -150,17 +135,52 @@
       align-items: stretch;
 
       select,
-      input[type='date'] {
+      input[type='date'],
+      button {
         width: 100%;
       }
     }
 
     table {
-      font-size: 0.85rem;
+      display: block;
+      width: 100%;
+      overflow-x: auto;
+      border: none;
 
+      thead,
+      tbody,
       th,
+      td,
+      tr {
+        display: block;
+        text-align: right;
+      }
+
+      tr {
+        margin-bottom: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 0.5rem;
+        background-color: #fff;
+      }
+
       td {
-        padding: 0.6rem;
+        border: none;
+        padding: 0.5rem 0;
+        position: relative;
+
+        &::before {
+          content: attr(data-label);
+          position: absolute;
+          right: 1rem;
+          top: 0.5rem;
+          font-weight: bold;
+          color: #555;
+        }
+      }
+
+      th {
+        display: none;
       }
     }
   }

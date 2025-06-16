@@ -145,6 +145,7 @@ export function SowingAdd() {
     const newErrors = {}
 
     if (!formData.cropId) newErrors.cropId = 'יש לבחור יבול'
+    if (!formData.fieldId) newErrors.fieldId = 'יש לבחור חלקה לשתילה'
     if (!(formData.sowingDate instanceof Date)) newErrors.sowingDate = 'יש לבחור תאריך תקף'
 
     setErrors(newErrors)
@@ -174,8 +175,9 @@ export function SowingAdd() {
       <h1>שתילה חדשה</h1>
       <form onSubmit={handleSubmit}>
         <label>
-          שדה נבחר:
+          חלקה נבחרת:
           <div style={{ padding: '0.5rem', backgroundColor: '#f3f4f6', borderRadius: '6px', border: '1px solid #ccc' }}>{selectedFieldName || '---'}</div>
+          {errors.fieldId && <span style={{ color: 'red', fontSize: '0.8rem' }}>{errors.fieldId}</span>}
         </label>
 
         <label>
@@ -191,7 +193,7 @@ export function SowingAdd() {
           {errors.cropId && <span style={{ color: 'red', fontSize: '0.8rem' }}>{errors.cropId}</span>}
           {(selectedCropDays !== null || selectedCropNotes || selectedCropDescription || selectedCropSeasons.length > 0 || preferredSeasonInfo) && (
             <div style={{ marginTop: '0.5rem' }}>
-              {selectedCropDays !== null && <div style={{ fontSize: '0.9rem', color: '#374151' }}>⏱️ זמן גידול צפוי: {selectedCropDays} ימים ❔</div>}
+              {selectedCropDays !== null && <div style={{ fontSize: '0.9rem', color: '#374151' }}>⏱️ זמן גידול צפוי: {selectedCropDays} ימים</div>}
               {preferredSeasonInfo && (
                 <div style={{ fontSize: '0.9rem', color: '#0d9488' }}>
                   ⭐ עונה מועדפת לשתילה: {preferredSeasonInfo.name} ({preferredSeasonInfo.startDate} - {preferredSeasonInfo.endDate})

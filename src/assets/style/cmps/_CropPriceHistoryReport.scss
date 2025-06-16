@@ -85,15 +85,19 @@
     }
 
     tbody td {
-      padding: 0.4rem;
+      padding: 0.8rem 0.5rem 0.8rem 4rem;
       position: relative;
-      text-align: left;
+      text-align: right;
+      border: none;
+      border-bottom: 1px solid #ddd;
+      font-size: 0.9rem;
 
       &::before {
         content: attr(data-label);
         position: absolute;
-        left: 0.5rem;
-        top: 0.5rem;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
         font-weight: bold;
         color: #333;
       }

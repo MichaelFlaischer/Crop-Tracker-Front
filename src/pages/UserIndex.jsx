@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react'
 import { userService } from '../services/user.service'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service'
 import { useNavigate } from 'react-router-dom'
+import { ResponsiveTable } from '../cmps/ResponsiveTable.jsx'
 
 export function UserIndex() {
   const [users, setUsers] = useState([])
+  const [filterBy, setFilterBy] = useState({ name: '', sort: '' })
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -33,49 +35,73 @@ export function UserIndex() {
     }
   }
 
+  function handleFilterChange({ target }) {
+    const { name, value } = target
+    setFilterBy((prev) => ({ ...prev, [name]: value }))
+  }
+
+  function clearFilters() {
+    setFilterBy({ name: '', sort: '' })
+  }
+
+  const tableData = users.map((user) => ({
+    _id: user._id,
+    fullName: user.FullName,
+    username: user.Username,
+    roleName: user.RoleName || '—',
+    email: user.Email,
+    phoneNumber: user.PhoneNumber,
+    status: user.Status,
+    isAdmin: String(user.IsAdmin).toLowerCase() === 'true' ? '✔️' : '❌',
+  }))
+
+  const sortedData = [...tableData]
+  if (filterBy.sort === 'name') {
+    sortedData.sort((a, b) => a.fullName.localeCompare(b.fullName))
+  } else if (filterBy.sort === 'role') {
+    sortedData.sort((a, b) => a.roleName.localeCompare(b.roleName))
+  }
+
+  const filteredData = sortedData.filter((user) => user.fullName.toLowerCase().includes(filterBy.name.toLowerCase()))
+
   return (
     <section className='user-index main-layout'>
       <h2>רשימת עובדים</h2>
 
-      <button className='add-user-btn' onClick={() => navigate('/users/add')}>
+      <button className='btn btn-primary' onClick={() => navigate('/user/add')}>
         ➕ הוסף עובד
       </button>
 
-      {users.length === 0 ? (
-        <p>לא נמצאו עובדים.</p>
-      ) : (
-        <table className='user-table'>
-          <thead>
-            <tr>
-              <th>שם מלא</th>
-              <th>שם עובד</th>
-              <th>תפקיד</th>
-              <th>אימייל</th>
-              <th>טלפון</th>
-              <th>סטטוס</th>
-              <th>אדמין</th>
-              <th>פעולות</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user._id}>
-                <td>{user.FullName}</td>
-                <td>{user.Username}</td>
-                <td>{user.RoleName || '—'}</td>
-                <td>{user.Email}</td>
-                <td>{user.PhoneNumber}</td>
-                <td>{user.Status}</td>
-                <td>{String(user.IsAdmin).toLowerCase() === 'true' ? '✔️' : '❌'}</td>
-                <td>
-                  <button onClick={() => navigate(`/user/edit/${user._id}`)}>✏️</button>
-                  <button onClick={() => onRemove(user._id, user.FullName)}>🗑️</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+      <ResponsiveTable
+        columns={[
+          { key: 'fullName', label: 'שם מלא' },
+          { key: 'username', label: 'שם עובד' },
+          { key: 'roleName', label: 'תפקיד' },
+          { key: 'email', label: 'אימייל' },
+          { key: 'phoneNumber', label: 'טלפון' },
+          { key: 'status', label: 'סטטוס' },
+          { key: 'isAdmin', label: 'אדמין' },
+        ]}
+        data={filteredData}
+        filterBy={filterBy}
+        onFilterChange={handleFilterChange}
+        onClearFilters={clearFilters}
+        filterFields={[{ name: 'name', label: 'שם עובד', type: 'text' }]}
+        sortOptions={[
+          { value: 'name', label: 'שם עובד' },
+          { value: 'role', label: 'תפקיד' },
+        ]}
+        renderActions={(user) => (
+          <>
+            <button className='btn btn-edit' onClick={() => navigate(`/user/edit/${user._id}`)}>
+              ✏️ עריכה
+            </button>
+            <button className='btn btn-delete' onClick={() => onRemove(user._id, user.fullName)}>
+              🗑️ מחיקה
+            </button>
+          </>
+        )}
+      />
     </section>
   )
 }

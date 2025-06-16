@@ -29,4 +29,46 @@
       background-color: #f9f9f9;
     }
   }
+
+  @media (max-width: 768px) {
+    .employees-in-task-index {
+      padding: 1rem;
+
+      .employees-task-table {
+        display: none;
+      }
+
+      .records-cards {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+
+        .record-card {
+          background-color: #fff;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          padding: 1rem;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+
+          .field {
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+
+            span {
+              font-weight: bold;
+              display: inline-block;
+              width: 40%;
+              color: #333;
+            }
+
+            .value {
+              display: inline-block;
+              width: 55%;
+              text-align: left;
+            }
+          }
+        }
+      }
+    }
+  }
 }

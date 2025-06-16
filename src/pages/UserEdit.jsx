@@ -7,6 +7,12 @@ import { roleService } from '../services/role.service'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service'
 import * as yup from 'yup'
 
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
+import { registerLocale } from 'react-datepicker'
+import he from 'date-fns/locale/he'
+registerLocale('he', he)
+
 const schema = yup.object().shape({
   FullName: yup.string().required('יש להזין שם מלא'),
   Username: yup.string().required('יש להזין שם משתמש'),
@@ -15,7 +21,7 @@ const schema = yup.object().shape({
     .string()
     .matches(/^05\d{8}$/, 'מספר טלפון לא תקין')
     .optional(),
-  StartDate: yup.date().typeError('יש להזין תאריך תקין').optional(),
+  StartDate: yup.date().typeError('יש להזין תאריך תקין').nullable(),
   Salary: yup.number().typeError('יש להזין מספר').min(0, 'שכר לא יכול להיות שלילי').optional(),
   Address: yup.string().optional(),
   RoleID: yup.number().required('יש לבחור תפקיד'),
@@ -47,6 +53,7 @@ export function UserEdit() {
     resolver: yupResolver(schema),
     defaultValues: {
       ChangePassword: false,
+      StartDate: null,
     },
   })
 
@@ -58,13 +65,12 @@ export function UserEdit() {
   async function loadUser() {
     try {
       const userFromServer = await userService.getById(userId)
-
       const formUser = {
         FullName: userFromServer.FullName || '',
         Username: userFromServer.Username || '',
         Email: userFromServer.Email || '',
         PhoneNumber: userFromServer.PhoneNumber || '',
-        StartDate: userFromServer.StartDate ? new Date(userFromServer.StartDate).toISOString().split('T')[0] : '',
+        StartDate: userFromServer.StartDate ? new Date(userFromServer.StartDate) : null,
         Salary: userFromServer.Salary || '',
         Address: userFromServer.Address || '',
         RoleID: userFromServer.RoleID || 2,
@@ -74,7 +80,6 @@ export function UserEdit() {
         Password: '',
         ChangePassword: false,
       }
-
       reset(formUser)
     } catch (err) {
       showErrorMsg('שגיאה בטעינת העובד')
@@ -142,7 +147,14 @@ export function UserEdit() {
 
         <label>
           תאריך התחלה:
-          <input type='date' {...register('StartDate')} />
+          <DatePicker
+            selected={watch('StartDate')}
+            onChange={(date) => setValue('StartDate', date)}
+            dateFormat='dd/MM/yyyy'
+            placeholderText='בחר תאריך'
+            className='datepicker-input'
+            locale='he'
+          />
           {errors.StartDate && <span>{errors.StartDate.message}</span>}
         </label>
 
@@ -172,7 +184,6 @@ export function UserEdit() {
               }
             }}
           >
-            {/* אפשרות פתיחה על התפקיד הנוכחי */}
             {watch('RoleID') && !roles.find((r) => r.RoleID === +watch('RoleID')) && <option value={watch('RoleID')}>{watch('RoleName')}</option>}
             {roles.map((role) => (
               <option key={role._id} value={role.RoleID}>
@@ -194,7 +205,7 @@ export function UserEdit() {
 
         <label>
           האם אדמין:
-          <input type='text' value={watch('isAdmin') === 'true' ? 'כן' : 'לא'} readOnly disabled />
+          <span>{watch('isAdmin') === 'true' ? 'כן' : 'לא'}</span>
         </label>
 
         <label className='password-toggle'>
@@ -208,7 +219,7 @@ export function UserEdit() {
 
         {/* מוסתרים אך דרושים לשמירה */}
         <input type='hidden' {...register('RoleName')} />
-        <input type='hidden' {...register('IsAdmin')} />
+        <input type='hidden' {...register('isAdmin')} />
 
         <div className='form-actions'>
           <button type='submit' className='btn'>

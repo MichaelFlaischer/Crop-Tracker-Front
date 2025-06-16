@@ -1,11 +1,19 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import Select from 'react-select'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
+import { registerLocale } from 'react-datepicker'
+import he from 'date-fns/locale/he'
+
 import { taskService } from '../services/task.service.js'
 import { employeesInTaskService } from '../services/employees-in-task.service.js'
 import { userService } from '../services/user.service.js'
 import { fieldService } from '../services/field.service.js'
 import { operationService } from '../services/operation.service.js'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service.js'
+
+registerLocale('he', he)
 
 export function TaskDetails() {
   const { taskId } = useParams()
@@ -15,7 +23,7 @@ export function TaskDetails() {
   const [users, setUsers] = useState([])
   const [operationName, setOperationName] = useState('')
   const [fieldName, setFieldName] = useState('')
-  const [newAssignments, setNewAssignments] = useState({ employeeIds: [], actualStart: '' })
+  const [newAssignments, setNewAssignments] = useState({ employeeIds: [], actualStart: null })
 
   const statusMap = {
     waiting: 'בהמתנה',
@@ -42,8 +50,8 @@ export function TaskDetails() {
       const taskEmployees = allEmployees.filter((e) => e.taskId === taskId)
       const field = fields.find((f) => f._id === task.fieldId)
       const fieldOperation = await operationService.getById(task.operationId)
-      setOperationName(fieldOperation?.operationName || '-')
 
+      setOperationName(fieldOperation?.operationName || '-')
       setTask(task)
       setEmployees(taskEmployees)
       setUsers(users)
@@ -80,7 +88,6 @@ export function TaskDetails() {
       status: 'done',
       actualEnd: now.toISOString(),
     }
-    console.log(updated)
     employeesInTaskService
       .update(updated)
       .then(() => {
@@ -107,12 +114,12 @@ export function TaskDetails() {
   function handleAddAssignment(ev) {
     ev.preventDefault()
     const { employeeIds, actualStart } = newAssignments
-    if (!employeeIds.length) return
+    if (!employeeIds.length || !actualStart) return
 
     const inserts = employeeIds.map((id) => ({
       taskId,
       employeeId: id,
-      actualStart,
+      actualStart: actualStart.toISOString(),
       assignedAt: new Date(),
       status: 'in-progress',
     }))
@@ -120,7 +127,7 @@ export function TaskDetails() {
     Promise.all(inserts.map((rec) => employeesInTaskService.add(rec)))
       .then((added) => {
         setEmployees((prev) => [...prev, ...added])
-        setNewAssignments({ employeeIds: [], actualStart: '' })
+        setNewAssignments({ employeeIds: [], actualStart: null })
         showSuccessMsg('העובד(ים) נוספו בהצלחה')
       })
       .catch(() => showErrorMsg('שגיאה בהוספת עובד(ים)'))
@@ -134,7 +141,7 @@ export function TaskDetails() {
       ? 'יש פחות עובדים מהנדרש'
       : employees.length === task?.requiredEmployees
       ? 'כמות מדויקת של עובדים שובצה'
-      : 'יש יותר מדי עובדים שובצו מהנדרש'
+      : 'שובצו יותר מדי עובדים'
 
   if (!task) return <section className='task-details'>טוען פרטים...</section>
 
@@ -144,6 +151,7 @@ export function TaskDetails() {
         <button onClick={() => navigate('/tasks')}>⬅ חזור לרשימת המשימות</button>
         <button onClick={() => navigate(`/tasks/edit/${taskId}`)}>✏ עריכת משימה זו</button>
       </div>
+
       <h1>פרטי משימה</h1>
       <div className='task-summary'>
         <p>
@@ -153,7 +161,7 @@ export function TaskDetails() {
           <strong>תיאור משימה:</strong> {task.taskDescription}
         </p>
         <p>
-          <strong>שדה:</strong> {fieldName}
+          <strong>חלקה:</strong> {fieldName}
         </p>
         <p>
           <strong>תאריך התחלה:</strong> {formatDate(task.startDate)} {task.startTime}
@@ -218,33 +226,86 @@ export function TaskDetails() {
         </table>
       )}
 
-      <h2>הוספת עובדים למשימה</h2>
+      {employees.length === 0 ? (
+        <p>לא שובצו עובדים למשימה זו.</p>
+      ) : (
+        <div className='assigned-employees'>
+          {employees.map((e) => {
+            const emp = users.find((u) => u._id === e.employeeId)
+            const isEditable = ['waiting', 'in-progress', 'pending'].includes(e.status)
+            return (
+              <div className={`employee-card status-${e.status}`} key={e._id}>
+                <p>
+                  <strong>שם:</strong> {emp?.FullName || '-'}
+                </p>
+                <p>
+                  <strong>תפקיד:</strong> {emp?.RoleName || '-'}
+                </p>
+                <p>
+                  <strong>סטטוס:</strong> {statusMap[e.status] || e.status}
+                </p>
+                <p>
+                  <strong>שעת התחלה:</strong> {formatDate(e.actualStart)} {formatTime(e.actualStart)}
+                </p>
+                <p>
+                  <strong>שעת סיום:</strong> {formatDate(e.actualEnd)} {formatTime(e.actualEnd)}
+                </p>
+                <p>
+                  <strong>הערות:</strong> {e.employeeNotes || '-'}
+                </p>
+
+                <div className='action-buttons'>
+                  {isEditable && <button onClick={() => markAsDone(e)}>✅ סיים</button>}
+                  {isEditable && <button onClick={() => markAsMissed(e)}>❌ לא בוצע</button>}
+                  <button onClick={() => handleRemove(e._id)}>🗑️ הסר</button>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+
       <form onSubmit={handleAddAssignment} className='add-employee-form'>
-        <label>בחירת עובדים</label>
-        <select
-          multiple
-          required
-          value={newAssignments.employeeIds}
-          onChange={(e) =>
-            setNewAssignments((prev) => ({
-              ...prev,
-              employeeIds: Array.from(e.target.selectedOptions, (opt) => opt.value),
-            }))
-          }
-        >
-          {unassignedUsers.map((u) => (
-            <option key={u._id} value={u._id}>
-              {u.FullName}
-            </option>
-          ))}
-        </select>
-        <label>שעת התחלה בפועל</label>
-        <input
-          type='datetime-local'
-          value={newAssignments.actualStart}
-          onChange={(e) => setNewAssignments((prev) => ({ ...prev, actualStart: e.target.value }))}
-        />
-        <button type='submit'>➕ הוסף</button>
+        <h2>הוספת עובדים למשימה</h2>
+
+        <div className='form-group'>
+          <label>בחירת עובדים</label>
+          <Select
+            isMulti
+            options={unassignedUsers.map((u) => ({ value: u._id, label: u.FullName }))}
+            value={unassignedUsers.filter((u) => newAssignments.employeeIds.includes(u._id)).map((u) => ({ value: u._id, label: u.FullName }))}
+            onChange={(selectedOptions) =>
+              setNewAssignments((prev) => ({
+                ...prev,
+                employeeIds: selectedOptions.map((opt) => opt.value),
+              }))
+            }
+            placeholder='בחר עובד/ים...'
+            classNamePrefix='react-select'
+          />
+          <p className='note'>
+            נבחרו {newAssignments.employeeIds.length} מתוך {task.requiredEmployees} עובדים נדרשים
+          </p>
+        </div>
+
+        <div className='form-group'>
+          <label>שעת התחלה בפועל</label>
+          <DatePicker
+            selected={newAssignments.actualStart}
+            onChange={(date) => setNewAssignments((prev) => ({ ...prev, actualStart: date }))}
+            showTimeSelect
+            timeIntervals={15}
+            timeCaption='שעה'
+            dateFormat='dd/MM/yyyy HH:mm'
+            locale='he'
+            placeholderText='בחר תאריך ושעה'
+            className='date-picker-input'
+          />
+        </div>
+
+        <button type='submit' className='btn btn-primary'>
+          ➕ הוסף
+        </button>
       </form>
     </section>
   )

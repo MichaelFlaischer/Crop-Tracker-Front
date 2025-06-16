@@ -20,6 +20,7 @@ const schema = yup.object().shape({
   maxHumidity: yup.number().required().moreThan(yup.ref('minHumidity')),
   minRainfall: yup.number().required(),
   maxRainfall: yup.number().required().moreThan(yup.ref('minRainfall')),
+  minSunlightHours: yup.number().required('יש להזין מינימום שעות אור').min(0, 'חייב להיות 0 ומעלה'),
   preferredSeasonId: yup.string().required('יש לבחור עונה מועדפת'),
   isSensitiveToRain: yup.boolean().required(),
   waterRecommendation: yup.number().nullable(),
@@ -73,6 +74,7 @@ export function CropEdit() {
       setRainfallRange([crop.maxRainfall, crop.minRainfall])
       setIsSensitiveToRain(crop.isSensitiveToRain)
       setSelectedSeasonId(crop.preferredSeasonId)
+      setValue('minSunlightHours', crop.minSunlightHours)
     } catch (err) {
       showErrorMsg('שגיאה בטעינת היבול')
     } finally {
@@ -165,6 +167,10 @@ export function CropEdit() {
         <label>⏳ זמן גדילה (ימים)</label>
         <input type='number' {...register('growthTime')} />
         {errors.growthTime && <span className='error'>{errors.growthTime.message}</span>}
+
+        <label>🌞 מינימום שעות אור (שעות ביום)</label>
+        <input type='number' min='0' step='0.1' {...register('minSunlightHours')} />
+        {errors.minSunlightHours && <span className='error'>{errors.minSunlightHours.message}</span>}
 
         <div className='slider-field'>
           <label>🌡️ טווח טמפרטורה (°C)</label>

@@ -1,5 +1,5 @@
 .harvest-add {
-  max-width: 600px;
+  max-width: 700px;
   margin: 2rem auto;
   padding: 2rem;
   background-color: #ffffff;
@@ -8,7 +8,7 @@
 
   h1 {
     text-align: center;
-    font-size: 1.75rem;
+    font-size: 2rem;
     color: #111827;
     margin-bottom: 1.5rem;
   }
@@ -34,6 +34,29 @@
         color: #6b7280;
       }
     }
+
+    table {
+      width: 100%;
+      text-align: center;
+      border-collapse: collapse;
+      margin-top: 1rem;
+
+      th,
+      td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        font-size: 0.9rem;
+      }
+
+      td {
+        background-color: #fff;
+      }
+
+      td.active {
+        background-color: #d1fae5;
+        font-weight: bold;
+      }
+    }
   }
 
   form {
@@ -49,7 +72,8 @@
       color: #374151;
 
       input,
-      textarea {
+      textarea,
+      select {
         margin-top: 0.3rem;
         padding: 0.5rem;
         font-size: 0.95rem;
@@ -60,6 +84,17 @@
       textarea {
         min-height: 80px;
         resize: vertical;
+      }
+    }
+
+    ul {
+      padding-right: 1rem;
+      margin: 0;
+      color: #b91c1c;
+      font-size: 0.9rem;
+
+      li {
+        margin: 0.2rem 0;
       }
     }
 
@@ -110,6 +145,7 @@
       display: flex;
       gap: 1rem;
       margin-top: 1rem;
+      flex-wrap: wrap;
 
       .submit-btn {
         background-color: #10b981;
@@ -139,6 +175,54 @@
         &:hover {
           background-color: #dc2626;
         }
+      }
+    }
+  }
+
+  @media (max-width: 600px) {
+    padding: 1rem;
+    margin: 1rem;
+
+    h1 {
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .info-box {
+      padding: 0.75rem;
+
+      table {
+        font-size: 0.8rem;
+
+        th,
+        td {
+          padding: 6px;
+        }
+      }
+    }
+
+    form {
+      gap: 0.75rem;
+
+      label {
+        font-size: 0.85rem;
+
+        input,
+        textarea,
+        select {
+          font-size: 0.85rem;
+          padding: 0.4rem;
+        }
+      }
+    }
+
+    .form-actions {
+      flex-direction: column;
+
+      .submit-btn,
+      .cancel-btn {
+        width: 100%;
+        font-size: 0.95rem;
       }
     }
   }

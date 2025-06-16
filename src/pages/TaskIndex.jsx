@@ -6,6 +6,7 @@ import { cropService } from '../services/crop.service.js'
 import { sowingAndHarvestService } from '../services/sowing-and-harvest.service.js'
 import { employeesInTaskService } from '../services/employees-in-task.service.js'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service.js'
+import { ResponsiveTable } from '../cmps/ResponsiveTable.jsx'
 
 export function TaskIndex() {
   const [tasks, setTasks] = useState([])
@@ -127,6 +128,29 @@ export function TaskIndex() {
   const deliveryTasks = filteredAllTasks.filter((t) => t.operationId?.toString() === DELIVERY_OPERATION_ID)
   const regularTasks = filteredAllTasks.filter((t) => t.operationId?.toString() !== DELIVERY_OPERATION_ID)
 
+  const deliveryTableData = deliveryTasks.map((task) => ({
+    _id: task._id,
+    customerName: task.taskDescription?.replace('משלוח ללקוח: ', ''),
+    orderId: task.fieldId,
+    deliveryDate: formatDate(task.startDate),
+    requiredEmployees: task.requiredEmployees,
+    status: statusMap[task.status] || task.status,
+  }))
+
+  const regularTableData = regularTasks.map((task) => ({
+    _id: task._id,
+    taskDescription: task.taskDescription,
+    fieldName: task.fieldName,
+    cropName: task.cropName,
+    startDate: formatDate(task.startDate),
+    startTime: task.startTime,
+    endDate: formatDate(task.endDate),
+    endTime: task.endTime,
+    requiredEmployees: task.requiredEmployees,
+    assignedEmployees: assignedMap[task._id] || 0,
+    status: statusMap[task.status] || task.status,
+  }))
+
   return (
     <section className='task-index main-layout'>
       <h1>רשימת משימות</h1>
@@ -147,10 +171,10 @@ export function TaskIndex() {
           <option value='endDateAsc'>מיון לפי סיום (עולה)</option>
           <option value='endDateDesc'>מיון לפי סיום (יורד)</option>
         </select>
-        <button className='btn-reset' onClick={() => setFilter({ status: 'all', filterDate: '', sortBy: 'startDateAsc' })}>
+        <button className='btn btn-secondary' onClick={() => setFilter({ status: 'all', filterDate: '', sortBy: 'startDateAsc' })}>
           איפוס
         </button>
-        <button className='btn-add' onClick={onAdd}>
+        <button className='btn btn-primary' onClick={onAdd}>
           ➕ הוספת משימה חדשה
         </button>
       </div>
@@ -158,32 +182,31 @@ export function TaskIndex() {
       {deliveryTasks.length > 0 && (
         <>
           <h2>🚚 משימות משלוח ללקוח</h2>
-          <table className='delivery-task-table'>
-            <thead>
-              <tr>
-                <th>שם הלקוח</th>
-                <th>מספר הזמנה</th>
-                <th>תאריך הספקה</th>
-                <th>כמות עובדים נדרשים</th>
-                <th>סטטוס</th>
-                <th>לפרטי ההזמנה</th>
-              </tr>
-            </thead>
-            <tbody>
-              {deliveryTasks.map((task) => (
-                <tr key={task._id}>
-                  <td>{task.taskDescription?.replace('משלוח ללקוח: ', '')}</td>
-                  <td>{task.fieldId}</td>
-                  <td>{formatDate(task.startDate)}</td>
-                  <td>{task.requiredEmployees}</td>
-                  <td className={`status ${task.status}`}>{statusMap[task.status]}</td>
-                  <td>
-                    <button onClick={() => navigate(`/order/${task.fieldId}`)}>📦 לפרטי ההזמנה</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <ResponsiveTable
+            columns={[
+              { key: 'customerName', label: 'שם הלקוח' },
+              { key: 'orderId', label: 'מספר הזמנה' },
+              { key: 'deliveryDate', label: 'תאריך הספקה' },
+              { key: 'requiredEmployees', label: 'עובדים נדרש' },
+              { key: 'status', label: 'סטטוס' },
+            ]}
+            data={deliveryTableData}
+            filterBy={{}}
+            onFilterChange={() => {}}
+            onClearFilters={() => {}}
+            filterFields={[]}
+            sortOptions={[]}
+            renderActions={(task) => (
+              <>
+                <button className='btn btn-view' onClick={() => navigate(`/order/${task.orderId}`)}>
+                  📦 לפרטי ההזמנה
+                </button>
+                <button className='btn btn-edit' onClick={() => onViewDetails(task._id)}>
+                  ✏️ עריכת משימה
+                </button>
+              </>
+            )}
+          />
         </>
       )}
 
@@ -194,53 +217,44 @@ export function TaskIndex() {
       ) : (
         <>
           <h2>🌿 משימות רגילות</h2>
-          <table className='task-table'>
-            <thead>
-              <tr>
-                <th>שם פעולה</th>
-                <th>שדה</th>
-                <th>יבול</th>
-                <th>תאריך התחלה</th>
-                <th>שעת התחלה</th>
-                <th>תאריך סיום</th>
-                <th>שעת סיום</th>
-                <th>כמות עובדים נדרשים</th>
-                <th>כמות עובדים שובצו</th>
-                <th>סטטוס</th>
-                <th>📄 פרטים</th>
-                <th>🛠️ פעולות</th>
-              </tr>
-            </thead>
-            <tbody>
-              {regularTasks.map((task) => (
-                <tr key={task._id}>
-                  <td>{task.taskDescription}</td>
-                  <td>{task.fieldName}</td>
-                  <td>{task.cropName}</td>
-                  <td>{formatDate(task.startDate)}</td>
-                  <td>{task.startTime}</td>
-                  <td>{formatDate(task.endDate)}</td>
-                  <td>{task.endTime}</td>
-                  <td>{task.requiredEmployees}</td>
-                  <td>{assignedMap[task._id] || 0}</td>
-                  <td className={`status ${task.status}`}>{statusMap[task.status] || task.status}</td>
-                  <td>
-                    <button title='פרטים' onClick={() => onViewDetails(task._id)}>
-                      📄
-                    </button>
-                  </td>
-                  <td>
-                    <button title='עריכה' onClick={() => onEdit(task._id)}>
-                      ✏️
-                    </button>
-                    <button className='danger' title='מחיקה' onClick={() => onDelete(task._id)}>
-                      🗑️
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <ResponsiveTable
+            columns={[
+              { key: 'taskDescription', label: 'שם פעולה' },
+              { key: 'fieldName', label: 'חלקה' },
+              { key: 'cropName', label: 'יבול' },
+              { key: 'startDate', label: 'תאריך התחלה' },
+              { key: 'startTime', label: 'שעת התחלה' },
+              { key: 'endDate', label: 'תאריך סיום' },
+              { key: 'endTime', label: 'שעת סיום' },
+              { key: 'requiredEmployees', label: 'עובדים נדרש' },
+              { key: 'assignedEmployees', label: 'עובדים שובצו' },
+              { key: 'status', label: 'סטטוס' },
+            ]}
+            data={regularTableData}
+            filterBy={{ name: filter.filterDate, sort: filter.sortBy }}
+            onFilterChange={() => {}}
+            onClearFilters={() => setFilter({ status: 'all', filterDate: '', sortBy: 'startDateAsc' })}
+            filterFields={[{ name: 'name', label: 'שם פעולה', type: 'text' }]}
+            sortOptions={[
+              { value: 'startDateAsc', label: 'תאריך התחלה (עולה)' },
+              { value: 'startDateDesc', label: 'תאריך התחלה (יורד)' },
+              { value: 'endDateAsc', label: 'תאריך סיום (עולה)' },
+              { value: 'endDateDesc', label: 'תאריך סיום (יורד)' },
+            ]}
+            renderActions={(task) => (
+              <>
+                <button className='btn btn-view' onClick={() => onViewDetails(task._id)}>
+                  📄 פרטים
+                </button>
+                <button className='btn btn-edit' onClick={() => onEdit(task._id)}>
+                  ✏️ עריכה
+                </button>
+                <button className='btn btn-delete' onClick={() => onDelete(task._id)}>
+                  🗑️ מחיקה
+                </button>
+              </>
+            )}
+          />
         </>
       )}
     </section>

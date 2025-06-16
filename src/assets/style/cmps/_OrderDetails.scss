@@ -7,38 +7,13 @@
   h1 {
     text-align: center;
     margin-bottom: 2rem;
-    font-size: 2rem;
-  }
-
-  .order-summary,
-  .order-info,
-  .order-items,
-  .delivery-employees {
-    background-color: #f9f9f9;
-    border: 1px solid #ccc;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    border-radius: 8px;
-
-    h2 {
-      margin-bottom: 1rem;
-      color: #1a237e;
-    }
-
-    p {
-      margin: 0.5rem 0;
-      font-size: 1rem;
-
-      strong {
-        font-weight: bold;
-      }
-    }
+    font-size: 2.4rem;
+    color: #1a237e;
   }
 
   .back-btn {
-    display: inline-block;
     margin-bottom: 1.5rem;
-    padding: 0.4rem 0.8rem;
+    padding: 0.5rem 1rem;
     background-color: #2196f3;
     color: white;
     font-weight: bold;
@@ -52,12 +27,41 @@
     }
   }
 
+  .order-summary,
+  .order-info,
+  .order-items,
+  .delivery-employees {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+    border-radius: 8px;
+
+    h2 {
+      margin-bottom: 1.2rem;
+      color: #0d47a1;
+      font-size: 1.5rem;
+    }
+
+    p {
+      margin: 0.5rem 0;
+      font-size: 1rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+
+      strong {
+        min-width: 180px;
+        font-weight: bold;
+        color: #333;
+      }
+    }
+  }
+
   .order-info p {
-    display: flex;
-    justify-content: space-between;
     border-bottom: 1px dashed #ddd;
-    padding-bottom: 4px;
-    margin-bottom: 8px;
+    padding-bottom: 6px;
+    margin-bottom: 10px;
   }
 
   table {
@@ -75,33 +79,30 @@
     th {
       background-color: #e3f2fd;
       color: #0d47a1;
+      font-weight: bold;
     }
 
     tr:nth-child(even) {
-      background-color: #f1f1f1;
+      background-color: #f7f7f7;
+    }
+
+    caption {
+      caption-side: top;
+      font-weight: bold;
+      color: #1a237e;
+      padding-bottom: 0.5rem;
     }
   }
 
   .warehouse-breakdown-table {
-    width: 100%;
-    margin: auto;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #ffffff;
+    margin-top: 0.5rem;
 
     th {
       background-color: #f0f8ff;
-      font-size: 0.95rem;
-    }
-
-    td {
-      font-size: 0.95rem;
     }
   }
 
   .delivery-employees table {
-    margin-top: 0.5rem;
-
     th {
       background-color: #ede7f6;
       color: #311b92;
@@ -109,16 +110,18 @@
   }
 
   .actions {
-    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
     margin-top: 2rem;
 
     button {
-      margin: 0.5rem;
-      padding: 0.6rem 1.2rem;
-      border: none;
-      border-radius: 6px;
+      padding: 0.7rem 1.5rem;
       font-size: 1rem;
       font-weight: bold;
+      border: none;
+      border-radius: 6px;
       cursor: pointer;
       transition: background-color 0.2s;
 
@@ -126,7 +129,7 @@
         opacity: 0.9;
       }
 
-      &:first-child {
+      &:nth-child(1) {
         background-color: #4caf50;
         color: white;
       }
@@ -136,7 +139,7 @@
         color: white;
       }
 
-      &:last-child {
+      &:nth-child(3) {
         background-color: #f44336;
         color: white;
       }
@@ -146,17 +149,75 @@
   @media (max-width: 600px) {
     padding: 1rem;
 
+    h1 {
+      font-size: 1.6rem;
+      line-height: 1.3;
+    }
+
+    .order-summary,
+    .order-info,
+    .order-items,
+    .delivery-employees {
+      padding: 1rem;
+    }
+
+    .order-info p,
+    .order-summary p {
+      flex-direction: column;
+      gap: 0.2rem;
+      font-size: 0.95rem;
+
+      strong {
+        min-width: unset;
+      }
+    }
+
+    table,
+    .warehouse-breakdown-table {
+      display: block;
+      width: 100%;
+      overflow-x: auto;
+
+      thead {
+        display: none;
+      }
+
+      tr {
+        display: block;
+        border: 1px solid #ddd;
+        margin-bottom: 1rem;
+        background-color: #fff;
+        border-radius: 6px;
+        padding: 0.5rem;
+      }
+
+      td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem;
+        font-size: 0.9rem;
+        border: none;
+        border-bottom: 1px solid #eee;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        &::before {
+          content: attr(data-label);
+          font-weight: bold;
+          color: #555;
+        }
+      }
+    }
+
     .actions {
       flex-direction: column;
       gap: 0.5rem;
-    }
 
-    table {
-      font-size: 0.9rem;
-
-      th,
-      td {
-        padding: 0.5rem;
+      button {
+        width: 100%;
       }
     }
   }

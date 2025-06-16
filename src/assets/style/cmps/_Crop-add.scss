@@ -1,4 +1,5 @@
 .crop-add {
+  direction: rtl;
   padding: 2rem;
 
   h1 {
@@ -47,10 +48,6 @@
       display: flex;
       flex-direction: column;
 
-      label {
-        margin-bottom: 0.5rem;
-      }
-
       .inputs-inline {
         display: flex;
         gap: 1rem;
@@ -73,9 +70,9 @@
       font-weight: bold;
       padding: 0.8rem 1rem;
       border-radius: 6px;
-      white-space: pre-line;
       font-size: 1rem;
       line-height: 1.6;
+      white-space: pre-line;
 
       &.match {
         background-color: #e8f5e9;
@@ -87,22 +84,6 @@
         background-color: #ffebee;
         color: #c62828;
         border: 1px solid #ef9a9a;
-      }
-    }
-
-    button {
-      padding: 0.8rem;
-      background-color: #4caf50;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-weight: bold;
-      font-size: 1.1rem;
-      cursor: pointer;
-      transition: background-color 0.3s;
-
-      &:hover {
-        background-color: #388e3c;
       }
     }
 
@@ -120,6 +101,16 @@
         border-radius: 6px;
         cursor: pointer;
         transition: background-color 0.3s;
+        border: none;
+      }
+
+      button[type='submit'] {
+        background-color: #4caf50;
+        color: white;
+
+        &:hover {
+          background-color: #388e3c;
+        }
       }
 
       .btn-cancel {
@@ -129,6 +120,26 @@
 
         &:hover {
           background-color: #ddd;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 600px) {
+    padding: 1rem;
+
+    h1 {
+      font-size: 1.6rem;
+    }
+
+    .form {
+      gap: 1rem;
+
+      .form-actions {
+        flex-direction: column;
+
+        button {
+          width: 100%;
         }
       }
     }

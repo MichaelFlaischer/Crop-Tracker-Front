@@ -81,8 +81,9 @@ export function CustomerOrderHistoryReport() {
       }
       let valA = keyMap[sortConfig.key] ? a[keyMap[sortConfig.key]] : a[sortConfig.key]
       let valB = keyMap[sortConfig.key] ? b[keyMap[sortConfig.key]] : b[sortConfig.key]
-      if (valA === '—') return 1
-      if (valB === '—') return -1
+      if (valA === '—' || valA === undefined || valA === null) return 1
+      if (valB === '—' || valB === undefined || valB === null) return -1
+
       if (valA < valB) return sortConfig.direction === 'asc' ? -1 : 1
       if (valA > valB) return sortConfig.direction === 'asc' ? 1 : -1
       return 0
@@ -131,9 +132,9 @@ export function CustomerOrderHistoryReport() {
             <th onClick={() => handleSort('clientName')}>לקוח</th>
             <th onClick={() => handleSort('orderDate')}>תאריך הזמנה</th>
             <th onClick={() => handleSort('desiredDeliveryDate')}>תאריך אספקה רצוי</th>
-            <th>פער (ימים) מרצוי לאספקה בפועל</th>
-            <th onClick={() => handleSort('deliveredAt')}>תאריך אספקה בפועל</th>
             <th>פער (ימים) מהזמנה לרצוי</th>
+            <th>תאריך אספקה בפועל</th>
+            <th>פער (ימים) מרצוי לאספקה בפועל</th>
             <th onClick={() => handleSort('status')}>סטטוס</th>
             <th onClick={() => handleSort('totalAmount')}>סה"כ (ש"ח)</th>
             <th onClick={() => handleSort('approvedBy')}>מאושר ע"י</th>
@@ -144,18 +145,18 @@ export function CustomerOrderHistoryReport() {
         <tbody>
           {rows.map((row) => (
             <tr key={row.id}>
-              <td>{row.serial}</td>
-              <td>{row.clientName}</td>
-              <td>{row.orderDate}</td>
-              <td>{row.desiredDeliveryDate}</td>
-              <td>{row.gapOrderToDesired}</td>
-              <td>{row.deliveredAt}</td>
-              <td>{row.gapDesiredToActual}</td>
-              <td>{row.status}</td>
-              <td>{row.totalAmount}</td>
-              <td>{row.approvedBy}</td>
-              <td>{row.approvedAt}</td>
-              <td>{row.notes}</td>
+              <td data-label='מס"ד'>{row.serial}</td>
+              <td data-label='לקוח'>{row.clientName}</td>
+              <td data-label='תאריך הזמנה'>{row.orderDate}</td>
+              <td data-label='תאריך אספקה רצוי'>{row.desiredDeliveryDate}</td>
+              <td data-label='פער (ימים) מהזמנה לרצוי'>{row.gapOrderToDesired}</td>
+              <td data-label='תאריך אספקה בפועל'>{row.deliveredAt}</td>
+              <td data-label='פער (ימים) מרצוי לאספקה בפועל'>{row.gapDesiredToActual}</td>
+              <td data-label='סטטוס'>{row.status}</td>
+              <td data-label='סה"כ (ש"ח)'>{row.totalAmount}</td>
+              <td data-label='מאושר ע"י'>{row.approvedBy}</td>
+              <td data-label='תאריך אישור'>{row.approvedAt}</td>
+              <td data-label='הערות'>{row.notes}</td>
             </tr>
           ))}
         </tbody>

@@ -66,7 +66,7 @@ export function WeatherSimulation() {
     try {
       const selectedField = fields.find((field) => String(field._id) === String(selectedFieldId))
       if (!selectedField?.location?.lat || !selectedField?.location?.lng) {
-        throw new Error('לשדה אין מיקום גיאוגרפי')
+        throw new Error('לחלקת יבול אין מיקום גיאוגרפי')
       }
 
       const latitude = selectedField.location.lat
@@ -156,7 +156,7 @@ export function WeatherSimulation() {
 
       <form onSubmit={onRunSimulation}>
         <label>
-          בחר שדה:
+          בחר חלקת יבול:
           <select value={selectedFieldId} onChange={(e) => setSelectedFieldId(e.target.value)}>
             {fields.map((field) => (
               <option key={String(field._id)} value={String(field._id)}>
