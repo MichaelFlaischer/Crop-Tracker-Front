@@ -4,6 +4,12 @@ import { cropService } from '../services/crop.service.js'
 import { fieldService } from '../services/field.service.js'
 import * as XLSX from 'xlsx'
 import { saveAs } from 'file-saver'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
+import { registerLocale } from 'react-datepicker'
+import he from 'date-fns/locale/he'
+
+registerLocale('he', he)
 
 export function InventoryHistoryReport() {
   const [records, setRecords] = useState([])
@@ -160,11 +166,25 @@ export function InventoryHistoryReport() {
       <div className='filters'>
         <label>
           מתאריך:
-          <input type='date' value={filter.from} onChange={(e) => setFilter((prev) => ({ ...prev, from: e.target.value }))} />
+          <DatePicker
+            selected={filter.from ? new Date(filter.from) : null}
+            onChange={(date) => setFilter((prev) => ({ ...prev, from: date ? date.toISOString() : '' }))}
+            dateFormat='dd/MM/yyyy'
+            locale='he'
+            className='custom-datepicker'
+            placeholderText='בחר תאריך התחלה'
+          />
         </label>
         <label>
           עד תאריך:
-          <input type='date' value={filter.to} onChange={(e) => setFilter((prev) => ({ ...prev, to: e.target.value }))} />
+          <DatePicker
+            selected={filter.to ? new Date(filter.to) : null}
+            onChange={(date) => setFilter((prev) => ({ ...prev, to: date ? date.toISOString() : '' }))}
+            dateFormat='dd/MM/yyyy'
+            locale='he'
+            className='custom-datepicker'
+            placeholderText='בחר תאריך סיום'
+          />
         </label>
         <button onClick={exportToExcel}>📤 ייצוא לאקסל</button>
       </div>

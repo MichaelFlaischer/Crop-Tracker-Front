@@ -6,6 +6,11 @@ import { useNavigate } from 'react-router-dom'
 import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service'
 import { userService } from '../services/user.service'
 import { roleService } from '../services/role.service'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
+import { registerLocale } from 'react-datepicker'
+import he from 'date-fns/locale/he'
+registerLocale('he', he)
 
 const schema = yup.object().shape({
   FullName: yup.string().required('יש להזין שם מלא'),
@@ -34,6 +39,7 @@ export function UserAdd() {
     handleSubmit,
     setValue,
     watch,
+    getValues,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
@@ -61,8 +67,6 @@ export function UserAdd() {
     try {
       const rolesFromServer = await roleService.query()
       setRoles(rolesFromServer)
-
-      // ברירת מחדל לפי התפקיד הראשון ברשימה
       const defaultRole = rolesFromServer.find((r) => r.RoleID === 2) || rolesFromServer[0]
       if (defaultRole) {
         setValue('RoleID', defaultRole.RoleID)
@@ -130,7 +134,17 @@ export function UserAdd() {
 
         <label>
           תאריך התחלה:
-          <input type='date' {...register('StartDate')} />
+          <DatePicker
+            selected={watch('StartDate') ? new Date(watch('StartDate')) : null}
+            onChange={(date) => {
+              const iso = date?.toISOString().split('T')[0]
+              setValue('StartDate', iso)
+            }}
+            dateFormat='dd/MM/yyyy'
+            placeholderText='בחר תאריך (יום/חודש/שנה)'
+            locale='he'
+            className='custom-datepicker'
+          />
           {errors.StartDate && <span>{errors.StartDate.message}</span>}
         </label>
 
@@ -183,7 +197,6 @@ export function UserAdd() {
           <span>{watch('isAdmin') === 'true' ? 'כן' : 'לא'}</span>
         </label>
 
-        {/* מוסתרים אך דרושים לשמירה */}
         <input type='hidden' {...register('RoleName')} />
         <input type='hidden' {...register('isAdmin')} />
 

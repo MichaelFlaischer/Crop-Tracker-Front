@@ -6,6 +6,11 @@ import { cropService } from '../services/crop.service.js'
 import { warehouseService } from '../services/warehouse.service.js'
 import { getWeeklyWeatherSummary } from '../services/weather.service.js'
 import { Switch } from '@headlessui/react'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
+import { registerLocale } from 'react-datepicker'
+import he from 'date-fns/locale/he'
+registerLocale('he', he)
 
 export function HarvestAdd() {
   const { sowingId } = useParams()
@@ -228,7 +233,14 @@ export function HarvestAdd() {
       <form onSubmit={handleSubmit}>
         <label>
           תאריך קציר:
-          <input type='date' name='date' value={log.date} onChange={handleChange} required />
+          <DatePicker
+            selected={log.date ? new Date(log.date) : null}
+            onChange={(date) => setLog((prev) => ({ ...prev, date: date?.toISOString().split('T')[0] }))}
+            dateFormat='dd/MM/yyyy'
+            placeholderText='בחר תאריך (יום/חודש/שנה)'
+            locale='he'
+            className='custom-datepicker'
+          />
         </label>
         {weatherSuitabilityMsg && <p>{weatherSuitabilityMsg}</p>}
 

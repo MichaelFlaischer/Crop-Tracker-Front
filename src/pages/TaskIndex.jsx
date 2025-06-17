@@ -7,6 +7,11 @@ import { sowingAndHarvestService } from '../services/sowing-and-harvest.service.
 import { employeesInTaskService } from '../services/employees-in-task.service.js'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service.js'
 import { ResponsiveTable } from '../cmps/ResponsiveTable.jsx'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
+import { registerLocale } from 'react-datepicker'
+import he from 'date-fns/locale/he'
+registerLocale('he', he)
 
 export function TaskIndex() {
   const [tasks, setTasks] = useState([])
@@ -164,16 +169,30 @@ export function TaskIndex() {
           <option value='delayed'>נדחתה</option>
           <option value='missed'>לא בוצעה</option>
         </select>
-        <input type='date' value={filter.filterDate} onChange={(e) => setFilter((prev) => ({ ...prev, filterDate: e.target.value }))} />
+
+        <DatePicker
+          selected={filter.filterDate ? new Date(filter.filterDate) : null}
+          onChange={(date) => {
+            const iso = date?.toISOString().split('T')[0]
+            setFilter((prev) => ({ ...prev, filterDate: iso }))
+          }}
+          dateFormat='dd/MM/yyyy'
+          placeholderText='בחר תאריך (יום/חודש/שנה)'
+          locale='he'
+          className='custom-datepicker'
+        />
+
         <select value={filter.sortBy} onChange={(e) => setFilter((prev) => ({ ...prev, sortBy: e.target.value }))}>
           <option value='startDateAsc'>מיון לפי התחלה (עולה)</option>
           <option value='startDateDesc'>מיון לפי התחלה (יורד)</option>
           <option value='endDateAsc'>מיון לפי סיום (עולה)</option>
           <option value='endDateDesc'>מיון לפי סיום (יורד)</option>
         </select>
+
         <button className='btn btn-secondary' onClick={() => setFilter({ status: 'all', filterDate: '', sortBy: 'startDateAsc' })}>
           איפוס
         </button>
+
         <button className='btn btn-primary' onClick={onAdd}>
           ➕ הוספת משימה חדשה
         </button>

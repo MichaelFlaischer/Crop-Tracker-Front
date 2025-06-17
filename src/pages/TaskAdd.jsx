@@ -1,13 +1,19 @@
 import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { useNavigate } from 'react-router-dom'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
+import { registerLocale } from 'react-datepicker'
+import he from 'date-fns/locale/he'
 
 import { taskService } from '../services/task.service.js'
 import { fieldService } from '../services/field.service.js'
 import { operationService } from '../services/operation.service.js'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service.js'
+
+registerLocale('he', he)
 
 const DELIVERY_TASK_OPERATION_ID = '68354fa1d29fa199e95c04d8'
 
@@ -32,6 +38,7 @@ export function TaskAdd() {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
@@ -104,7 +111,20 @@ export function TaskAdd() {
 
         <label>
           תאריך התחלה
-          <input type='date' {...register('startDate')} />
+          <Controller
+            control={control}
+            name='startDate'
+            render={({ field }) => (
+              <DatePicker
+                placeholderText='בחר תאריך התחלה'
+                dateFormat='dd/MM/yyyy'
+                locale='he'
+                className='custom-datepicker'
+                {...field}
+                selected={field.value ? new Date(field.value) : null}
+              />
+            )}
+          />
           {errors.startDate && <span className='error'>{errors.startDate.message}</span>}
         </label>
 
@@ -116,7 +136,20 @@ export function TaskAdd() {
 
         <label>
           תאריך סיום
-          <input type='date' {...register('endDate')} />
+          <Controller
+            control={control}
+            name='endDate'
+            render={({ field }) => (
+              <DatePicker
+                placeholderText='בחר תאריך סיום'
+                dateFormat='dd/MM/yyyy'
+                locale='he'
+                className='custom-datepicker'
+                {...field}
+                selected={field.value ? new Date(field.value) : null}
+              />
+            )}
+          />
           {errors.endDate && <span className='error'>{errors.endDate.message}</span>}
         </label>
 

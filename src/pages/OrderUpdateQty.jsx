@@ -9,6 +9,12 @@ import { taskService } from '../services/task.service.js'
 import { employeesInTaskService } from '../services/employees-in-task.service.js'
 import { userService } from '../services/user.service.js'
 import { format } from 'date-fns'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
+import { registerLocale } from 'react-datepicker'
+import he from 'date-fns/locale/he'
+
+registerLocale('he', he)
 
 export function OrderUpdateQty() {
   const { orderId } = useParams()
@@ -48,7 +54,7 @@ export function OrderUpdateQty() {
     setWarehousesMap(warehouseMap)
     setUsers(users)
     setCropsMap(cropMap)
-    setDeliveryDate(o.desiredDeliveryDate || '')
+    setDeliveryDate(o.desiredDeliveryDate ? new Date(o.desiredDeliveryDate) : '')
   }
 
   function handleWarehouseQtyChange(itemIdx, warehouseId, value) {
@@ -95,20 +101,17 @@ export function OrderUpdateQty() {
         return alert('אנא בחר עובד לכל שיבוץ.')
       }
 
-      // עדכון פריטי הזמנה
       for (const item of items) {
         await customerOrderItemService.update(item._id, {
           deliveredQuantity: item.actualDelivery,
           warehouseBreakdown: item.warehouseBreakdown,
         })
 
-        // עדכון כמות במחסנים
         for (const w of item.warehousesUsed) {
           await warehouseService.updateCropQuantity(w.warehouseId, item.cropId, -w.quantity)
         }
       }
 
-      // עדכון סטטוס הזמנה
       const updatedOrder = {
         ...order,
         status: 'מאושרת',
@@ -118,7 +121,6 @@ export function OrderUpdateQty() {
       }
       await customerOrderService.update(orderId, updatedOrder)
 
-      // יצירת משימה חדשה
       const task = await taskService.add({
         operationId: '68354fa1d29fa199e95c04d8',
         fieldId: order._id,
@@ -132,7 +134,6 @@ export function OrderUpdateQty() {
         taskDescription: `משלוח ללקוח: ${client.customerName}`,
       })
 
-      // שיוך עובדים למשימה
       for (const assignment of assignments) {
         await employeesInTaskService.add({
           taskId: task._id,
@@ -248,7 +249,14 @@ export function OrderUpdateQty() {
       <div className='delivery-date'>
         <label>
           תאריך משלוח:
-          <input type='date' value={deliveryDate?.slice(0, 10)} onChange={(e) => setDeliveryDate(e.target.value)} required />
+          <DatePicker
+            selected={deliveryDate ? new Date(deliveryDate) : null}
+            onChange={(date) => setDeliveryDate(date)}
+            dateFormat='dd/MM/yyyy'
+            locale='he'
+            className='custom-datepicker'
+            placeholderText='בחר תאריך משלוח'
+          />
         </label>
       </div>
 
