@@ -47,7 +47,6 @@ export function WorkerDashboard() {
       const todayTasksArr = enrichedTasks.filter((t) => isSameDate(t.startDate, today) && t.operationId !== deliveryOpId)
 
       const todayDeliveriesArr = enrichedTasks.filter((t) => isSameDate(t.startDate, today) && t.operationId === deliveryOpId)
-
       const weekAgo = new Date()
       weekAgo.setDate(now.getDate() - 7)
       const monthAgo = new Date()
@@ -91,7 +90,7 @@ export function WorkerDashboard() {
           <ul>
             {todayDeliveries.map((task) => (
               <li key={task._id}>
-                {task.taskDescription} — <Link to={`/tasks/${task._id}`}>[צפה בפרטי המשלוח]</Link>
+                {task.taskDescription} — <Link to={`/order/${task.fieldId}`}>[צפה בפרטי המשלוח]</Link>
               </li>
             ))}
           </ul>
