@@ -152,7 +152,7 @@ export function TaskIndex() {
   }))
 
   return (
-    <section className='task-index main-layout'>
+    <section className='task-index'>
       <h1>רשימת משימות</h1>
 
       <div className='filter-bar'>

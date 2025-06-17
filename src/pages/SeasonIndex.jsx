@@ -36,7 +36,7 @@ export function SeasonIndex() {
   }
 
   return (
-    <section className='season-index main-layout'>
+    <section className='season-index'>
       <h1>🌦️ ניהול עונות</h1>
       <p className='page-description'>כאן תוכל לצפות בעונות ולהתאים את התאריכים והתנאים. עונות שהסתיימו מסומנות באדום.</p>
 

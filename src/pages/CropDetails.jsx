@@ -57,7 +57,7 @@ export function CropDetails() {
   if (!crop) return <div>לא נמצאו נתונים עבור היבול המבוקש</div>
 
   return (
-    <section className='crop-details main-layout'>
+    <section className='crop-details'>
       <h1>פרטי יבול</h1>
 
       <table className='crop-details-table'>

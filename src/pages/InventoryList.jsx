@@ -140,7 +140,7 @@ export function InventoryList() {
   }
 
   return (
-    <section className='inventory-list main-layout'>
+    <section className='inventory-list'>
       <h1>מלאי יבול והמלצות DSS</h1>
       <div className='inventory-cards'>
         {inventoryData.map((entry) => (

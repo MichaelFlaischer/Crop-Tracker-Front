@@ -67,7 +67,7 @@ export function ReportIndex() {
   }
 
   return (
-    <section className='report-index main-layout'>
+    <section className='report-index'>
       <h1>📊 סקירה כללית של המערכת</h1>
 
       <p style={{ marginBottom: '1.5rem' }}>

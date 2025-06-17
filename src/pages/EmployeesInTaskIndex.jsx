@@ -38,7 +38,7 @@ export function EmployeesInTaskIndex() {
   }
 
   return (
-    <section className='employees-in-task-index main-layout'>
+    <section className='employees-in-task-index'>
       <h1>שיבוץ עובדים למשימות</h1>
       {isLoading ? (
         <p>טוען נתונים...</p>

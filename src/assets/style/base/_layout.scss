@@ -1,30 +1,53 @@
 .main-layout {
   display: grid;
-  grid-template-columns: $layoutPadding 1fr $layoutPadding;
-  grid-template-rows: auto 1fr auto;
-  height: 100vh; // גובה של 80% מהגובה הכולל של החלון
-  box-sizing: border-box;
+  grid-template-areas:
+    'header main'
+    'footer footer';
+  grid-template-columns: 30vh auto;
+  grid-template-rows: 1fr auto;
+  min-height: 100vh;
 
-  // כל האלמנטים שמקבלים class="full" יתפרסו על כל הרוחב
-  > *.full {
-    grid-column: 1 / -1;
-  }
-
-  // כל האלמנטים האחרים כמו main יוצגו בעמודה המרכזית בלבד
-  > *:not(.full) {
-    grid-column: 2;
-  }
-
-  // תוכן ראשי
-  main {
+  > header {
+    grid-area: header;
+    background-color: #f4f4f4;
+    border-inline-end: 1px solid #ccc;
+    padding: 1.5rem;
+    overflow-y: auto;
     height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start; // אפשר לשנות ל center אם רוצים תוכן ממורכז
-    align-items: stretch;
-    overflow: auto;
-    position: relative;
-    z-index: 1;
-    padding: 1em 0; // אם רוצים ריווח פנימי
+    position: sticky;
+    top: 0;
+    align-self: start;
+  }
+
+  > main {
+    grid-area: main;
+    background-color: #fff;
+    padding: 2rem;
+
+    min-height: 0; // מונע גלילה כפולה
+  }
+
+  > footer {
+    grid-area: footer;
+    background-color: #eaeaea;
+    padding: 1rem 2rem;
+    border-top: 1px solid #ccc;
+    text-align: center;
+  }
+
+  @media (max-width: 768px) {
+    grid-template-areas:
+      'header'
+      'main'
+      'footer';
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+
+    > header {
+      position: static;
+      height: auto;
+      border-inline-end: none;
+      border-bottom: 1px solid #ccc;
+    }
   }
 }

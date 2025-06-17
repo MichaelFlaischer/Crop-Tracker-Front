@@ -163,7 +163,7 @@ export function WarehouseEdit() {
   if (!isLoaded || !warehouse) return <p>טוען...</p>
 
   return (
-    <section className='warehouse-edit main-layout'>
+    <section className='warehouse-edit'>
       <h1>ערוך מחסן</h1>
       <div className='form-map-container'>
         <form onSubmit={onSave} className='warehouse-form'>

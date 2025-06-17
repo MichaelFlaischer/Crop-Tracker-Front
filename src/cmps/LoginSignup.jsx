@@ -6,9 +6,9 @@ export function LoginSignup() {
   async function onLogin(credentials) {
     try {
       await login(credentials)
-      showSuccessMsg('Logged in successfully')
+      showSuccessMsg('התחברת בהצלחה!')
     } catch (error) {
-      showErrorMsg('Oops try again', error)
+      showErrorMsg('שגיאה בהתחברות', error)
     }
   }
 

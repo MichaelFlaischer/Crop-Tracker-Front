@@ -95,7 +95,7 @@ export function UserAdd() {
   }
 
   return (
-    <section className='user-add main-layout'>
+    <section className='user-add'>
       <h2>הוספת עובד חדש</h2>
       <form onSubmit={handleSubmit(onSubmit)} className='user-form'>
         <label>

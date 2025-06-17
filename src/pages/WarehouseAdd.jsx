@@ -157,7 +157,7 @@ export function WarehouseAdd() {
   if (!isLoaded) return <p>טוען מפה...</p>
 
   return (
-    <section className='warehouse-add main-layout'>
+    <section className='warehouse-add'>
       <h1>הוסף מחסן חדש</h1>
       <div className='form-map-container'>
         <form onSubmit={onSave} className='warehouse-form'>

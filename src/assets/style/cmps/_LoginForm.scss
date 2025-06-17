@@ -1,39 +1,62 @@
-.login {
+.login-form {
+  padding: 2rem 2.5rem;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
   width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
 
-  .form {
+  h2 {
+    margin-bottom: 0.5rem;
+    font-size: 1.5rem;
+    text-align: center;
+    color: #333;
+  }
+
+  label {
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.5em;
-    max-width: 100%;
+    flex-direction: column;
+    font-size: 0.95rem;
+    color: #444;
 
     input {
-      flex: 1;
-      min-width: 120px;
-      padding: 0.4em 0.6em;
-      font-size: 0.9rem;
+      margin-top: 0.3rem;
+      padding: 0.6em 0.8em;
+      font-size: 0.95rem;
       border: 1px solid #ccc;
-      border-radius: 4px;
-      direction: rtl;
-      text-align: right;
-    }
+      border-radius: 5px;
+      background-color: #fefefe;
+      transition: border-color 0.2s;
 
-    .btn {
-      padding: 0.4em 1em;
-      font-size: 0.9rem;
-      background-color: darken($clr-brand1, 10%);
-      border: none;
-      color: white;
-      cursor: pointer;
-      border-radius: 4px;
-      white-space: nowrap;
-      transition: background-color 0.2s;
-
-      &:hover {
-        background-color: darken($clr-brand1, 15%);
+      &:focus {
+        border-color: $clr-brand1;
+        outline: none;
       }
+    }
+  }
+
+  .btn-submit {
+    padding: 0.6em 1em;
+    background-color: $clr-brand1;
+    color: #fff;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: darken($clr-brand1, 10%);
+    }
+  }
+
+  @media (max-width: 600px) {
+    padding: 1rem;
+
+    .login-form {
+      padding: 1.5rem;
     }
   }
 }

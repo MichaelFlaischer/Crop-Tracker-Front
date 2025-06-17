@@ -78,7 +78,7 @@ export function SeasonEdit() {
   if (!season) return <div>טוען נתונים...</div>
 
   return (
-    <section className='season-edit main-layout'>
+    <section className='season-edit'>
       <h1>✏️ עריכת עונה - {season.name}</h1>
       <p className='page-description'>
         במסך זה ניתן לערוך את מאפייני העונה במערכת. שדות החובה כוללים את טווח התאריכים של העונה, ממוצעי טמפרטורה, משקעים ולחות, וכן תיאור כללי לעונה זו.

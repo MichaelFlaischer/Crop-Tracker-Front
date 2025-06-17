@@ -99,7 +99,7 @@ export function CropIndex() {
   if (isLoading) return <div className='loader'>טוען נתונים...</div>
 
   return (
-    <section className='crop-index main-layout'>
+    <section className='crop-index'>
       <h1>רשימת יבולים</h1>
       <button className='btn-add' onClick={onAddCrop}>
         ➕ הוספת יבול

@@ -153,7 +153,7 @@ export function WeatherForecast() {
 
   return (
     <section className='weekly-weather-page'>
-      <h1>תחזית שבועית לפי שדות והמלצות DSS</h1>
+      <h1>תחזית שבועית לפי חלקות גידול יבול והמלצות DSS</h1>
       {forecastData.map((field) => (
         <div key={field.fieldId} className='forecast-field'>
           <div className='field-header' onClick={() => toggleFieldOpen(field.fieldId)}>

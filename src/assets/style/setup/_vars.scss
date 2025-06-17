@@ -1,12 +1,22 @@
-// COLOR PALETTE
-$clr-brand1: #6b71ff;
-$clr-brand2: #52b69a;
+// Brand Colors
+$clr-brand1: #6b71ff; // כחול-סגול עיקרי
+$clr-brand2: #52b69a; // ירוק טורקיזי משני
 
-$clr-primary: #f2f3f7;
-$clr-secondary: #ececec;
-$clr-tertiary: rgb(240, 240, 240);
-$clr-dark: rgb(44, 44, 44);
+// UI Base Colors
+$clr-primary: #f2f3f7; // רקע בהיר מאוד
+$clr-secondary: #ececec; // אפור בהיר
+$clr-tertiary: #f0f0f0; // אפור ביניים
 
+// Text & Border
+$clr-dark: #2c2c2c; // שחור-אפור לטקסטים
+$clr-border: #ccc; // ברירת מחדל לגבולות
 
-// LAYOUT
-$layoutPadding: 1.6rem;
+// Layout & Spacing
+$layoutPadding: 1.6rem; // ריווח פנימי כללי
+$sidebarWidth: 260px; // רוחב תפריט צד
+$maxContentWidth: 1200px; // מקסימום רוחב תוכן
+
+// Breakpoints for responsive design
+$breakpoint-mobile: 768px;
+$breakpoint-tablet: 992px;
+$breakpoint-desktop: 1200px;

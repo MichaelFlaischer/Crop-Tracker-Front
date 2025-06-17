@@ -5,21 +5,20 @@
 html {
   color: $clr-dark;
   font-family: roboto, sans-serif;
-
-  // תמיכה כללית ב-RTL
   direction: rtl;
+  line-height: 1.6;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
   margin: 0;
-
-  // יישור טקסטים עבריים ברירת מחדל
+  padding: 0;
   text-align: right;
-  line-height: 1.6;
   background-color: #fff;
+  overflow-x: hidden;
 }
 
-// כותרות ופסקאות
 h1,
 h2,
 h3,
@@ -34,7 +33,6 @@ p {
   margin: 0 0 1em;
 }
 
-// קישורים
 a {
   text-decoration: none;
   color: unset;
@@ -44,7 +42,10 @@ a.active {
   text-decoration: overline;
 }
 
-// מדיה
+a:hover {
+  text-decoration: none;
+}
+
 img,
 embed,
 video,
@@ -52,23 +53,22 @@ object {
   max-width: 100%;
 }
 
-// DEBUG
 .debug * {
   outline: 1px solid gold;
 }
 
-// טפסים – RTL מלא
 input,
 select,
-textarea {
+textarea,
+button {
   direction: rtl;
   text-align: right;
+  font-family: inherit;
 }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
+button {
+  cursor: pointer;
+  text-align: center;
 }
 
 #root {

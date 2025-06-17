@@ -39,7 +39,7 @@ export function RoleIndex() {
   }
 
   return (
-    <section className='role-index main-layout'>
+    <section className='role-index'>
       <h1>📋 ניהול תפקידים במערכת</h1>
       <div className='page-description'>במסך זה ניתן להוסיף, לערוך ולמחוק תפקידים במערכת. כל תפקיד מגדיר את סוג הגישה וההרשאות עבור המשתמשים שיקושרו אליו.</div>
 

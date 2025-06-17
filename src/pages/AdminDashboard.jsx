@@ -149,7 +149,7 @@ export function AdminDashboard() {
   const COLORS = ['#00C49F', '#FF8042', '#FFBB28', '#0088FE', '#FF6699', '#AA55FF']
 
   return (
-    <section className='admin-dashboard main-layout'>
+    <section className='admin-dashboard'>
       <h1>דשבורד ניהולי</h1>
 
       <div className='stat-cards'>

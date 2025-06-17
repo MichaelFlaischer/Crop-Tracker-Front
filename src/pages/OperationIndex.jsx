@@ -45,7 +45,7 @@ export function OperationIndex() {
   }
 
   return (
-    <section className='operation-index main-layout'>
+    <section className='operation-index'>
       <h1>ניהול פעולות במערכת Crop-Tracker</h1>
       <p className='section-description'>
         כאן ניתן להוסיף, לערוך ולנהל פעולות שמיועדות לשיבוץ במשימות גידול. <br />

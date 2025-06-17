@@ -146,7 +146,7 @@ export function TaskDetails() {
   if (!task) return <section className='task-details'>טוען פרטים...</section>
 
   return (
-    <section className='task-details main-layout'>
+    <section className='task-details'>
       <div className='task-actions'>
         <button onClick={() => navigate('/tasks')}>⬅ חזור לרשימת המשימות</button>
         <button onClick={() => navigate(`/tasks/edit/${taskId}`)}>✏ עריכת משימה זו</button>

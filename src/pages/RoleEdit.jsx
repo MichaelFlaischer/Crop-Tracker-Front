@@ -44,7 +44,7 @@ export function RoleEdit() {
   if (!role) return <p>טוען נתונים...</p>
 
   return (
-    <section className='role-edit main-layout'>
+    <section className='role-edit'>
       <h1>✏️ עריכת תפקיד במערכת</h1>
       <p className='page-description'>
         כאן ניתן לערוך את שם התפקיד, התיאור שלו, ולהגדיר האם מדובר בתפקיד עם הרשאות מנהל מערכת (גישה מלאה לכל הפונקציות והדוחות).

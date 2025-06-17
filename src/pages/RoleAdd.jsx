@@ -31,7 +31,7 @@ export function RoleAdd() {
   }
 
   return (
-    <section className='role-add main-layout'>
+    <section className='role-add'>
       <h1>➕ הוספת תפקיד חדש למערכת</h1>
       <p className='page-description'>
         כאן ניתן להגדיר תפקיד חדש עבור משתמשים במערכת. ניתן לציין שם תפקיד, תיאור, ולהחליט האם מדובר בתפקיד עם הרשאות מנהל מערכת.

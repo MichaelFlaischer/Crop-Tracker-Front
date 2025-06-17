@@ -5,8 +5,8 @@ export function LoginForm({ onLogin, isSignup }) {
   const [credentials, setCredentials] = useState(userService.getEmptyCredentials())
 
   function handleChange({ target }) {
-    const { name: field, value } = target
-    setCredentials((prevState) => ({ ...prevState, [field]: value }))
+    const { name, value } = target
+    setCredentials((prev) => ({ ...prev, [name]: value }))
   }
 
   function handleSubmit(ev) {
@@ -17,14 +17,27 @@ export function LoginForm({ onLogin, isSignup }) {
   const { fullname, username, password } = credentials
 
   return (
-    <form className='form flex' onSubmit={handleSubmit} autoComplete='on' dir='rtl'>
-      <input type='text' name='username' value={username} placeholder='שם עובד' onChange={handleChange} required autoFocus autoComplete='username' />
+    <form className='login-form' onSubmit={handleSubmit} dir='rtl'>
+      <h2>{isSignup ? 'הרשמה למערכת' : 'התחברות למערכת'}</h2>
 
-      <input type='password' name='password' value={password} placeholder='סיסמה' onChange={handleChange} required autoComplete='current-password' />
+      <label>
+        שם משתמש
+        <input type='text' name='username' value={username} onChange={handleChange} required autoComplete='username' />
+      </label>
 
-      {isSignup && <input type='text' name='fullname' value={fullname} placeholder='שם מלא' onChange={handleChange} required autoComplete='name' />}
+      <label>
+        סיסמה
+        <input type='password' name='password' value={password} onChange={handleChange} required autoComplete='current-password' />
+      </label>
 
-      <button className='btn' type='submit'>
+      {isSignup && (
+        <label>
+          שם מלא
+          <input type='text' name='fullname' value={fullname} onChange={handleChange} required autoComplete='name' />
+        </label>
+      )}
+
+      <button className='btn-submit' type='submit'>
         {isSignup ? 'הרשמה' : 'כניסה'}
       </button>
     </form>

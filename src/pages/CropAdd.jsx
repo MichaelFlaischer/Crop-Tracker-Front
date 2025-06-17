@@ -162,7 +162,7 @@ export function CropAdd() {
   }
 
   return (
-    <section className='crop-add main-layout'>
+    <section className='crop-add'>
       <h1>הוספת יבול</h1>
       <form onSubmit={handleSubmit(onSubmit)} className='form'>
         <label>שם היבול *</label>

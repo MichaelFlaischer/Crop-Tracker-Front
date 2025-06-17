@@ -69,7 +69,7 @@ export function WorkerDashboard() {
   }
 
   return (
-    <section className='worker-dashboard main-layout'>
+    <section className='worker-dashboard'>
       <h1>שלום וברוך הבא לעבודה! 👩‍🌾</h1>
 
       <section className='dashboard-cards'>

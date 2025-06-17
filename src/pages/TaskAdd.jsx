@@ -65,7 +65,7 @@ export function TaskAdd() {
   }
 
   return (
-    <section className='task-add main-layout'>
+    <section className='task-add'>
       <h1>הוספת משימה חדשה</h1>
       <form className='form styled-form' onSubmit={handleSubmit(onSubmit)}>
         <label>

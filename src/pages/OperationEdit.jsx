@@ -70,7 +70,7 @@ export function OperationEdit() {
   }
 
   return (
-    <section className='operation-edit main-layout'>
+    <section className='operation-edit'>
       <h1>עריכת פעולה במערכת Crop-Tracker</h1>
       <p className='form-note'>
         כאן ניתן לעדכן את פרטי הפעולה לשיבוץ במשימות השונות. <br />* שדות חובה

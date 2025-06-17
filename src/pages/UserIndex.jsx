@@ -65,7 +65,7 @@ export function UserIndex() {
   const filteredData = sortedData.filter((user) => user.fullName.toLowerCase().includes(filterBy.name.toLowerCase()))
 
   return (
-    <section className='user-index main-layout'>
+    <section className='user-index'>
       <h2>רשימת עובדים</h2>
 
       <button className='btn btn-primary' onClick={() => navigate('/user/add')}>

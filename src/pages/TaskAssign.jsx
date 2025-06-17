@@ -265,7 +265,7 @@ export function TaskAssign() {
   )
 
   return (
-    <section className='task-assign main-layout'>
+    <section className='task-assign'>
       <h1>המשימות שלי</h1>
 
       <h2>🚚 משימות משלוח</h2>

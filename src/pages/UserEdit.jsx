@@ -118,7 +118,7 @@ export function UserEdit() {
   }
 
   return (
-    <section className='user-edit main-layout'>
+    <section className='user-edit'>
       <h2>עריכת עובד</h2>
       <form onSubmit={handleSubmit(onSave)} className='user-form'>
         <label>

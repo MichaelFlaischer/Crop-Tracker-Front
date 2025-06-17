@@ -58,7 +58,7 @@ export function InventoryHistory() {
   }
 
   return (
-    <section className='inventory-history main-layout'>
+    <section className='inventory-history'>
       <h1>היסטוריית קציר לפי חלקות ויבולים</h1>
       {isLoading ? (
         <p>טוען נתונים...</p>

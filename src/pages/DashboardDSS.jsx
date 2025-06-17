@@ -144,7 +144,7 @@ export function DashboardDSS() {
   }
 
   return (
-    <section className='dashboard-dss main-layout'>
+    <section className='dashboard-dss'>
       <h1>📊 לוח תובנות חקלאיות</h1>
 
       <h2>📊 כמות זמינה לפי יבול</h2>

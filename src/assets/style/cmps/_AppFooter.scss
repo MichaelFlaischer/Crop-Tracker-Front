@@ -1,6 +1,41 @@
 .app-footer {
-    background-color: $clr-brand1;
-    color: $clr-primary;
-    padding: 1em calc(1em + $layoutPadding);
-    text-align: center;
+  grid-area: footer;
+  background-color: $clr-brand1;
+  padding: 1.5em calc(1em + $layoutPadding);
+  text-align: center;
+  font-size: 1rem;
+  line-height: 1.8;
+  width: 100%;
+  border-top: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.05);
+
+  p {
+    margin: 0.3em 0;
+    white-space: pre-line;
+    font-weight: 300;
+
+    strong {
+      font-weight: 600;
+    }
+
+    span {
+      font-weight: 500;
+    }
+  }
+
+  a {
+    color: #e2f7e2;
+    text-decoration: underline;
+
+    &:hover {
+      text-decoration: none;
+      color: #fff;
+    }
+  }
+
+  @media (max-width: $breakpoint-mobile) {
+    padding: 1em;
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
 }

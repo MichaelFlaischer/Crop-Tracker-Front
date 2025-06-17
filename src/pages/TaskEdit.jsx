@@ -88,7 +88,7 @@ export function TaskEdit() {
   }
 
   return (
-    <section className='task-edit main-layout'>
+    <section className='task-edit'>
       <h1>עריכת משימה</h1>
       {isLoading ? (
         <p>טוען...</p>

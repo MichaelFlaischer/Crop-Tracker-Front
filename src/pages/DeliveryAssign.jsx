@@ -66,7 +66,7 @@ export function DeliveryAssign() {
   }
 
   return (
-    <section className='delivery-assign main-layout'>
+    <section className='delivery-assign'>
       <h1>🚛 שיבוץ משלוחים להזמנות מאושרות</h1>
 
       {orders.length === 0 ? (

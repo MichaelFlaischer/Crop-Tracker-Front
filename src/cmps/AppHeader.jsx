@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service'
@@ -6,9 +6,22 @@ import { logout } from '../store/actions/user.actions'
 import { LoginSignup } from './LoginSignup'
 
 export function AppHeader() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const user = useSelector((storeState) => storeState.userModule.loggedInUser)
   const isAdmin = user?.IsAdmin
+  const [openMenus, setOpenMenus] = useState([])
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const isGuest = !user
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 768) setIsMobileMenuOpen(true)
+      else setIsMobileMenuOpen(false)
+    }
+
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   async function onLogout() {
     try {
@@ -19,249 +32,201 @@ export function AppHeader() {
     }
   }
 
+  function toggleMenu(key) {
+    setOpenMenus((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]))
+  }
+
+  function isOpen(key) {
+    return openMenus.includes(key)
+  }
+
+  function renderMenu(items, level = 1, parentKey = '') {
+    return (
+      <ul className={`accordion-level accordion-level-${level}`}>
+        {items.map((item, idx) => {
+          const key = `${parentKey}-${idx}`
+          const hasSub = item.subMenu?.length > 0
+          if (item.adminOnly && !isAdmin) return null
+
+          return (
+            <li key={key} className={isOpen(key) ? 'open' : ''}>
+              <div className='dropdownlink' onClick={() => hasSub && toggleMenu(key)}>
+                {hasSub ? (
+                  <>
+                    {item.label}
+                    <span className='arrow'>{isOpen(key) ? '▲' : '▼'}</span>
+                  </>
+                ) : (
+                  <NavLink to={item.path} className={({ isActive }) => (isActive ? 'active' : '')}>
+                    {item.label}
+                  </NavLink>
+                )}
+              </div>
+              {hasSub && isOpen(key) && renderMenu(item.subMenu, level + 1, key)}
+            </li>
+          )
+        })}
+      </ul>
+    )
+  }
+
+  const fullMenu = [
+    {
+      label: 'דשבורד ראשי',
+      path: '/',
+    },
+    {
+      label: '👷 ניהול עובדים',
+      adminOnly: true,
+      subMenu: [
+        {
+          label: 'עובדים',
+          subMenu: [
+            { label: 'רשימת עובדים', path: '/user' },
+            { label: '➕ הוספת עובד', path: '/user/add' },
+          ],
+        },
+        {
+          label: 'ניהול תפקידים',
+          subMenu: [
+            { label: 'רשימת תפקידים', path: '/roles' },
+            { label: '➕ הוספת תפקיד', path: '/roles/add' },
+          ],
+        },
+      ],
+    },
+    {
+      label: '🌾 ניהול חקלאי',
+      subMenu: [
+        {
+          label: 'חלקות לגידול יבולים',
+          subMenu: [
+            { label: 'רשימת חלקות', path: '/field' },
+            { label: '➕ הוספת חלקה', path: '/field/add', adminOnly: true },
+          ],
+        },
+        {
+          label: 'סוגי יבולים',
+          subMenu: [
+            { label: 'רשימת סוגי יבולים', path: '/crop' },
+            { label: '➕ הוספת סוג יבול', path: '/crop/add', adminOnly: true },
+          ],
+        },
+        {
+          label: 'ניהול מלאי ומחסנים',
+          subMenu: [
+            { label: 'רשימת מחסנים', path: '/warehouse' },
+            { label: '➕ הוספת מחסן', path: '/warehouse/add', adminOnly: true },
+          ],
+        },
+        {
+          label: 'עונות חקלאיות',
+          subMenu: [{ label: 'רשימת עונות', path: '/seasons' }],
+        },
+      ],
+    },
+    {
+      label: '📋 משימות',
+      subMenu: [
+        { label: 'המשימות שלי (שיבוץ אישי)', path: '/tasks/assign' },
+        {
+          label: 'ניהול משימות',
+          adminOnly: true,
+          subMenu: [
+            { label: 'רשימת משימות', path: '/tasks/' },
+            { label: '➕ הוספת משימה', path: '/tasks/add' },
+          ],
+        },
+        {
+          label: 'ניהול פעולות',
+          adminOnly: true,
+          subMenu: [
+            { label: 'רשימת פעולות חקלאיות', path: '/operations' },
+            { label: '➕ הוספת פעולה', path: '/operations/add' },
+          ],
+        },
+      ],
+    },
+    {
+      label: '🚛 משלוחים ושיווק',
+      adminOnly: true,
+      subMenu: [
+        {
+          label: 'לקוחות',
+          subMenu: [
+            { label: 'לקוחות', path: '/client' },
+            { label: '➕ הוספת לקוח', path: '/client/add' },
+          ],
+        },
+        {
+          label: 'הזמנות',
+          subMenu: [
+            { label: 'הזמנות', path: '/orders/view' },
+            { label: '📝 הוספת הזמנה', path: '/order/add' },
+          ],
+        },
+      ],
+    },
+    {
+      label: '📊 דוחות וניתוחים',
+      adminOnly: true,
+      subMenu: [
+        { label: 'דשבורד סקירה כללית', path: '/reports' },
+        {
+          label: 'דוחות מערכת',
+          subMenu: [
+            { label: 'היסטוריית קצירת יבול', path: '/reports/inventory-history' },
+            { label: 'היסטוריית הזמנות לקוחות', path: '/reports/customer-order-history' },
+            { label: 'היסטוריית מחירי יבול', path: '/reports/crop-price-history' },
+            { label: 'היסטוריית משימות ומשלוחים', path: '/reports/employee-task-history' },
+            { label: 'לוח פעילות חקלאית', path: '/reports/SowingAndHarvestTimeline' },
+            { label: 'דוח קציר בפילוח עונתי', path: '/reports/CropSeasonSummary' },
+          ],
+        },
+        {
+          label: 'תובנות תומכות החלטה (DSS)',
+          subMenu: [
+            { label: 'מזג אוויר והמלצות', path: '/reports/weather' },
+            { label: 'סימולציית תנאי מזג אוויר וגידול', path: '/weather-simulation' },
+            { label: 'מלאי יבול והמלצות DSS', path: '/inventory' },
+            { label: 'לוח תובנות חקלאיות', path: '/dashboarddss' },
+          ],
+        },
+      ],
+    },
+    {
+      label: 'אודות',
+      path: '/about',
+    },
+  ]
+
+  const guestMenu = [
+    { label: 'דף הבית', path: '/' },
+    { label: 'אודות', path: '/about' },
+  ]
+
   return (
-    <section className='app-header full'>
-      <section className='nav-wrapper flex justify-between align-center'>
-        <button className='mobile-menu-toggle' onClick={() => setIsMobileMenuOpen((prev) => !prev)}>
-          ☰ תפריט
-        </button>
+    <header className='app-header'>
+      <h2 className='header-title'>Crop-Tracker</h2>
 
-        <nav role='navigation'>
-          <ul className={isMobileMenuOpen ? 'open' : ''}>
-            <li>
-              <NavLink to='/'>בית</NavLink>
-            </li>
+      <button className='mobile-menu-toggle' onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+        ☰ תפריט
+      </button>
 
-            {user && (
-              <>
-                {isAdmin && (
-                  <li>
-                    <span className='non-clickable'>👷 ניהול עובדים</span>
-                    <ul className='dropdown'>
-                      <li>
-                        <span className='non-clickable'>עובדים</span>
-                        <ul className='dropdown'>
-                          <li>
-                            <NavLink to='/user'>רשימת עובדים</NavLink>
-                          </li>
-                          <li>
-                            <NavLink to='/user/add'>➕ הוספת עובד</NavLink>
-                          </li>
-                        </ul>
-                      </li>
-                      <li>
-                        <span className='non-clickable'>ניהול תפקידים</span>
-                        <ul className='dropdown'>
-                          <li>
-                            <NavLink to='/roles'>רשימת תפקידים</NavLink>
-                          </li>
-                          <li>
-                            <NavLink to='/roles/add'>➕ הוספת תפקיד</NavLink>
-                          </li>
-                        </ul>
-                      </li>
-                    </ul>
-                  </li>
-                )}
+      {(isMobileMenuOpen || window.innerWidth > 768) && <section className='nav-wrapper'>{renderMenu(isGuest ? guestMenu : fullMenu)}</section>}
 
-                <li>
-                  <span className='non-clickable'>🌾 ניהול חקלאי</span>
-                  <ul className='dropdown'>
-                    <li>
-                      <span className='non-clickable'>חלקות לגידול יבולים</span>
-                      <ul className='dropdown'>
-                        <li>
-                          <NavLink to='/field'>רשימת חלקות</NavLink>
-                        </li>
-                        {isAdmin && (
-                          <li>
-                            <NavLink to='/field/add'>➕ הוספת חלקה</NavLink>
-                          </li>
-                        )}
-                      </ul>
-                    </li>
-                    <li>
-                      <span className='non-clickable'>סוגי יבולים</span>
-                      <ul className='dropdown'>
-                        <li>
-                          <NavLink to='/crop'>רשימת סוגי יבולים</NavLink>
-                        </li>
-                        {isAdmin && (
-                          <li>
-                            <NavLink to='/crop/add'>➕ הוספת סוג יבול</NavLink>
-                          </li>
-                        )}
-                      </ul>
-                    </li>
-                    <li>
-                      <span className='non-clickable'>ניהול מלאי ומחסנים</span>
-                      <ul className='dropdown'>
-                        <li>
-                          <NavLink to='/Warehouse'>רשימת מחסנים</NavLink>
-                        </li>
-                        {isAdmin && (
-                          <li>
-                            <NavLink to='/warehouse/add'>➕ הוספת מחסן</NavLink>
-                          </li>
-                        )}
-                      </ul>
-                    </li>
-                    <li>
-                      <span className='non-clickable'>עונות חקלאיות</span>
-                      <ul className='dropdown'>
-                        <li>
-                          <NavLink to='/seasons'>רשימת עונות</NavLink>
-                        </li>
-                      </ul>
-                    </li>
-                  </ul>
-                </li>
-
-                <li>
-                  <span className='non-clickable'>📋 משימות</span>
-                  <ul className='dropdown'>
-                    <li>
-                      <NavLink to='/tasks/assign'>המשימות שלי (שיבוץ אישי)</NavLink>
-                    </li>
-
-                    {isAdmin && (
-                      <>
-                        <li>
-                          <span className='non-clickable'>ניהול משימות</span>
-                          <ul className='dropdown'>
-                            <li>
-                              <NavLink to='/tasks/'>רשימת משימות</NavLink>
-                            </li>
-                            <li>
-                              <NavLink to='/tasks/add'>➕ הוספת משימה</NavLink>
-                            </li>
-                          </ul>
-                        </li>
-                        <li>
-                          <span className='non-clickable'>ניהול פעולות</span>
-                          <ul className='dropdown'>
-                            <li>
-                              <NavLink to='/operations'>רשימת פעולות חקלאיות</NavLink>
-                            </li>
-                            <li>
-                              <NavLink to='/operations/add'>➕ הוספת פעולה</NavLink>
-                            </li>
-                          </ul>
-                        </li>
-                      </>
-                    )}
-                  </ul>
-                </li>
-
-                {isAdmin && (
-                  <li>
-                    <span className='non-clickable'>🚛 משלוחים ושיווק</span>
-                    <ul className='dropdown'>
-                      <li>
-                        <span className='non-clickable'>לקוחות</span>
-                        <ul className='dropdown'>
-                          <li>
-                            <NavLink to='/client'>לקוחות</NavLink>
-                          </li>
-                          <li>
-                            <NavLink to='/client/add'>➕ הוספת לקוח</NavLink>
-                          </li>
-                        </ul>
-                      </li>
-
-                      <li>
-                        <span className='non-clickable'>הזמנות</span>
-                        <ul className='dropdown'>
-                          <li>
-                            <NavLink to='/orders/view'>הזמנות</NavLink>
-                          </li>
-                          <li>
-                            <NavLink to='/order/add'>📝 הוספת הזמנה</NavLink>
-                          </li>
-                        </ul>
-                      </li>
-                    </ul>
-                  </li>
-                )}
-
-                <li>
-                  <span className='non-clickable'>📊 דוחות וניתוחים</span>
-                  <ul className='dropdown'>
-                    {isAdmin && (
-                      <>
-                        <li>
-                          <NavLink to='/reports'>דשבורד סקירה כללית</NavLink>
-                        </li>
-
-                        <li>
-                          <span className='non-clickable'>דוחות מערכת</span>
-                          <ul className='dropdown'>
-                            <li>
-                              <NavLink to='/reports/inventory-history'>היסטוריית מלאי במחסנים</NavLink>
-                            </li>
-                            <li>
-                              <NavLink to='/reports/customer-order-history'>היסטוריית הזמנות לפי לקוח</NavLink>
-                            </li>
-                            <li>
-                              <NavLink to='/reports/crop-price-history'>היסטוריית מחירי יבולים</NavLink>
-                            </li>
-                            <li>
-                              <NavLink to='/reports/employee-task-history'>היסטוריית שיבוץ משימות</NavLink>
-                            </li>
-                            <li>
-                              <NavLink to='/reports/SowingAndHarvestTimeline'>לוח זמנים לפעילות חקלאית</NavLink>
-                            </li>
-                            <li>
-                              <NavLink to='/reports/CropSeasonSummary'>דוח קציר לפי עונה</NavLink>
-                            </li>
-                          </ul>
-                        </li>
-
-                        <li>
-                          <span className='non-clickable'>תובנות תומכות החלטה (DSS)</span>
-                          <ul className='dropdown'>
-                            <li>
-                              <NavLink to='/reports/weather'>מזג אוויר והמלצות לשתילה וקציר</NavLink>
-                            </li>
-                            <li>
-                              <NavLink to='/weather-simulation'>סימולציית תנאי גידול ומזג אוויר</NavLink>
-                            </li>
-                            <li>
-                              <NavLink to='/inventory'>מלאי והמלצות ניהול</NavLink>
-                            </li>
-                            <li>
-                              <NavLink to='/dashboarddss'>דשבורד תובנות חקלאיות</NavLink>
-                            </li>
-                          </ul>
-                        </li>
-                      </>
-                    )}
-                  </ul>
-                </li>
-              </>
-            )}
-
-            <li>
-              <NavLink to='/about'>אודות</NavLink>
-            </li>
-          </ul>
-        </nav>
+      <section className='user-section'>
+        {user ? (
+          <section className='user-info'>
+            <span>שלום, {user.FullName}</span>
+            <button className='btn btn-logout' onClick={onLogout}>
+              יציאה
+            </button>
+          </section>
+        ) : (
+          <LoginSignup />
+        )}
       </section>
-
-      <section className='bottom flex justify-between'>
-        <div className='user-section'>
-          {user ? (
-            <section>
-              <span>שלום, {user.FullName}</span>
-              <button className='btn btn-logout' onClick={onLogout}>
-                יציאה
-              </button>
-            </section>
-          ) : (
-            <LoginSignup />
-          )}
-        </div>
-      </section>
-    </section>
+    </header>
   )
 }

@@ -36,7 +36,7 @@ export function OperationAdd() {
   }
 
   return (
-    <section className='operation-add main-layout'>
+    <section className='operation-add'>
       <h1>הוספת פעולה חדשה</h1>
       <p className='form-note'>* שדות חובה</p>
       <form onSubmit={handleSubmit(onSubmit)} className='form'>

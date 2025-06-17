@@ -154,7 +154,7 @@ export function CropEdit() {
   if (isLoading) return <div className='loader'>טוען...</div>
 
   return (
-    <section className='crop-edit main-layout'>
+    <section className='crop-edit'>
       <h1>עריכת יבול</h1>
       <form onSubmit={handleSubmit(onSubmit)} className='form'>
         <label>שם היבול *</label>
