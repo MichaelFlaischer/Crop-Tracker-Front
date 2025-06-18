@@ -9,7 +9,6 @@
   direction: rtl;
   min-width: 240px;
   height: 100%;
-  overflow-y: auto;
 
   .header-title {
     font-size: 1.6rem;
@@ -30,6 +29,9 @@
   }
 
   .nav-wrapper {
+    max-height: 70vh;
+    overflow-y: auto;
+
     ul {
       list-style: none;
       padding: 0;

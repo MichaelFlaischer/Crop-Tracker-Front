@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service'
 import { logout } from '../store/actions/user.actions'
@@ -8,20 +8,26 @@ import { LoginSignup } from './LoginSignup'
 export function AppHeader() {
   const user = useSelector((storeState) => storeState.userModule.loggedInUser)
   const isAdmin = user?.IsAdmin
+  const location = useLocation()
+
   const [openMenus, setOpenMenus] = useState([])
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const isGuest = !user
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth > 768) setIsMobileMenuOpen(true)
-      else setIsMobileMenuOpen(false)
+      setIsMobileMenuOpen(window.innerWidth > 768)
     }
 
     handleResize()
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false)
+    setOpenMenus([])
+  }, [location])
 
   async function onLogout() {
     try {
