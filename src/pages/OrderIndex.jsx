@@ -56,7 +56,7 @@ export function OrderIndex() {
   const DELIVERY_OPERATION_ID = '68354fa1d29fa199e95c04d8'
 
   function getDeliveryTaskIdByOrderId(orderId) {
-    const task = tasks.find((t) => String(t.fieldId) === String(orderId) && String(t.operationId) === DELIVERY_OPERATION_ID)
+    const task = tasks.find((t) => String(t.operationId) === DELIVERY_OPERATION_ID && String(t.fieldId) === String(orderId))
     return task?._id || null
   }
 

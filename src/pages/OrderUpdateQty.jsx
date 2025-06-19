@@ -114,14 +114,12 @@ export function OrderUpdateQty() {
         }
       }
 
-      const updatedOrder = {
-        ...order,
+      await customerOrderService.update(orderId, {
         status: 'מאושרת',
         approvedAt: new Date().toISOString(),
         approvedBy: loggedInUser?._id || null,
         desiredDeliveryDate: deliveryDate,
-      }
-      await customerOrderService.update(orderId, updatedOrder)
+      })
 
       const task = await taskService.add({
         operationId: '68354fa1d29fa199e95c04d8',

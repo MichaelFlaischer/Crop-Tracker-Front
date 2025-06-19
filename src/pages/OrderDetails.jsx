@@ -41,6 +41,10 @@ const statusToHebrew = (status) => {
   }
 }
 
+function formatDate(dateStr) {
+  return isValid(new Date(dateStr)) ? format(new Date(dateStr), 'dd/MM/yyyy') : '—'
+}
+
 export function OrderDetails() {
   const { orderId } = useParams()
   const [order, setOrder] = useState(null)
@@ -76,7 +80,7 @@ export function OrderDetails() {
       const status = statusToHebrew(o.status)
       if (['מאושרת', 'סופקה'].includes(status)) {
         const tasks = await taskService.query()
-        const deliveryTask = tasks.find((t) => t.fieldId === o._id && t.operationId === DELIVERY_OPERATION_ID)
+        const deliveryTask = tasks.find((t) => String(t.fieldId) === String(o._id) && String(t.operationId) === DELIVERY_OPERATION_ID)
         if (deliveryTask) {
           const assignments = await employeesInTaskService.query()
           const relevant = assignments.filter((a) => a.taskId === deliveryTask._id)
