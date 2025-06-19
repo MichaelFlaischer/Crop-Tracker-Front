@@ -1,32 +1,32 @@
 .btn {
-    cursor: pointer;
-    background-color: $clr-secondary;
-    margin: 0.5em;
-    border: 0;
-    padding: 0.5em 0.8em;
-    border-radius: 4px;
-    font-size: 0.85rem;
-    box-shadow: #00000026 1.95px 1.95px 2.6px;
+  cursor: pointer;
+  background-color: $clr-secondary;
+  margin: 0.5em;
+  border: 0;
+  padding: 0.5em 0.8em;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  box-shadow: #00000026 1.95px 1.95px 2.6px;
 
-    &:hover:not(:disabled) {
-        background-color: $clr-brand2;
-        color: white;
-        transition: 0.3s;
-    }
+  &:hover:not(:disabled) {
+    background-color: $clr-brand2;
+    color: white;
+    transition: 0.3s;
+  }
 
-    &:disabled {
-        pointer-events: none;
-    }
+  &:disabled {
+    pointer-events: none;
+  }
 }
 
 input[type='text'],
 input[type='number'],
 input[type='password'],
 select {
-    font-size: 1rem;
+  font-size: 1rem;
 }
 
 input:focus {
-    background-color: $clr-primary;
-    transition: background-color 1s;
+  background-color: $clr-primary;
+  transition: background-color 1s;
 }

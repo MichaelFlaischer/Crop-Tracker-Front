@@ -13,21 +13,21 @@ import he from 'date-fns/locale/he'
 registerLocale('he', he)
 
 const schema = yup.object().shape({
-  FullName: yup.string().required('יש להזין שם מלא'),
-  Username: yup.string().required('יש להזין שם משתמש'),
-  Password: yup.string().min(6, 'סיסמה חייבת להיות לפחות 6 תווים').required('יש להזין סיסמה'),
-  Email: yup.string().email('אימייל לא תקין').notRequired(),
-  PhoneNumber: yup
+  fullName: yup.string().required('יש להזין שם מלא'),
+  username: yup.string().required('יש להזין שם משתמש'),
+  password: yup.string().min(6, 'סיסמה חייבת להיות לפחות 6 תווים').required('יש להזין סיסמה'),
+  email: yup.string().email('אימייל לא תקין').notRequired(),
+  phoneNumber: yup
     .string()
     .matches(/^05\d{8}$/, 'מספר טלפון לא תקין')
     .notRequired(),
-  StartDate: yup.date().typeError('יש להזין תאריך תקין').notRequired(),
-  Salary: yup.number().typeError('יש להזין מספר').min(0, 'שכר לא יכול להיות שלילי').notRequired(),
-  Address: yup.string().notRequired(),
-  RoleID: yup.number().required('יש לבחור תפקיד'),
-  RoleName: yup.string().required('שם תפקיד נדרש'),
-  isAdmin: yup.string().oneOf(['true', 'false']),
-  Status: yup.string().oneOf(['Active', 'Inactive']),
+  startDate: yup.date().typeError('יש להזין תאריך תקין').notRequired(),
+  salary: yup.number().typeError('יש להזין מספר').min(0, 'שכר לא יכול להיות שלילי').notRequired(),
+  address: yup.string().notRequired(),
+  roleId: yup.number().required('יש לבחור תפקיד'),
+  roleName: yup.string().required('שם תפקיד נדרש'),
+  isAdmin: yup.boolean().default(false),
+  status: yup.string().oneOf(['Active', 'Inactive']),
 })
 
 export function UserAdd() {
@@ -39,23 +39,22 @@ export function UserAdd() {
     handleSubmit,
     setValue,
     watch,
-    getValues,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      FullName: '',
-      Username: '',
-      Password: '',
-      Email: '',
-      PhoneNumber: '',
-      StartDate: '',
-      Salary: '',
-      Address: '',
-      RoleID: 2,
-      RoleName: '',
-      isAdmin: 'false',
-      Status: 'Active',
+      fullName: '',
+      username: '',
+      password: '',
+      email: '',
+      phoneNumber: '',
+      startDate: '',
+      salary: '',
+      address: '',
+      roleId: 2,
+      roleName: '',
+      isAdmin: false,
+      status: 'Active',
     },
   })
 
@@ -69,9 +68,9 @@ export function UserAdd() {
       setRoles(rolesFromServer)
       const defaultRole = rolesFromServer.find((r) => r.RoleID === 2) || rolesFromServer[0]
       if (defaultRole) {
-        setValue('RoleID', defaultRole.RoleID)
-        setValue('RoleName', defaultRole.RoleName)
-        setValue('isAdmin', defaultRole.IsAdmin ? 'true' : 'false')
+        setValue('roleId', defaultRole.RoleID)
+        setValue('roleName', defaultRole.RoleName)
+        setValue('isAdmin', !!defaultRole.isAdmin)
       }
     } catch (err) {
       showErrorMsg('שגיאה בטעינת התפקידים')
@@ -80,15 +79,20 @@ export function UserAdd() {
 
   async function onSubmit(user) {
     try {
-      user.Salary = +user.Salary
-      user.RoleID = +user.RoleID
-
       const userToSend = {
-        ...user,
-        IsAdmin: user.isAdmin === 'true',
+        fullName: user.fullName,
+        username: user.username,
+        password: user.password,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        startDate: user.startDate,
+        salary: +user.salary,
+        address: user.address,
+        roleId: +user.roleId,
+        roleName: user.roleName,
+        isAdmin: !!user.isAdmin,
+        status: user.status,
       }
-
-      delete userToSend.isAdmin
 
       await userService.add(userToSend)
       showSuccessMsg('העובד נוסף בהצלחה!')
@@ -104,73 +108,73 @@ export function UserAdd() {
       <form onSubmit={handleSubmit(onSubmit)} className='user-form'>
         <label>
           שם מלא:
-          <input {...register('FullName')} />
-          {errors.FullName && <span>{errors.FullName.message}</span>}
+          <input {...register('fullName')} />
+          {errors.fullName && <span>{errors.fullName.message}</span>}
         </label>
 
         <label>
           שם משתמש:
-          <input {...register('Username')} />
-          {errors.Username && <span>{errors.Username.message}</span>}
+          <input {...register('username')} />
+          {errors.username && <span>{errors.username.message}</span>}
         </label>
 
         <label>
           סיסמה:
-          <input type='password' {...register('Password')} />
-          {errors.Password && <span>{errors.Password.message}</span>}
+          <input type='password' {...register('password')} />
+          {errors.password && <span>{errors.password.message}</span>}
         </label>
 
         <label>
           אימייל:
-          <input type='email' {...register('Email')} />
-          {errors.Email && <span>{errors.Email.message}</span>}
+          <input type='email' {...register('email')} />
+          {errors.email && <span>{errors.email.message}</span>}
         </label>
 
         <label>
           טלפון:
-          <input {...register('PhoneNumber')} />
-          {errors.PhoneNumber && <span>{errors.PhoneNumber.message}</span>}
+          <input {...register('phoneNumber')} />
+          {errors.phoneNumber && <span>{errors.phoneNumber.message}</span>}
         </label>
 
         <label>
           תאריך התחלה:
           <DatePicker
-            selected={watch('StartDate') ? new Date(watch('StartDate')) : null}
+            selected={watch('startDate') ? new Date(watch('startDate')) : null}
             onChange={(date) => {
-              const iso = date?.toISOString().split('T')[0]
-              setValue('StartDate', iso)
+              const iso = date?.toISOString()
+              setValue('startDate', iso)
             }}
             dateFormat='dd/MM/yyyy'
             placeholderText='בחר תאריך (יום/חודש/שנה)'
             locale='he'
             className='custom-datepicker'
           />
-          {errors.StartDate && <span>{errors.StartDate.message}</span>}
+          {errors.startDate && <span>{errors.startDate.message}</span>}
         </label>
 
         <label>
           כתובת:
-          <input {...register('Address')} />
-          {errors.Address && <span>{errors.Address.message}</span>}
+          <input {...register('address')} />
+          {errors.address && <span>{errors.address.message}</span>}
         </label>
 
         <label>
           משכורת:
-          <input type='number' {...register('Salary')} />
-          {errors.Salary && <span>{errors.Salary.message}</span>}
+          <input type='number' {...register('salary')} />
+          {errors.salary && <span>{errors.salary.message}</span>}
         </label>
 
         <label>
           תפקיד:
           <select
-            {...register('RoleID')}
+            {...register('roleId')}
             onChange={(e) => {
               const selectedId = +e.target.value
               const selectedRole = roles.find((role) => role.RoleID === selectedId)
               if (selectedRole) {
-                setValue('RoleID', selectedRole.RoleID)
-                setValue('RoleName', selectedRole.RoleName)
-                setValue('isAdmin', selectedRole.IsAdmin ? 'true' : 'false')
+                setValue('roleId', selectedRole.RoleID)
+                setValue('roleName', selectedRole.RoleName)
+                setValue('isAdmin', !!selectedRole.isAdmin)
               }
             }}
           >
@@ -180,24 +184,24 @@ export function UserAdd() {
               </option>
             ))}
           </select>
-          {errors.RoleID && <span>{errors.RoleID.message}</span>}
+          {errors.roleId && <span>{errors.roleId.message}</span>}
         </label>
 
         <label>
           סטטוס:
-          <select {...register('Status')}>
+          <select {...register('status')}>
             <option value='Active'>פעיל</option>
             <option value='Inactive'>לא פעיל</option>
           </select>
-          {errors.Status && <span>{errors.Status.message}</span>}
+          {errors.status && <span>{errors.status.message}</span>}
         </label>
 
         <label>
           האם אדמין:
-          <span>{watch('isAdmin') === 'true' ? 'כן' : 'לא'}</span>
+          <span>{watch('isAdmin') ? 'כן' : 'לא'}</span>
         </label>
 
-        <input type='hidden' {...register('RoleName')} />
+        <input type='hidden' {...register('roleName')} />
         <input type='hidden' {...register('isAdmin')} />
 
         <div className='form-actions'>

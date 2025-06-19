@@ -15,6 +15,8 @@ import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service.js'
 
 registerLocale('he', he)
 
+const DELIVERY_TASK_OPERATION_ID = '68354fa1d29fa199e95c04d8'
+
 const schema = yup.object().shape({
   taskDescription: yup.string().required('יש להזין תיאור פעולה'),
   fieldId: yup.string().required('יש לבחור שדה'),
@@ -34,6 +36,8 @@ export function TaskEdit() {
   const [isLoading, setIsLoading] = useState(true)
   const [fields, setFields] = useState([])
   const [operations, setOperations] = useState([])
+  const [isDeliveryTask, setIsDeliveryTask] = useState(false)
+  const [task, setTask] = useState(null)
 
   const {
     register,
@@ -56,17 +60,19 @@ export function TaskEdit() {
 
   async function loadFormData() {
     try {
-      const [task, fields, operations] = await Promise.all([taskService.getById(taskId), fieldService.query(), operationService.query()])
+      const [taskData, fieldsData, operationsData] = await Promise.all([taskService.getById(taskId), fieldService.query(), operationService.query()])
 
-      if (!task) throw new Error('לא נמצאה משימה')
+      if (!taskData) throw new Error('לא נמצאה משימה')
 
-      setFields(fields)
-      setOperations(operations)
+      setFields(fieldsData)
+      setOperations(operationsData)
+      setTask(taskData)
+      setIsDeliveryTask(taskData.operationId === DELIVERY_TASK_OPERATION_ID)
 
       reset({
-        ...task,
-        startDate: task.startDate ? new Date(task.startDate) : null,
-        endDate: task.endDate ? new Date(task.endDate) : null,
+        ...taskData,
+        startDate: taskData.startDate ? new Date(taskData.startDate) : null,
+        endDate: taskData.endDate ? new Date(taskData.endDate) : null,
       })
     } catch (err) {
       console.error('שגיאה בטעינת משימה:', err)
@@ -89,7 +95,7 @@ export function TaskEdit() {
 
   return (
     <section className='task-edit'>
-      <h1>עריכת משימה</h1>
+      <h1>{isDeliveryTask ? 'עריכת משימת משלוח ללקוח' : 'עריכת משימה'}</h1>
       {isLoading ? (
         <p>טוען...</p>
       ) : (
@@ -101,15 +107,19 @@ export function TaskEdit() {
           </label>
 
           <label>
-            חלקה
-            <select {...register('fieldId')}>
-              <option value=''>בחר חלקה</option>
-              {fields.map((f) => (
-                <option key={f._id} value={f._id}>
-                  {f.fieldName}
-                </option>
-              ))}
-            </select>
+            {isDeliveryTask ? 'מספר הזמנה' : 'חלקה'}
+            {isDeliveryTask ? (
+              <input type='text' value={task.fieldId} readOnly disabled />
+            ) : (
+              <select {...register('fieldId')}>
+                <option value=''>בחר חלקה</option>
+                {fields.map((f) => (
+                  <option key={f._id} value={f._id}>
+                    {f.fieldName}
+                  </option>
+                ))}
+              </select>
+            )}
             {errors.fieldId && <span className='error'>{errors.fieldId.message}</span>}
           </label>
 
@@ -173,11 +183,9 @@ export function TaskEdit() {
           <label>
             סטטוס
             <select {...register('status')}>
-              <option value='pending'>בהמתנה</option>
               <option value='in-progress'>בתהליך</option>
               <option value='done'>הושלמה</option>
-              <option value='delayed'>נדחתה</option>
-              <option value='missed'>לא בוצעה</option>
+              <option value='cancelled'>בוטלה</option>
             </select>
             {errors.status && <span className='error'>{errors.status.message}</span>}
           </label>

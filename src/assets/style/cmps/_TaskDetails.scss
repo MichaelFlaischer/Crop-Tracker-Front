@@ -98,6 +98,7 @@
       }
     }
   }
+
   .assigned-employees {
     display: grid;
     gap: 1rem;
@@ -153,7 +154,6 @@
     }
   }
 
-  // הצג טבלה במסך גדול בלבד
   .assigned-employees-table {
     @media (max-width: 767px) {
       display: none;
@@ -212,12 +212,6 @@
   @media (max-width: 768px) {
     .task-actions {
       flex-direction: column;
-    }
-
-    .assigned-employees-table {
-      display: block;
-      overflow-x: auto;
-      white-space: nowrap;
     }
 
     .task-summary {

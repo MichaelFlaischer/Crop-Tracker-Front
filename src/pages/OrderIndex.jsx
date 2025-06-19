@@ -10,7 +10,7 @@ export function OrderIndex() {
   const [clients, setClients] = useState([])
   const [tasks, setTasks] = useState([])
   const [filterBy, setFilterBy] = useState({
-    status: 'טיוטה',
+    status: 'Draft',
     sort: '',
     customerName: '',
     totalMin: '',
@@ -153,10 +153,10 @@ export function OrderIndex() {
               <br />
               <select name='status' value={filterBy.status} onChange={handleFilterChange}>
                 <option value=''>כל הסטטוסים</option>
-                <option value='טיוטה'>טיוטה</option>
-                <option value='מאושרת'>מאושרת</option>
-                <option value='סופקה'>סופקה</option>
-                <option value='מבוטלת'>מבוטלת</option>
+                <option value='Draft'>טיוטה</option>
+                <option value='Approved'>מאושרת</option>
+                <option value='Delivered'>סופקה</option>
+                <option value='Cancelled'>מבוטלת</option>
               </select>
             </th>
             <th>
@@ -205,11 +205,18 @@ export function OrderIndex() {
                 <td>{getClientName(order.customerId)}</td>
                 <td>{formattedDate}</td>
                 <td className={colorClass}>{daysLeft !== null ? `${daysLeft} ימים` : 'לא הוזן תאריך'}</td>
-                <td>{order.status}</td>
+                <td>
+                  {{
+                    Draft: 'טיוטה',
+                    Approved: 'מאושרת',
+                    Delivered: 'סופקה',
+                    Cancelled: 'מבוטלת',
+                  }[order.status] || order.status}
+                </td>
                 <td>{order.totalAmount} ₪</td>
                 <td>{order.notes || '—'}</td>
                 <td>
-                  {order.status === 'טיוטה' && (
+                  {order.status === 'Draft' && (
                     <>
                       <button onClick={() => navigate(`/order/edit/${order._id}`)}>✏️ עריכת הזמנה</button>
                       <button
@@ -229,12 +236,12 @@ export function OrderIndex() {
                       </button>
                     </>
                   )}
-                  {order.status === 'מאושרת' && (
+                  {order.status === 'Approved' && (
                     <>
                       <button
                         onClick={() => {
                           if (window.confirm('האם אתה בטוח שברצונך לאשר הספקת משלוח להזמנה זו?')) {
-                            updateOrderStatus(order._id, 'סופקה')
+                            updateOrderStatus(order._id, 'Delivered')
                           }
                         }}
                       >

@@ -22,14 +22,15 @@ async function getById(id) {
 async function add(data) {
   const cleanedData = {
     ...data,
-    fieldId: typeof data.fieldId === 'string' ? data.fieldId : data.fieldId.toString(),
-    cropId: typeof data.cropId === 'string' ? data.cropId : data.cropId.toString(),
   }
   return await httpService.post(BASE_URL, cleanedData)
 }
 
 async function update(id, data) {
-  return await httpService.put(`${BASE_URL}/${id}`, data)
+  const cleanedData = {
+    ...data,
+  }
+  return await httpService.put(`${BASE_URL}/${id}`, cleanedData)
 }
 
 async function remove(id) {
@@ -37,5 +38,8 @@ async function remove(id) {
 }
 
 async function addHarvestLog(id, log) {
-  return await httpService.post(`${BASE_URL}/${id}/harvest-log`, log)
+  const cleanedLog = {
+    ...log,
+  }
+  return await httpService.post(`${BASE_URL}/${id}/harvest-log`, cleanedLog)
 }

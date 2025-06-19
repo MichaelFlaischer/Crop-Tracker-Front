@@ -24,12 +24,12 @@ export function InventoryList() {
       ])
 
       const cropMap = crops.reduce((acc, crop) => {
-        acc[crop._id] = crop
+        acc[crop._id.toString()] = crop
         return acc
       }, {})
 
       const fieldMap = fields.reduce((acc, field) => {
-        acc[field._id] = field
+        acc[field._id.toString()] = field
         return acc
       }, {})
 
@@ -37,7 +37,7 @@ export function InventoryList() {
 
       warehouses.forEach((warehouse) => {
         warehouse.cropsStock?.forEach((item) => {
-          const cropId = item.cropId.toString()
+          const cropId = item.cropId?.toString?.() || item.cropId
           if (!cropInventory[cropId]) {
             cropInventory[cropId] = {
               crop: cropMap[cropId],
@@ -79,14 +79,17 @@ export function InventoryList() {
 
       records.forEach((record) => {
         if (!record.isActive) return
-        const cropId = record.cropId.toString()
+        const cropId = record.cropId?.toString?.() || record.cropId
+        const fieldId = record.fieldId?.toString?.() || record.fieldId
         const crop = cropInventory[cropId]
-        const field = fieldMap[record.fieldId]
+        const field = fieldMap[fieldId]
         if (!crop || !field) return
 
         const sowingDate = new Date(record.sowingDate)
+        if (isNaN(sowingDate)) return
+
         const expectedEnd = new Date(sowingDate)
-        expectedEnd.setDate(sowingDate.getDate() + crop.crop.growthTime)
+        expectedEnd.setDate(sowingDate.getDate() + (crop.crop?.growthTime || crop.growthTime || 0))
 
         crop.fields.push({
           name: field.fieldName,
@@ -119,7 +122,6 @@ export function InventoryList() {
           entry.statusColor = 'danger'
         }
 
-        // DSS Recommendation
         if (available < min * 0.8) {
           entry.recommendation = 'שקול שתילה של יבול נוסף'
           entry.recommendationAction = () => navigate('/field')
@@ -133,7 +135,7 @@ export function InventoryList() {
         }
       })
 
-      setInventoryData(Object.values(cropInventory))
+      setInventoryData(Object.values(cropInventory).sort((a, b) => a.crop.cropName.localeCompare(b.crop.cropName)))
     } catch (err) {
       console.error('שגיאה בטעינת מלאי:', err)
     }

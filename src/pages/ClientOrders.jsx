@@ -6,7 +6,7 @@ import { format, isValid } from 'date-fns'
 
 export function ClientOrders() {
   const [orders, setOrders] = useState([])
-  const [collapsed, setCollapsed] = useState({ טיוטה: false, מאושרת: false, סופקה: false, מבוטלת: false })
+  const [collapsed, setCollapsed] = useState({ Draft: false, Approved: false, Delivered: false, Cancelled: false })
   const [client, setClient] = useState(null)
   const { clientId } = useParams()
   const navigate = useNavigate()
@@ -42,7 +42,7 @@ export function ClientOrders() {
     deliveryDate.setHours(0, 0, 0, 0)
     const diffTime = deliveryDate - today
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-    return diffDays >= 0 ? diffDays : null
+    return diffDays
   }
 
   function getDaysColor(daysLeft) {
@@ -52,6 +52,21 @@ export function ClientOrders() {
     return 'safe'
   }
 
+  function getDeliveryDiff(actualDate, desiredDate) {
+    if (!actualDate || !desiredDate) return null
+    const actual = new Date(actualDate)
+    const desired = new Date(desiredDate)
+    actual.setHours(0, 0, 0, 0)
+    desired.setHours(0, 0, 0, 0)
+    return (actual - desired) / (1000 * 60 * 60 * 24)
+  }
+
+  function getDeliveryDiffClass(diff) {
+    if (diff < 0) return 'early'
+    if (diff === 0) return 'on-time'
+    return 'late'
+  }
+
   async function updateOrderStatus(orderId, status, note = '') {
     const confirm = window.confirm(`האם אתה בטוח שברצונך לבצע את הפעולה: שינוי סטטוס ל-${status}?`)
     if (!confirm) return
@@ -59,7 +74,7 @@ export function ClientOrders() {
     try {
       const order = orders.find((o) => o._id === orderId)
       await customerOrderService.update(orderId, { ...order, status, notes: note || order.notes })
-      if (status === 'סופקה') {
+      if (status === 'Delivered') {
         await fetch(`/api/task/mark-delivered/${orderId}`, { method: 'PUT' })
       }
       loadOrders()
@@ -85,10 +100,10 @@ export function ClientOrders() {
               <tr>
                 <th>#</th>
                 <th>תאריך הספקה</th>
-                <th>נותרו ימים</th>
+                {(status === 'Draft' || status === 'Approved') && <th>נותרו ימים</th>}
                 <th>סכום</th>
                 <th>הערות</th>
-                <th>פעולות</th>
+                {(status === 'Draft' || status === 'Approved') && <th>פעולות</th>}
                 <th>פרטים</th>
               </tr>
             </thead>
@@ -100,35 +115,34 @@ export function ClientOrders() {
                   order.desiredDeliveryDate && isValid(new Date(order.desiredDeliveryDate)) && new Date(order.desiredDeliveryDate).getFullYear() > 1971
                     ? format(new Date(order.desiredDeliveryDate), 'dd/MM/yyyy')
                     : ''
+                const deliveryDiff = getDeliveryDiff(order?.task?.actualEnd, order?.desiredDeliveryDate)
 
                 return (
                   <tr key={order._id} className={`status-${order.status}`}>
                     <td>{idx + 1}</td>
                     <td>{formattedDate}</td>
-                    <td className={colorClass}>{daysLeft !== null ? `${daysLeft} ימים` : ''}</td>
+                    {(status === 'Draft' || status === 'Approved') && <td className={colorClass}>{daysLeft !== null ? `${daysLeft} ימים` : ''}</td>}
                     <td>{order.totalAmount} ₪</td>
                     <td>{order.notes}</td>
-                    <td>
-                      {status === 'טיוטה' && (
-                        <>
-                          <button onClick={() => navigate(`/order/edit/${order._id}`)}>✏️ עריכה</button>
-                          <button onClick={() => navigate(`/order/update-qty/${order._id}`)}>🚚 הקמת משלוח בפועל</button>
-                          <button
-                            onClick={() => {
-                              const reason = window.prompt('נא להזין סיבת ביטול ההזמנה:')
-                              if (reason) updateOrderStatus(order._id, 'מבוטלת', reason)
-                            }}
-                          >
-                            ❌ ביטול הזמנה
-                          </button>
-                        </>
-                      )}
-                      {status === 'מאושרת' && (
-                        <>
-                          <button onClick={() => updateOrderStatus(order._id, 'סופקה')}>✔️ אישור הספקת משלוח</button>
-                        </>
-                      )}
-                    </td>
+                    {(status === 'Draft' || status === 'Approved') && (
+                      <td>
+                        {status === 'Draft' && (
+                          <>
+                            <button onClick={() => navigate(`/order/edit/${order._id}`)}>✏️ עריכה</button>
+                            <button onClick={() => navigate(`/order/update-qty/${order._id}`)}>🚚 הקמת משלוח בפועל</button>
+                            <button
+                              onClick={() => {
+                                const reason = window.prompt('נא להזין סיבת ביטול ההזמנה:')
+                                if (reason) updateOrderStatus(order._id, 'Cancelled', reason)
+                              }}
+                            >
+                              ❌ ביטול הזמנה
+                            </button>
+                          </>
+                        )}
+                        {status === 'Approved' && <button onClick={() => updateOrderStatus(order._id, 'Delivered')}>✔️ אישור הספקת משלוח</button>}
+                      </td>
+                    )}
                     <td>
                       <button className='blue-btn' onClick={() => navigate(`/order/${order._id}`)}>
                         🔍 פרטים
@@ -147,10 +161,10 @@ export function ClientOrders() {
   return (
     <section className='client-orders'>
       <h1>הזמנות לקוח: {client?.customerName || `מס' ${clientId}`}</h1>
-      {renderTable('טיוטה', 'טיוטה')}
-      {renderTable('מאושרת', 'מאושרת')}
-      {renderTable('סופקה', 'סופקה')}
-      {renderTable('מבוטלת', 'מבוטלת')}
+      {renderTable('Draft', 'טיוטה')}
+      {renderTable('Approved', 'מאושרת')}
+      {renderTable('Delivered', 'סופקה')}
+      {renderTable('Cancelled', 'מבוטלת')}
     </section>
   )
 }

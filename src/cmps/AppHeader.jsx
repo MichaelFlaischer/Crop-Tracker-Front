@@ -7,7 +7,7 @@ import { LoginSignup } from './LoginSignup'
 
 export function AppHeader() {
   const user = useSelector((storeState) => storeState.userModule.loggedInUser)
-  const isAdmin = user?.IsAdmin
+  const isAdmin = user?.isAdmin
   const location = useLocation()
 
   const [openMenus, setOpenMenus] = useState([])
@@ -224,7 +224,7 @@ export function AppHeader() {
       <section className='user-section'>
         {user ? (
           <section className='user-info'>
-            <span>שלום, {user.FullName}</span>
+            <span>שלום, {user.fullName}</span>
             <button className='btn btn-logout' onClick={onLogout}>
               יציאה
             </button>

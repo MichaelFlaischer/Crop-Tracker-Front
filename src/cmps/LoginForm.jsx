@@ -14,7 +14,7 @@ export function LoginForm({ onLogin, isSignup }) {
     onLogin(credentials)
   }
 
-  const { fullname, username, password } = credentials
+  const { fullName, username, password } = credentials
 
   return (
     <form className='login-form' onSubmit={handleSubmit} dir='rtl'>
@@ -33,7 +33,7 @@ export function LoginForm({ onLogin, isSignup }) {
       {isSignup && (
         <label>
           שם מלא
-          <input type='text' name='fullname' value={fullname} onChange={handleChange} required autoComplete='name' />
+          <input type='text' name='fullName' value={fullName} onChange={handleChange} required autoComplete='name' />
         </label>
       )}
 

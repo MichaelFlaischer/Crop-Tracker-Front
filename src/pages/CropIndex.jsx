@@ -81,15 +81,17 @@ export function CropIndex() {
         const field = fields.find((f) => f._id?.toString() === s.fieldId?.toString())
         const sowingDate = new Date(s.sowingDate)
         let expectedHarvest = 'לא ידוע'
-        if (crop?.growthTime) {
+
+        if (crop?.growthTime && typeof crop.growthTime === 'number') {
           const estimatedDate = new Date(sowingDate)
           estimatedDate.setDate(estimatedDate.getDate() + crop.growthTime)
           expectedHarvest = estimatedDate
         }
+
         return {
           fieldName: field?.fieldName || 'שדה לא מזוהה',
-          sowingDate: sowingDate,
-          expectedHarvest: expectedHarvest,
+          sowingDate,
+          expectedHarvest,
         }
       })
 
@@ -114,8 +116,9 @@ export function CropIndex() {
               <tr>
                 <th>שם היבול</th>
                 <th>תיאור</th>
-                <th>כמות במחסן (ק״ג)</th>
-                <th>גידול פעיל בחלקות</th>
+                <th>זמן גידול (ימים)</th>
+                <th>כמות במחסן</th>
+                <th>גידול פעיל</th>
                 <th>פעולות</th>
               </tr>
             </thead>
@@ -126,7 +129,8 @@ export function CropIndex() {
                   <tr key={crop._id}>
                     <td>{crop.cropName}</td>
                     <td>{crop.description}</td>
-                    <td>{summary.inWarehouses.toLocaleString('he-IL')}</td>
+                    <td>{crop.growthTime || '—'}</td>
+                    <td>{summary.inWarehouses.toLocaleString('he-IL')} ק״ג</td>
                     <td>
                       {summary.growingInFields.length === 0 ? (
                         '—'
@@ -161,6 +165,7 @@ export function CropIndex() {
                 <div className='crop-card' key={crop._id}>
                   <h3>{crop.cropName}</h3>
                   <div className='field-info'>📝 {crop.description}</div>
+                  <div className='field-info'>⏱️ {crop.growthTime} ימים בממוצע</div>
                   <div className='field-info'>📦 במלאי: {summary.inWarehouses.toLocaleString('he-IL')} ק״ג</div>
                   <div className='field-info'>
                     🌱{' '}

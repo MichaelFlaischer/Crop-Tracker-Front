@@ -35,6 +35,17 @@ export function UserIndex() {
     }
   }
 
+  function translateStatus(status) {
+    switch (status) {
+      case 'Active':
+        return 'פעיל'
+      case 'Inactive':
+        return 'לא פעיל'
+      default:
+        return status || '—'
+    }
+  }
+
   function handleFilterChange({ target }) {
     const { name, value } = target
     setFilterBy((prev) => ({ ...prev, [name]: value }))
@@ -46,13 +57,13 @@ export function UserIndex() {
 
   const tableData = users.map((user) => ({
     _id: user._id,
-    fullName: user.FullName,
-    username: user.Username,
-    roleName: user.RoleName || '—',
-    email: user.Email,
-    phoneNumber: user.PhoneNumber,
-    status: user.Status,
-    isAdmin: String(user.IsAdmin).toLowerCase() === 'true' ? '✔️' : '❌',
+    fullName: user.fullName,
+    username: user.username,
+    roleName: user.roleName || '—',
+    email: user.email,
+    phoneNumber: user.phoneNumber,
+    status: translateStatus(user.status),
+    isAdmin: user.isAdmin ? '✔️' : '❌',
   }))
 
   const sortedData = [...tableData]
@@ -75,7 +86,7 @@ export function UserIndex() {
       <ResponsiveTable
         columns={[
           { key: 'fullName', label: 'שם מלא' },
-          { key: 'username', label: 'שם עובד' },
+          { key: 'username', label: 'שם משתמש' },
           { key: 'roleName', label: 'תפקיד' },
           { key: 'email', label: 'אימייל' },
           { key: 'phoneNumber', label: 'טלפון' },

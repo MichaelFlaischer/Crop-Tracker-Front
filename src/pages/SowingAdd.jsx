@@ -196,7 +196,8 @@ export function SowingAdd() {
               {selectedCropDays !== null && <div style={{ fontSize: '0.9rem', color: '#374151' }}>⏱️ זמן גידול צפוי: {selectedCropDays} ימים</div>}
               {preferredSeasonInfo && (
                 <div style={{ fontSize: '0.9rem', color: '#0d9488' }}>
-                  ⭐ עונה מועדפת לשתילה: {preferredSeasonInfo.name} ({preferredSeasonInfo.startDate} - {preferredSeasonInfo.endDate})
+                  ⭐ עונה מועדפת לשתילה: {preferredSeasonInfo.name} ({new Date(preferredSeasonInfo.startDate).toLocaleDateString('he-IL')} -
+                  {new Date(preferredSeasonInfo.endDate).toLocaleDateString('he-IL')}){' '}
                 </div>
               )}
               {recommendedSeasonsInfo.length > 0 && (

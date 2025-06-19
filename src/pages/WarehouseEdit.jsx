@@ -22,8 +22,8 @@ const warehouseSchema = yup.object().shape({
   location: yup.object().shape({
     region: yup.string().required('יש להזין אזור'),
     coordinates: yup.object().shape({
-      lat: yup.number().required(),
-      lng: yup.number().required(),
+      lat: yup.number().required().min(-90).max(90),
+      lng: yup.number().required().min(-180).max(180),
     }),
   }),
   capacity: yup.number().required('יש להזין קיבולת').positive('הקיבולת חייבת להיות מספר חיובי'),
@@ -36,7 +36,7 @@ export function WarehouseEdit() {
   const mapRef = useRef(null)
   const searchBoxRef = useRef(null)
   const searchInputRef = useRef(null)
-  const { WarehouseId } = useParams()
+  const { warehouseId } = useParams()
   const navigate = useNavigate()
 
   const { isLoaded } = useJsApiLoader({
@@ -51,7 +51,7 @@ export function WarehouseEdit() {
 
   async function loadWarehouse() {
     try {
-      const data = await warehouseService.getById(WarehouseId)
+      const data = await warehouseService.getById(warehouseId)
       setWarehouse(data)
     } catch (err) {
       console.error('שגיאה בטעינת מחסן:', err)
@@ -61,6 +61,12 @@ export function WarehouseEdit() {
 
   function handleChange({ target }) {
     const { name, value } = target
+    setErrors((prevErrors) => {
+      const newErrors = { ...prevErrors }
+      delete newErrors[name]
+      return newErrors
+    })
+
     if (name === 'lat' || name === 'lng') {
       setWarehouse((prev) => ({
         ...prev,

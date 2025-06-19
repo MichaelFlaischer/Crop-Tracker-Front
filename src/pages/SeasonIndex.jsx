@@ -30,9 +30,13 @@ export function SeasonIndex() {
   }
 
   function isPast(dateStr) {
-    const [day, month, year] = dateStr.split(/[\/\-]/).map(Number)
-    const parsedDate = new Date(`${year}-${month}-${day}`)
+    const parsedDate = new Date(dateStr)
     return parsedDate < new Date()
+  }
+
+  function formatDate(dateStr) {
+    const date = new Date(dateStr)
+    return date.toLocaleDateString('he-IL')
   }
 
   return (
@@ -66,8 +70,8 @@ export function SeasonIndex() {
                   <tr key={s._id} className={isPast(s.endDate) ? 'past-season' : ''}>
                     <td>{s.name}</td>
                     <td>{s.season}</td>
-                    <td>{s.startDate}</td>
-                    <td>{s.endDate}</td>
+                    <td>{formatDate(s.startDate)}</td>
+                    <td>{formatDate(s.endDate)}</td>
                     <td>{s.avgTemperature}°C</td>
                     <td>{s.avgRainfall} מ״מ</td>
                     <td>{s.avgHumidity}%</td>
@@ -93,7 +97,7 @@ export function SeasonIndex() {
                   <strong>קוד:</strong> {s.season}
                 </p>
                 <p>
-                  <strong>תאריכים:</strong> {s.startDate} - {s.endDate}
+                  <strong>תאריכים:</strong> {formatDate(s.startDate)} - {formatDate(s.endDate)}
                 </p>
                 <p>
                   <strong>טמפ':</strong> {s.avgTemperature}°C

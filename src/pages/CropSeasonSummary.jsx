@@ -17,20 +17,23 @@ export function CropSeasonSummary() {
 
       const structured = crops.map((crop) => {
         const cropHarvestLogs = harvests
-          .filter((record) => +record.cropId === crop._id && (record.harvestLogs ?? []).length)
+          .filter((record) => record.cropId?.toString() === crop._id?.toString() && (record.harvestLogs ?? []).length)
           .flatMap((record) =>
             (record.harvestLogs ?? []).map((log) => {
               const date = new Date(log.date)
               const matchedSeason = seasons.find((s) => {
                 if (!s.startDate || !s.endDate) return false
-                const [sd, sm] = s.startDate.split('/')
-                const [ed, em] = s.endDate.split('/')
-                const seasonStart = new Date(date.getFullYear(), +sm - 1, +sd)
-                const seasonEnd = new Date(date.getFullYear(), +em - 1, +ed)
-                if (seasonEnd < seasonStart) seasonEnd.setFullYear(seasonEnd.getFullYear() + 1)
+                const seasonStart = new Date(s.startDate)
+                const seasonEnd = new Date(s.endDate)
 
-                return date.getTime() >= seasonStart.getTime() && date.getTime() <= seasonEnd.getTime()
+                // תיקון לעונות שעוברות שנה (למשל חורף מדצמבר עד מרץ)
+                if (seasonEnd < seasonStart) {
+                  seasonEnd.setFullYear(seasonEnd.getFullYear() + 1)
+                }
+
+                return date >= seasonStart && date <= seasonEnd
               })
+
               return {
                 ...log,
                 cropId: crop._id,
@@ -38,7 +41,7 @@ export function CropSeasonSummary() {
                 date,
                 year: date.getFullYear(),
                 season: matchedSeason?.name ?? null,
-                amount: +log.amount || 0,
+                amount: log.amount || 0,
               }
             })
           )

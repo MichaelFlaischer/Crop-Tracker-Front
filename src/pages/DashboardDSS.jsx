@@ -30,7 +30,7 @@ export function DashboardDSS() {
       ])
 
       const cropMap = crops.reduce((acc, crop) => {
-        acc[crop._id] = crop
+        acc[crop._id.toString()] = crop
         return acc
       }, {})
 
@@ -38,7 +38,8 @@ export function DashboardDSS() {
 
       warehouses.forEach((warehouse) => {
         warehouse.cropsStock?.forEach((item) => {
-          const cropId = item.cropId.toString()
+          const cropId = item.cropId?.toString?.()
+          if (!cropId || !cropMap[cropId]) return
           if (!cropInventory[cropId]) {
             cropInventory[cropId] = { crop: cropMap[cropId], total: 0 }
           }
@@ -64,8 +65,8 @@ export function DashboardDSS() {
         const crop = cropInventory[cropId]?.crop
         const total = cropInventory[cropId]?.total || 0
         const available = total - reserved
-        const min = crop.businessMinValue || 0
-        const max = crop.businessMaxValue || 100000
+        const min = typeof crop.businessMinValue === 'number' ? crop.businessMinValue : 0
+        const max = typeof crop.businessMaxValue === 'number' ? crop.businessMaxValue : 100000
 
         statList.push({ name: crop.cropName, available })
         reservedList.push({ name: crop.cropName, reserved })
@@ -104,7 +105,7 @@ export function DashboardDSS() {
 
       const forecastList = records
         .map((rec) => {
-          const crop = cropMap[rec.cropId]
+          const crop = cropMap[rec.cropId?.toString?.()]
           if (!crop || !rec.sowingDate) return null
           const sowingDate = new Date(rec.sowingDate)
           const endDate = new Date(sowingDate)

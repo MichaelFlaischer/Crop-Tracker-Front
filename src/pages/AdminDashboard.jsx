@@ -19,7 +19,9 @@ export function AdminDashboard() {
   const [todayTasks, setTodayTasks] = useState([])
   const [todayDeliveries, setTodayDeliveries] = useState([])
 
-  const userId = sessionStorage.getItem('loggedinUser') ? JSON.parse(sessionStorage.getItem('loggedinUser'))._id : null
+  const userId = sessionStorage.getItem('loggedinUser')
+    ? JSON.parse(sessionStorage.getItem('loggedinUser'))._id?.$oid || JSON.parse(sessionStorage.getItem('loggedinUser'))._id
+    : null
 
   useEffect(() => {
     loadDashboardData()
@@ -75,13 +77,9 @@ export function AdminDashboard() {
         }))
 
       const statusTranslationMap = {
-        pending: 'מתוכננת',
+        cancelled: 'בוטלה',
         'in-progress': 'בביצוע',
         done: 'הושלמה',
-        באיחור: 'באיחור',
-        מתוכננת: 'מתוכננת',
-        בביצוע: 'בביצוע',
-        הושלמה: 'הושלמה',
       }
 
       const taskStatusCount = {}
@@ -116,7 +114,7 @@ export function AdminDashboard() {
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
       const deliveryOperationId = '68354fa1d29fa199e95c04d8'
 
-      const myAssignments = assignments.filter((a) => a.employeeId === userId)
+      const myAssignments = assignments.filter((a) => a.employeeId?.$oid === userId || a.employeeId === userId)
       const enrichedTasks = myAssignments
         .map((a) => {
           const task = tasks.find((t) => t._id === a.taskId)

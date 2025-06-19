@@ -206,8 +206,8 @@ export function TaskDetails() {
               const isEditable = ['waiting', 'in-progress', 'pending'].includes(e.status)
               return (
                 <tr key={e._id} className={`status-row ${e.status}`}>
-                  <td>{emp?.FullName || '-'}</td>
-                  <td>{emp?.RoleName || '-'}</td>
+                  <td>{emp?.fullName || '-'}</td>
+                  <td>{emp?.roleName || '-'}</td>
                   <td>{statusMap[e.status] || e.status}</td>
                   <td>{formatDate(e.actualStart)}</td>
                   <td>{formatTime(e.actualStart)}</td>
@@ -236,10 +236,10 @@ export function TaskDetails() {
             return (
               <div className={`employee-card status-${e.status}`} key={e._id}>
                 <p>
-                  <strong>שם:</strong> {emp?.FullName || '-'}
+                  <strong>שם:</strong> {emp?.fullName || '-'}
                 </p>
                 <p>
-                  <strong>תפקיד:</strong> {emp?.RoleName || '-'}
+                  <strong>תפקיד:</strong> {emp?.roleName || '-'}
                 </p>
                 <p>
                   <strong>סטטוס:</strong> {statusMap[e.status] || e.status}
@@ -272,8 +272,8 @@ export function TaskDetails() {
           <label>בחירת עובדים</label>
           <Select
             isMulti
-            options={unassignedUsers.map((u) => ({ value: u._id, label: u.FullName }))}
-            value={unassignedUsers.filter((u) => newAssignments.employeeIds.includes(u._id)).map((u) => ({ value: u._id, label: u.FullName }))}
+            options={unassignedUsers.map((u) => ({ value: u._id, label: u.fullName }))}
+            value={unassignedUsers.filter((u) => newAssignments.employeeIds.includes(u._id)).map((u) => ({ value: u._id, label: u.fullName }))}
             onChange={(selectedOptions) =>
               setNewAssignments((prev) => ({
                 ...prev,

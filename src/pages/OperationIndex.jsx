@@ -6,6 +6,7 @@ import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service.js'
 export function OperationIndex() {
   const [operations, setOperations] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [deletingId, setDeletingId] = useState(null)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -34,6 +35,7 @@ export function OperationIndex() {
 
   async function onDelete(id) {
     if (!window.confirm('האם אתה בטוח שברצונך למחוק פעולה זו?')) return
+    setDeletingId(id)
     try {
       await operationService.remove(id)
       setOperations((prev) => prev.filter((op) => op._id !== id))
@@ -41,6 +43,8 @@ export function OperationIndex() {
     } catch (err) {
       console.error('שגיאה במחיקה:', err)
       showErrorMsg('שגיאה במחיקת פעולה')
+    } finally {
+      setDeletingId(null)
     }
   }
 
@@ -82,8 +86,8 @@ export function OperationIndex() {
                   <td>{op.executionNotes || '-'}</td>
                   <td className='actions'>
                     <button onClick={() => onEdit(op._id)}>✏️ ערוך</button>
-                    <button className='danger' onClick={() => onDelete(op._id)}>
-                      🗑️ מחק
+                    <button className='danger' onClick={() => onDelete(op._id)} disabled={deletingId === op._id}>
+                      {deletingId === op._id ? '⏳ מוחק...' : '🗑️ מחק'}
                     </button>
                   </td>
                 </tr>
@@ -107,8 +111,8 @@ export function OperationIndex() {
                 </p>
                 <div className='actions'>
                   <button onClick={() => onEdit(op._id)}>✏️ ערוך</button>
-                  <button className='danger' onClick={() => onDelete(op._id)}>
-                    🗑️ מחק
+                  <button className='danger' onClick={() => onDelete(op._id)} disabled={deletingId === op._id}>
+                    {deletingId === op._id ? '⏳ מוחק...' : '🗑️ מחק'}
                   </button>
                 </div>
               </div>

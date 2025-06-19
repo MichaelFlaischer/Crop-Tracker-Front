@@ -98,7 +98,7 @@ export function OrderAdd() {
       customerId: selectedCustomerId,
       orderDate: new Date().toISOString(),
       desiredDeliveryDate,
-      status: 'טיוטה',
+      status: 'Draft',
       totalAmount: calcTotal(),
       notes,
     }

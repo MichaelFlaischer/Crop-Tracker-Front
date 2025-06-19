@@ -34,7 +34,7 @@ export function SowingAndHarvestTimeline() {
           )
         })
 
-        const crop = allCrops.find((c) => c._id === +entry.cropId)
+        const crop = allCrops.find((c) => c._id === entry.cropId)
         const field = allFields.find((f) => f._id === entry.fieldId)
 
         return {
@@ -126,6 +126,9 @@ export function SowingAndHarvestTimeline() {
 
   const activeRecords = records.filter((r) => r.isActive)
   const inactiveRecords = records.filter((r) => !r.isActive)
+
+  console.log('Active Records:', activeRecords)
+  console.log('Inactive Records:', inactiveRecords)
 
   function renderTimelineTables(timelineEvents) {
     const tables = []

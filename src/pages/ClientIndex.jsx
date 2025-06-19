@@ -55,11 +55,11 @@ export function ClientIndex() {
     let filtered = [...clients]
 
     if (filterBy.name) {
-      filtered = filtered.filter((c) => c.customerName.toLowerCase().includes(filterBy.name.toLowerCase()))
+      filtered = filtered.filter((c) => (c.customerName || '').toLowerCase().includes(filterBy.name.toLowerCase()))
     }
 
     if (filterBy.contact) {
-      filtered = filtered.filter((c) => c.contactPerson.toLowerCase().includes(filterBy.contact.toLowerCase()))
+      filtered = filtered.filter((c) => (c.contactPerson || '').toLowerCase().includes(filterBy.contact.toLowerCase()))
     }
 
     if (filterBy.sort === 'name') {

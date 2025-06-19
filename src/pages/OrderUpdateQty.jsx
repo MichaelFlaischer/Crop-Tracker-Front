@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import { customerOrderService } from '../services/customer-order.service.js'
 import { customerOrderItemService } from '../services/customer-order-item.service.js'
@@ -27,6 +28,7 @@ export function OrderUpdateQty() {
   const [assignments, setAssignments] = useState([])
   const [deliveryDate, setDeliveryDate] = useState('')
   const navigate = useNavigate()
+  const loggedInUser = useSelector((storeState) => storeState.userModule.loggedInUser)
 
   useEffect(() => {
     loadData()
@@ -116,7 +118,7 @@ export function OrderUpdateQty() {
         ...order,
         status: 'מאושרת',
         approvedAt: new Date().toISOString(),
-        approvedBy: 101,
+        approvedBy: loggedInUser?._id || null,
         desiredDeliveryDate: deliveryDate,
       }
       await customerOrderService.update(orderId, updatedOrder)
@@ -236,7 +238,7 @@ export function OrderUpdateQty() {
             <option value=''>בחר עובד לשיבוץ</option>
             {users.map((u) => (
               <option key={u._id} value={u._id}>
-                {u.FullName}
+                {u.fullName}
               </option>
             ))}
           </select>

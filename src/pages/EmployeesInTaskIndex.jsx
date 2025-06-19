@@ -66,7 +66,7 @@ export function EmployeesInTaskIndex() {
               ) : (
                 records.map((rec) => (
                   <tr key={rec._id}>
-                    <td>{usersMap[rec.employeeId]?.FullName || 'לא ידוע'}</td>
+                    <td>{usersMap[rec.employeeId]?.fullName || 'לא ידוע'}</td>
                     <td>{tasksMap[rec.taskId]?.title || 'לא ידוע'}</td>
                     <td>{new Date(rec.assignedAt).toLocaleDateString('he-IL')}</td>
                     <td>{translateStatus(rec.status)}</td>
@@ -91,7 +91,7 @@ export function EmployeesInTaskIndex() {
               <div className='record-card' key={rec._id}>
                 <div className='field'>
                   <span>שם העובד:</span>
-                  <span className='value'>{usersMap[rec.employeeId]?.FullName || 'לא ידוע'}</span>
+                  <span className='value'>{usersMap[rec.employeeId]?.fullName || 'לא ידוע'}</span>
                 </div>
                 <div className='field'>
                   <span>משימה:</span>

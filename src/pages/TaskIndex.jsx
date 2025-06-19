@@ -16,7 +16,12 @@ registerLocale('he', he)
 export function TaskIndex() {
   const [tasks, setTasks] = useState([])
   const [assignedMap, setAssignedMap] = useState({})
-  const [filter, setFilter] = useState({ status: 'all', filterDate: '', sortBy: 'startDateAsc' })
+  const [filter, setFilter] = useState({
+    status: 'all',
+    filterDate: '',
+    sortBy: 'startDateAsc',
+    orderId: '',
+  })
   const [isLoading, setIsLoading] = useState(true)
   const navigate = useNavigate()
 
@@ -27,7 +32,7 @@ export function TaskIndex() {
     'in-progress': 'בתהליך',
     done: 'הושלמה',
     delayed: 'נדחתה',
-    missed: 'לא בוצעה',
+    cancelled: 'לא בוצעה',
   }
 
   useEffect(() => {
@@ -120,7 +125,11 @@ export function TaskIndex() {
       const filterDate = filter.filterDate ? new Date(filter.filterDate) : null
       const fromMatch = !filterDate || new Date(task.startDate) <= filterDate
       const toMatch = !filterDate || new Date(task.endDate) >= filterDate
-      return statusMatch && fromMatch && toMatch
+      const orderMatch =
+        !filter.orderId ||
+        task.fieldId?.toLowerCase().includes(filter.orderId.toLowerCase()) ||
+        task.taskDescription?.toLowerCase().includes(filter.orderId.toLowerCase())
+      return statusMatch && fromMatch && toMatch && orderMatch
     })
     .sort((a, b) => {
       if (filter.sortBy === 'startDateAsc') return new Date(a.startDate) - new Date(b.startDate)
@@ -161,13 +170,19 @@ export function TaskIndex() {
       <h1>רשימת משימות</h1>
 
       <div className='filter-bar'>
+        <input
+          type='text'
+          placeholder='חיפוש לפי מספר הזמנה או שם לקוח'
+          value={filter.orderId}
+          onChange={(e) => setFilter((prev) => ({ ...prev, orderId: e.target.value }))}
+        />
+
         <select value={filter.status} onChange={(e) => setFilter((prev) => ({ ...prev, status: e.target.value }))}>
           <option value='all'>כל הסטטוסים</option>
-          <option value='pending'>בהמתנה</option>
           <option value='in-progress'>בתהליך</option>
           <option value='done'>הושלמה</option>
           <option value='delayed'>נדחתה</option>
-          <option value='missed'>לא בוצעה</option>
+          <option value='cancelled'>לא בוצעה</option>
         </select>
 
         <DatePicker
@@ -189,7 +204,7 @@ export function TaskIndex() {
           <option value='endDateDesc'>מיון לפי סיום (יורד)</option>
         </select>
 
-        <button className='btn btn-secondary' onClick={() => setFilter({ status: 'all', filterDate: '', sortBy: 'startDateAsc' })}>
+        <button className='btn btn-secondary' onClick={() => setFilter({ status: 'all', filterDate: '', sortBy: 'startDateAsc', orderId: '' })}>
           איפוס
         </button>
 
@@ -252,7 +267,7 @@ export function TaskIndex() {
             data={regularTableData}
             filterBy={{ name: filter.filterDate, sort: filter.sortBy }}
             onFilterChange={() => {}}
-            onClearFilters={() => setFilter({ status: 'all', filterDate: '', sortBy: 'startDateAsc' })}
+            onClearFilters={() => setFilter({ status: 'all', filterDate: '', sortBy: 'startDateAsc', orderId: '' })}
             filterFields={[{ name: 'name', label: 'שם פעולה', type: 'text' }]}
             sortOptions={[
               { value: 'startDateAsc', label: 'תאריך התחלה (עולה)' },

@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { roleService } from '../services/role.service'
+import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service'
 
 export function RoleAdd() {
   const [role, setRole] = useState({
-    name: '',
+    roleName: '',
     description: '',
     isAdmin: false,
   })
@@ -19,10 +20,15 @@ export function RoleAdd() {
   async function onSaveRole(ev) {
     ev.preventDefault()
     try {
-      await roleService.save(role)
+      await roleService.save({
+        ...role,
+        isAdmin: !!role.isAdmin,
+      })
+      showSuccessMsg('התפקיד נוסף בהצלחה')
       navigate('/roles')
     } catch (err) {
       console.error('שגיאה בשמירת תפקיד:', err)
+      showErrorMsg('שגיאה בשמירת תפקיד')
     }
   }
 
@@ -40,7 +46,7 @@ export function RoleAdd() {
       <form onSubmit={onSaveRole} className='form'>
         <label>
           שם התפקיד *<br />
-          <input type='text' name='name' value={role.name} onChange={handleChange} required placeholder='לדוג׳: מנהל לוגיסטיקה, עובד שדה' />
+          <input type='text' name='roleName' value={role.roleName} onChange={handleChange} required placeholder='לדוג׳: מנהל לוגיסטיקה, עובד שדה' />
         </label>
 
         <label>

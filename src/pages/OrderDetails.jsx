@@ -10,6 +10,37 @@ import { employeesInTaskService } from '../services/employees-in-task.service.js
 import { taskService } from '../services/task.service.js'
 import { format, isValid } from 'date-fns'
 
+const DELIVERY_OPERATION_ID = '68354fa1d29fa199e95c04d8'
+
+const statusToHebrew = (status) => {
+  switch (status?.toLowerCase()) {
+    case 'draft':
+    case 'טיוטה':
+      return 'טיוטה'
+    case 'approved':
+    case 'מאושרת':
+      return 'מאושרת'
+    case 'delivered':
+    case 'סופקה':
+      return 'סופקה'
+    case 'cancelled':
+    case 'מבוטלת':
+      return 'מבוטלת'
+    case 'missed':
+      return 'בוטל'
+    case 'pending':
+      return 'ממתין'
+    case 'delayed':
+      return 'דחה את המשימה'
+    case 'in-progress':
+      return 'בתהליך'
+    case 'done':
+      return 'הושלם'
+    default:
+      return status
+  }
+}
+
 export function OrderDetails() {
   const { orderId } = useParams()
   const [order, setOrder] = useState(null)
@@ -42,9 +73,10 @@ export function OrderDetails() {
       setClient(c)
       setCropsMap(map)
 
-      if (['מאושרת', 'סופקה'].includes(o.status)) {
+      const status = statusToHebrew(o.status)
+      if (['מאושרת', 'סופקה'].includes(status)) {
         const tasks = await taskService.query()
-        const deliveryTask = tasks.find((t) => t.fieldId === o._id)
+        const deliveryTask = tasks.find((t) => t.fieldId === o._id && t.operationId === DELIVERY_OPERATION_ID)
         if (deliveryTask) {
           const assignments = await employeesInTaskService.query()
           const relevant = assignments.filter((a) => a.taskId === deliveryTask._id)
@@ -66,7 +98,7 @@ export function OrderDetails() {
   async function loadUsers() {
     const users = await userService.query()
     const map = {}
-    users.forEach((u) => (map[u._id] = u.FullName))
+    users.forEach((u) => (map[u._id] = u.fullName))
     setUsersMap(map)
     setUsers(users)
   }
@@ -81,9 +113,13 @@ export function OrderDetails() {
     return diff >= 0 ? diff : null
   }
 
-  async function updateStatus(newStatus) {
-    const updated = { ...order, status: newStatus }
-    if (newStatus === 'סופקה') updated.deliveredAt = new Date().toISOString()
+  async function updateStatus(newStatus, reason = '') {
+    const updated = {
+      ...order,
+      status: newStatus,
+      deliveredAt: newStatus === 'סופקה' ? new Date().toISOString() : order.deliveredAt,
+      notes: reason ? (order.notes || '') + `\nסיבת ביטול: ${reason}` : order.notes,
+    }
     await customerOrderService.update(orderId, updated)
     loadOrder()
   }
@@ -122,25 +158,26 @@ export function OrderDetails() {
       <div className='order-info'>
         <h2>🗓️ פרטי ההזמנה</h2>
         <p>
-          <strong>תאריך הקמת ההזמנה:</strong> {format(new Date(order.orderDate), 'dd/MM/yyyy')}
+          <strong>תאריך הקמת ההזמנה:</strong> {order.orderDate && isValid(new Date(order.orderDate)) ? format(new Date(order.orderDate), 'dd/MM/yyyy') : '—'}
         </p>
         <p>
-          <strong>סטטוס:</strong> {order.status}
+          <strong>סטטוס:</strong> <span>{statusToHebrew(order.status)}</span>
         </p>
         <p>
-          <strong>תאריך הספקה:</strong> {order.desiredDeliveryDate ? format(new Date(order.desiredDeliveryDate), 'dd/MM/yyyy') : '—'}
+          <strong>תאריך הספקה:</strong>{' '}
+          {order.desiredDeliveryDate && isValid(new Date(order.desiredDeliveryDate)) ? format(new Date(order.desiredDeliveryDate), 'dd/MM/yyyy') : '—'}
         </p>
-        {['מאושרת', 'סופקה'].includes(order.status) && order.approvedBy && (
+        {['מאושרת', 'סופקה'].includes(statusToHebrew(order.status)) && order.approvedBy && (
           <p>
             <strong>אושרה על ידי:</strong> {usersMap[order.approvedBy] || order.approvedBy}
           </p>
         )}
-        {order.status === 'סופקה' && order.deliveredAt && isValid(new Date(order.deliveredAt)) && (
+        {statusToHebrew(order.status) === 'סופקה' && order.deliveredAt && isValid(new Date(order.deliveredAt)) && (
           <p>
             <strong>תאריך סופקה בפועל:</strong> {format(new Date(order.deliveredAt), 'dd/MM/yyyy')}
           </p>
         )}
-        {['טיוטה', 'מאושרת'].includes(order.status) && daysLeft !== null && (
+        {['טיוטה', 'מאושרת'].includes(statusToHebrew(order.status)) && daysLeft !== null && (
           <p>
             <strong>נותרו ימים להספקה:</strong> {daysLeft}
           </p>
@@ -220,9 +257,9 @@ export function OrderDetails() {
                 const user = getUserById(emp.employeeId)
                 return (
                   <tr key={idx}>
-                    <td>{user?.FullName || emp.employeeId}</td>
-                    <td>{user?.PhoneNumber || '—'}</td>
-                    <td>{emp.status}</td>
+                    <td>{user?.fullName || emp.employeeId}</td>
+                    <td>{user?.phoneNumber || '—'}</td>
+                    <td>{statusToHebrew(emp.status)}</td>
                     <td>{emp.note || '-'}</td>
                   </tr>
                 )
@@ -233,32 +270,32 @@ export function OrderDetails() {
       )}
 
       <div className='actions'>
-        {order.status === 'טיוטה' && (
+        {statusToHebrew(order.status) === 'טיוטה' && (
           <>
             <button onClick={() => navigate(`/order/edit/${order._id}`)}>✏️ ערוך</button>
             <button onClick={() => navigate(`/order/update-qty/${order._id}`)}>🚚 הקמת משלוח בפועל</button>
             <button
               onClick={() => {
                 const reason = window.prompt('נא להזין סיבת ביטול ההזמנה:')
-                if (reason) updateStatus('מבוטלת')
+                if (reason) updateStatus('מבוטלת', reason)
               }}
             >
               ❌ ביטול הזמנה (דורש הזנת סיבה)
             </button>
           </>
         )}
-        {order.status === 'מאושרת' && (
-          <>
-            <button
-              onClick={() => {
-                const confirm = window.confirm('האם אתה בטוח שברצונך לאשר את הספקת המשלוח עבור הזמנה זו?')
-                if (confirm) updateStatus('סופקה')
-              }}
-            >
-              ✔️ אישור הספקת משלוח
-            </button>
-          </>
+        {statusToHebrew(order.status) === 'מאושרת' && (
+          <button
+            className='btn-approve'
+            onClick={() => {
+              const confirm = window.confirm('האם אתה בטוח שברצונך לאשר את הספקת המשלוח עבור הזמנה זו?')
+              if (confirm) updateStatus('סופקה')
+            }}
+          >
+            ✔️ אישור הספקת משלוח
+          </button>
         )}
+        {order.status === 'draft' && <button onClick={handleCancelOrder}>ביטול הזמנה</button>}
       </div>
     </section>
   )

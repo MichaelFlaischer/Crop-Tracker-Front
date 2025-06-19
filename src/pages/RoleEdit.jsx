@@ -17,7 +17,7 @@ export function RoleEdit() {
       const fetchedRole = await roleService.getById(roleId)
       setRole({
         ...fetchedRole,
-        IsAdmin: fetchedRole.IsAdmin === true || fetchedRole.IsAdmin === 'true',
+        isAdmin: !!fetchedRole.isAdmin,
       })
     } catch (err) {
       showErrorMsg('שגיאה בטעינת פרטי התפקיד')
@@ -33,7 +33,10 @@ export function RoleEdit() {
   async function onSave(ev) {
     ev.preventDefault()
     try {
-      await roleService.save(role)
+      await roleService.save({
+        ...role,
+        isAdmin: !!role.isAdmin,
+      })
       showSuccessMsg('התפקיד עודכן בהצלחה')
       navigate('/roles')
     } catch (err) {
@@ -53,16 +56,16 @@ export function RoleEdit() {
       <form onSubmit={onSave} className='role-form'>
         <label>
           שם התפקיד *<br />
-          <input type='text' name='RoleName' value={role.RoleName} onChange={handleChange} required placeholder='לדוג׳: מנהל רכש, עובד מחסן' />
+          <input type='text' name='roleName' value={role.roleName} onChange={handleChange} required placeholder='לדוג׳: מנהל רכש, עובד מחסן' />
         </label>
 
         <label>
           תיאור התפקיד <br />
-          <textarea name='Description' value={role.Description} onChange={handleChange} placeholder='תיאור קצר של תחומי האחריות של התפקיד' />
+          <textarea name='description' value={role.description} onChange={handleChange} placeholder='תיאור קצר של תחומי האחריות של התפקיד' />
         </label>
 
         <label className='checkbox-label'>
-          <input type='checkbox' name='IsAdmin' checked={role.IsAdmin} onChange={handleChange} />
+          <input type='checkbox' name='isAdmin' checked={role.isAdmin} onChange={handleChange} />
           תפקיד זה מעניק הרשאות מנהל מערכת (גישה מלאה לכל המודולים)
         </label>
 

@@ -72,6 +72,12 @@ export function OrderEdit() {
   }
 
   function addItemRow() {
+    const hasEmptyRow = items.some((i) => !i.cropId || i.quantity == null || i.price == null || isNaN(i.quantity) || isNaN(i.price))
+
+    if (hasEmptyRow) {
+      alert('סיים למלא את כל שדות הפריטים לפני הוספת שורה חדשה.')
+      return
+    }
     setItems((prev) => [...prev, { cropId: '', quantity: '', price: '' }])
   }
 
@@ -120,10 +126,24 @@ export function OrderEdit() {
       await customerOrderService.update(orderId, updatedOrder)
       for (const item of items) {
         if (!item._id) {
-          const newItem = { ...item, customerOrderId: orderId, deliveredQuantity: 0 }
+          const newItem = {
+            ...item,
+            customerOrderId: orderId,
+            quantity: Number(item.quantity),
+            price: Number(item.price),
+            deliveredQuantity: 0,
+          }
+
           await customerOrderItemService.add(newItem)
         } else {
-          await customerOrderItemService.update(item._id, item)
+          const updatedItem = {
+            ...item,
+            quantity: Number(item.quantity),
+            price: Number(item.price),
+            deliveredQuantity: item.deliveredQuantity ?? 0,
+          }
+
+          await customerOrderItemService.update(item.customerOrderId, updatedItem)
         }
       }
       navigate('/orders/view')
@@ -160,7 +180,8 @@ export function OrderEdit() {
             <DatePicker
               selected={order.desiredDeliveryDate ? new Date(order.desiredDeliveryDate) : null}
               onChange={(date) => {
-                const iso = date?.toISOString().split('T')[0]
+                const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+                const iso = localDate.toISOString().split('T')[0]
                 handleChange('desiredDeliveryDate', iso)
               }}
               dateFormat='dd/MM/yyyy'
@@ -228,7 +249,9 @@ export function OrderEdit() {
                 <div className='crop-info'>
                   <div className='inventory-total'>סה״כ במלאי במחסנים: {stats.totalInWarehouses} ק״ג</div>
                   <div className='reserved'>כמות משוריינת להזמנות קיימות: {stats.reservedInOrders} ק״ג</div>
-                  <div className='available'>כמות זמינה לשיבוץ: {stats.available} ק״ג</div>
+                  <div className='available' style={{ color: stats.available <= 0 ? 'red' : 'blue' }}>
+                    כמות זמינה לשיבוץ: {stats.available} ק״ג
+                  </div>
                 </div>
               )}
             </div>

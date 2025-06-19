@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react'
 import { customerOrderService } from '../services/customer-order.service.js'
 import { clientService } from '../services/client.service.js'
+import { userService } from '../services/user.service.js'
 import * as XLSX from 'xlsx'
 import { saveAs } from 'file-saver'
 
 export function CustomerOrderHistoryReport() {
   const [orders, setOrders] = useState([])
   const [clients, setClients] = useState([])
+  const [users, setUsers] = useState([])
   const [sortConfig, setSortConfig] = useState({ key: '', direction: 'asc' })
 
   useEffect(() => {
@@ -15,9 +17,10 @@ export function CustomerOrderHistoryReport() {
 
   async function loadData() {
     try {
-      const [ordersData, clientsData] = await Promise.all([customerOrderService.query(), clientService.query()])
+      const [ordersData, clientsData, usersData] = await Promise.all([customerOrderService.query(), clientService.query(), userService.query()])
       setOrders(ordersData)
       setClients(clientsData)
+      setUsers(usersData)
     } catch (err) {
       console.error('❌ שגיאה בטעינת נתונים', err)
     }
@@ -27,6 +30,18 @@ export function CustomerOrderHistoryReport() {
     map[client._id] = client.customerName
     return map
   }, {})
+
+  const userMap = users.reduce((map, user) => {
+    map[user._id] = user.fullName || user.username || 'לא ידוע'
+    return map
+  }, {})
+
+  const statusLabels = {
+    Draft: 'טיוטה',
+    Approved: 'מאושרת',
+    Delivered: 'סופקה',
+    Cancelled: 'מבוטלת',
+  }
 
   const formatDate = (str) => {
     const d = new Date(str)
@@ -55,10 +70,10 @@ export function CustomerOrderHistoryReport() {
       orderDate: formatDate(order.orderDate),
       desiredDeliveryDate: formatDate(order.desiredDeliveryDate),
       deliveredAt: formatDate(order.deliveredAt),
-      status: order.status,
+      status: statusLabels[order.status] || order.status,
       totalAmount: `${totalAmount.toLocaleString()} ש"ח`,
       notes: order.notes || '',
-      approvedBy: order.approvedBy || '—',
+      approvedBy: userMap[order.approvedBy] || '—',
       approvedAt: formatDate(order.approvedAt),
       gapOrderToDesired: calcGap(order.orderDate, order.desiredDeliveryDate),
       gapDesiredToActual: calcGap(order.desiredDeliveryDate, order.deliveredAt),

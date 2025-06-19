@@ -9,7 +9,7 @@ import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service.js'
 
 const schema = yup.object().shape({
   operationName: yup.string().required('יש להזין שם פעולה'),
-  costPerUnit: yup.number().required('יש להזין עלות').min(0, 'הערך חייב להיות חיובי'),
+  costPerUnit: yup.number().typeError('יש להזין מספר').required('יש להזין עלות').min(0, 'הערך חייב להיות חיובי'),
   unitDescription: yup.string().required('יש להזין יחידת מידה'),
   executionNotes: yup.string(),
 })
@@ -18,6 +18,7 @@ export function OperationEdit() {
   const { operationId } = useParams()
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(true)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const {
     register,
@@ -30,6 +31,11 @@ export function OperationEdit() {
   })
 
   useEffect(() => {
+    if (!operationId) {
+      showErrorMsg('מזהה פעולה חסר')
+      navigate('/operations')
+      return
+    }
     loadOperation()
   }, [operationId])
 
@@ -38,7 +44,10 @@ export function OperationEdit() {
       const operation = await operationService.getById(operationId)
       if (!operation) throw new Error('פעולה לא נמצאה')
 
-      reset(operation)
+      reset({
+        ...operation,
+        costPerUnit: Number(operation.costPerUnit),
+      })
     } catch (err) {
       console.error(err)
       showErrorMsg('שגיאה בטעינת פעולה לעריכה')
@@ -48,13 +57,16 @@ export function OperationEdit() {
   }
 
   async function onSubmit(data) {
+    setIsSubmitting(true)
     try {
-      const updated = await operationService.save({ ...data, _id: operationId })
+      await operationService.save({ ...data, _id: operationId })
       showSuccessMsg('הפעולה עודכנה בהצלחה')
       navigate('/operations')
     } catch (err) {
       console.error(err)
       showErrorMsg('שגיאה בעדכון פעולה')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -93,8 +105,10 @@ export function OperationEdit() {
           </label>
 
           <div className='buttons'>
-            <button type='submit'>💾 שמור שינויים</button>
-            <button type='button' onClick={() => navigate('/operations')}>
+            <button type='submit' disabled={isSubmitting}>
+              💾 שמור שינויים
+            </button>
+            <button type='button' onClick={() => navigate('/operations')} disabled={isSubmitting}>
               בטל
             </button>
           </div>

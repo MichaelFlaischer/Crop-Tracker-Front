@@ -235,7 +235,7 @@ export function HarvestAdd() {
           תאריך קציר:
           <DatePicker
             selected={log.date ? new Date(log.date) : null}
-            onChange={(date) => setLog((prev) => ({ ...prev, date: date?.toISOString().split('T')[0] }))}
+            onChange={(date) => setLog((prev) => ({ ...prev, date: date?.toISOString() }))}
             dateFormat='dd/MM/yyyy'
             placeholderText='בחר תאריך (יום/חודש/שנה)'
             locale='he'

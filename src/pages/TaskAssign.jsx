@@ -58,7 +58,7 @@ export function TaskAssign() {
       const initialStatus = {}
       userAssignments.forEach((assign) => {
         initialNotes[assign._id] = assign.employeeNotes || ''
-        initialStatus[assign._id] = assign.status || 'pending'
+        initialStatus[assign._id] = assign.status || 'in-progress'
       })
 
       setNotesMap(initialNotes)
@@ -117,17 +117,19 @@ export function TaskAssign() {
     try {
       await employeesInTaskService.update(updated)
       showSuccessMsg('עודכן בהצלחה')
-      setEmployeeAssignments((prev) => prev.map((a) => (a._id === updated._id ? { ...a, actualEnd: updated.actualEnd, status: updated.status } : a)))
+      await loadData()
     } catch {
       showErrorMsg('שגיאה בשמירה')
     }
   }
 
-  const deliveryTasks = myTasks.filter(({ task }) => task?.operationId?.toString() === DELIVERY_TASK_OPERATION_ID)
-  const regularTasks = myTasks.filter(({ task }) => task?.operationId?.toString() !== DELIVERY_TASK_OPERATION_ID)
+  const deliveryTasks = myTasks.filter(({ task }) => (task?.operationId?.toString?.() || '') === DELIVERY_TASK_OPERATION_ID)
+  const regularTasks = myTasks.filter(({ task }) => (task?.operationId?.toString?.() || '') !== DELIVERY_TASK_OPERATION_ID)
 
   const activeRegular = regularTasks.filter(({ assignment }) => ['pending', 'in-progress'].includes(assignment.status))
-  const finishedRegular = regularTasks.filter(({ assignment }) => ['done', 'delayed', 'missed'].includes(assignment.status))
+  const finishedRegular = regularTasks
+    .filter(({ assignment }) => ['done', 'delayed', 'missed'].includes(assignment.status))
+    .sort((a, b) => new Date(a.task.endDate) - new Date(b.task.endDate))
 
   const groupTasks = (taskList) => {
     const active = taskList
@@ -137,8 +139,8 @@ export function TaskAssign() {
 
     const finished = taskList
       .filter(({ assignment }) => ['done', 'delayed', 'missed'].includes(assignment.status))
-      .filter(({ task }) => task?.startDate)
-      .sort((a, b) => new Date(a.task.startDate) - new Date(b.task.startDate))
+      .filter(({ task }) => task?.endDate)
+      .sort((a, b) => new Date(a.task.endDate) - new Date(b.task.endDate))
 
     return { active, finished }
   }
@@ -234,7 +236,6 @@ export function TaskAssign() {
                 <td>
                   {editable ? (
                     <select value={statusMap[assignment._id]} onChange={(e) => handleStatusChange(assignment._id, e.target.value)}>
-                      <option value='pending'>בהמתנה</option>
                       <option value='in-progress'>בתהליך</option>
                       <option value='done'>הושלמה</option>
                       <option value='delayed'>נדחתה</option>

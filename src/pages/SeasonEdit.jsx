@@ -3,6 +3,12 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { seasonService } from '../services/seasons.service'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service'
 
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
+import { registerLocale } from 'react-datepicker'
+import he from 'date-fns/locale/he'
+registerLocale('he', he)
+
 export function SeasonEdit() {
   const [season, setSeason] = useState(null)
   const [showDateUpdateBtn, setShowDateUpdateBtn] = useState(false)
@@ -15,21 +21,18 @@ export function SeasonEdit() {
 
   useEffect(() => {
     if (!season) return
-    const isPast = isDateInPast(season.endDate)
+    const isPast = new Date(season.endDate) < new Date()
     setShowDateUpdateBtn(isPast)
   }, [season?.endDate])
-
-  function isDateInPast(dateStr) {
-    if (!dateStr) return false
-    const [day, month, year] = dateStr.split(/[\/\-]/).map(Number)
-    const date = new Date(`${year}-${month}-${day}`)
-    return date < new Date()
-  }
 
   async function loadSeason() {
     try {
       const data = await seasonService.getById(seasonId)
-      setSeason(data)
+      setSeason({
+        ...data,
+        startDate: new Date(data.startDate),
+        endDate: new Date(data.endDate),
+      })
     } catch (err) {
       showErrorMsg('שגיאה בטעינת נתוני העונה')
     }
@@ -47,7 +50,6 @@ export function SeasonEdit() {
 
   async function onSave(ev) {
     ev.preventDefault()
-
     if (!isFormValid()) {
       showErrorMsg('יש למלא את כל השדות הנדרשים')
       return
@@ -69,8 +71,9 @@ export function SeasonEdit() {
     const updated = { ...season }
     const dateFields = ['startDate', 'endDate']
     dateFields.forEach((field) => {
-      const [day, month, year] = updated[field].split(/[\/\-]/)
-      updated[field] = `${day}/${month}/${+year + 1}`
+      const current = new Date(updated[field])
+      const nextYear = new Date(current.setFullYear(current.getFullYear() + 1))
+      updated[field] = nextYear
     })
     setSeason(updated)
   }
@@ -98,13 +101,25 @@ export function SeasonEdit() {
         </label>
 
         <label>
-          תאריך התחלה (בפורמט DD/MM/YYYY):
-          <input type='text' name='startDate' value={season.startDate} onChange={handleChange} required />
+          תאריך התחלה:
+          <DatePicker
+            selected={season.startDate}
+            onChange={(date) => setSeason((prev) => ({ ...prev, startDate: date }))}
+            dateFormat='dd/MM/yyyy'
+            locale='he'
+            className='datepicker-input'
+          />
         </label>
 
         <label>
-          תאריך סיום (בפורמט DD/MM/YYYY):
-          <input type='text' name='endDate' value={season.endDate} onChange={handleChange} required />
+          תאריך סיום:
+          <DatePicker
+            selected={season.endDate}
+            onChange={(date) => setSeason((prev) => ({ ...prev, endDate: date }))}
+            dateFormat='dd/MM/yyyy'
+            locale='he'
+            className='datepicker-input'
+          />
         </label>
 
         <label>

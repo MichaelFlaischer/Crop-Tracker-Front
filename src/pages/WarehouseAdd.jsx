@@ -74,8 +74,10 @@ export function WarehouseAdd() {
           region: value,
         },
       }))
+      setErrors((prev) => ({ ...prev, 'location.region': '' }))
     } else {
       setWarehouse((prev) => ({ ...prev, [name]: name === 'capacity' ? +value : value }))
+      setErrors((prev) => ({ ...prev, [name]: '' }))
     }
   }
 

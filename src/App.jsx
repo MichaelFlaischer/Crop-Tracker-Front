@@ -90,7 +90,7 @@ function DynamicDashboardRoute() {
   const [dashboard, setDashboard] = useState(<MainDashboard />)
 
   useEffect(() => {
-    if (user?.IsAdmin) setDashboard(<AdminDashboard />)
+    if (user?.isAdmin) setDashboard(<AdminDashboard />)
     else if (user) setDashboard(<WorkerDashboard />)
     else setDashboard(<MainDashboard />)
   }, [user])

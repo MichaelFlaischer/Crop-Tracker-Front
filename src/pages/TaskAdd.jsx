@@ -26,8 +26,8 @@ const schema = yup.object().shape({
   startTime: yup.string().required('יש להזין שעת התחלה'),
   endTime: yup.string().required('יש להזין שעת סיום'),
   requiredEmployees: yup.number().typeError('יש להזין מספר').min(1, 'לפחות עובד אחד נדרש'),
-  status: yup.string().required('יש לבחור סטטוס'),
   comments: yup.string(),
+  notes: yup.string(),
 })
 
 export function TaskAdd() {
@@ -62,7 +62,7 @@ export function TaskAdd() {
 
   async function onSubmit(data) {
     try {
-      await taskService.add(data)
+      await taskService.add({ ...data, status: 'in-progress' })
       showSuccessMsg('המשימה נוספה בהצלחה 🎉')
       navigate('/tasks')
     } catch (err) {
@@ -130,7 +130,7 @@ export function TaskAdd() {
 
         <label>
           שעת התחלה
-          <input type='time' {...register('startTime')} />
+          <input type='time' placeholder='08:00' {...register('startTime')} />
           {errors.startTime && <span className='error'>{errors.startTime.message}</span>}
         </label>
 
@@ -155,7 +155,7 @@ export function TaskAdd() {
 
         <label>
           שעת סיום
-          <input type='time' {...register('endTime')} />
+          <input type='time' placeholder='16:00' {...register('endTime')} />
           {errors.endTime && <span className='error'>{errors.endTime.message}</span>}
         </label>
 
@@ -166,17 +166,13 @@ export function TaskAdd() {
         </label>
 
         <label>
-          סטטוס
-          <select {...register('status')}>
-            <option value='pending'>בהמתנה</option>
-            <option value='in-progress'>בתהליך</option>
-          </select>
-          {errors.status && <span className='error'>{errors.status.message}</span>}
+          הערות
+          <textarea {...register('comments')} />
         </label>
 
         <label>
-          הערות
-          <textarea {...register('comments')} />
+          הערות כלליות
+          <textarea {...register('notes')} />
         </label>
 
         <div className='actions'>
