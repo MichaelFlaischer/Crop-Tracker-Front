@@ -41,6 +41,13 @@ export function WeatherSimulationResult() {
     return `${day}/${month}/${year}`
   }
 
+  const formatNextYearDate = (isoDateStr) => {
+    const d = new Date(isoDateStr)
+    d.setFullYear(d.getFullYear() + 1)
+    const isoNext = d.toISOString().split('T')[0]
+    return formatDate(isoNext)
+  }
+
   const barChartData = {
     labels: analyzedDays.map((day) => formatDate(day.date)),
     datasets: [
@@ -152,7 +159,8 @@ export function WeatherSimulationResult() {
 
   return (
     <section className='weather-simulation-result'>
-      <h1>תוצאות - סימולציית מזג אוויר עבור חלקת יבול</h1>
+      <h1>תוצאות – סימולציית מזג אוויר עבור חלקת יבול</h1>
+      <p className='data-source'>הנתונים מבוססים על מדדי מזג אוויר שנאספו בשנה האחרונה.</p>
 
       <section>
         <h2>פרטי הסימולציה:</h2>
@@ -163,11 +171,11 @@ export function WeatherSimulationResult() {
           <strong>יבול:</strong> {selectedCropName || 'נתונים ידניים'}
         </p>
         <p>
-          <strong>טמפ׳:</strong> {minTemperature}°C - {maxTemperature}°C
+          <strong>טמפ׳:</strong> {minTemperature}°C – {maxTemperature}°C
         </p>
         {isRainfallConditionUsed && (
           <p>
-            <strong>טווח משקעים:</strong> {minRainfall} מ״מ - {maxRainfall} מ״מ
+            <strong>טווח משקעים:</strong> {minRainfall} מ״מ – {maxRainfall} מ״מ
           </p>
         )}
         {growthPeriodInDays && (
@@ -186,7 +194,9 @@ export function WeatherSimulationResult() {
 
       {optimalSowing && (
         <p>
-          <strong>תאריך זריעה מיטבי:</strong> {formatDate(optimalSowing.bestStartDate)} — {(optimalSowing.bestScore * 100).toFixed(1)}%
+          <strong>תאריך זריעה מיטבי לשנה הקרובה:</strong> {formatNextYearDate(optimalSowing.bestStartDate)} — {(optimalSowing.bestScore * 100).toFixed(1)}%
+          <br />
+          <small>(בהנחה שמזג האוויר יהיה דומה בקירוב לשנה הקודמת)</small>
         </p>
       )}
 
@@ -197,7 +207,7 @@ export function WeatherSimulationResult() {
       {topSowingDates?.length > 0 && (
         <>
           <section className='desktop-table'>
-            <h3>תאריכים מומלצים לזריעה</h3>
+            <h3>תאריכים מומלצים לזריעה (שנה קרובה)</h3>
             <table>
               <thead>
                 <tr>
@@ -214,7 +224,7 @@ export function WeatherSimulationResult() {
               <tbody>
                 {topSowingDates.map((item, idx) => (
                   <tr key={idx}>
-                    <td>{formatDate(item.startDate)}</td>
+                    <td>{formatNextYearDate(item.startDate)}</td>
                     <td>{(item.suitableRatio * 100).toFixed(1)}%</td>
                     {isRainfallConditionUsed && (
                       <>
@@ -231,13 +241,14 @@ export function WeatherSimulationResult() {
           <section className='mobile-cards'>
             {topSowingDates.map((item, idx) => (
               <div key={idx} className='forecast-card'>
-                <h4>{formatDate(item.startDate)}</h4>
+                <h4>{formatNextYearDate(item.startDate)}</h4>
                 <p>אחוז ימים מתאימים: {(item.suitableRatio * 100).toFixed(1)}%</p>
                 {isRainfallConditionUsed && (
                   <p>
                     השקיה: {item.irrigationDays} | ניקוז: {item.drainageDays}
                   </p>
                 )}
+                <small>בהנחה שמזג האוויר יהיה דומה לשנה החולפת</small>
               </div>
             ))}
           </section>
