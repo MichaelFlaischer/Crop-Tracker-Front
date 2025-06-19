@@ -80,6 +80,7 @@ export function AdminDashboard() {
         cancelled: 'בוטלה',
         'in-progress': 'בביצוע',
         done: 'הושלמה',
+        pending: 'ממתינה',
       }
 
       const taskStatusCount = {}
