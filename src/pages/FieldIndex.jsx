@@ -223,24 +223,28 @@ export function FieldIndex() {
                       </ul>
                     </p>
                   )}
-                  <button
-                    onClick={() => navigate(`/harvest/${field.sowingId}`)}
-                    title='בצע קציר'
-                    style={{ backgroundColor: '#22c55e', color: 'white', padding: '0.4rem 0.75rem', border: 'none', borderRadius: '6px', cursor: 'pointer' }}
-                  >
+                  <button className='harvest-data-btn' onClick={() => navigate(`/sowing/${field.sowingId}`)} title='פרטי הגידול הפעיל'>
+                    פרטי גידול
+                  </button>
+                  <button className='harvest-btn' onClick={() => navigate(`/harvest/${field.sowingId}`)} title='בצע קציר'>
                     בצע קציר
                   </button>
                 </>
               )}
               {!field.isActive && (
-                <button
-                  onClick={() => navigate(`/sowing/add?fieldId=${field._id}`)}
-                  title='שתול יבול'
-                  style={{ backgroundColor: '#10b981', color: 'white', padding: '0.4rem 0.75rem', border: 'none', borderRadius: '6px', cursor: 'pointer' }}
-                >
-                  שתול יבול
-                </button>
+                <>
+                  <button
+                    onClick={() => navigate(`/sowing/add?fieldId=${field._id}`)}
+                    title='שתול יבול'
+                    style={{ backgroundColor: '#10b981', color: 'white', padding: '0.4rem 0.75rem', border: 'none', borderRadius: '6px', cursor: 'pointer' }}
+                  >
+                    שתול יבול
+                  </button>
+                </>
               )}
+              <button className='add-task-btn' onClick={() => navigate(`/tasks/add?fieldId=${field._id}`)}>
+                הוסף משימה
+              </button>
               {field.weather && (
                 <div style={{ marginTop: '0.75rem', backgroundColor: '#f0f9ff', padding: '0.5rem', borderRadius: '6px' }}>
                   <p>

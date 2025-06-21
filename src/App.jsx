@@ -39,6 +39,7 @@ import { FieldEdit } from './pages/FieldEdit'
 // Sowing & Harvest
 import { SowingAdd } from './pages/SowingAdd'
 import { HarvestAdd } from './pages/HarvestAdd'
+import { SowingDetails } from './pages/SowingDetails'
 
 // Inventory
 import { InventoryList } from './pages/InventoryList'
@@ -132,6 +133,8 @@ export function App() {
               {/* Sowing & Harvest */}
               <Route path='/sowing/add' element={<SowingAdd />} />
               <Route path='/harvest/:sowingId' element={<HarvestAdd />} />
+              <Route path='/sowing/:sowingId' element={<SowingDetails />} />
+
               {/* Inventory */}
               <Route path='/inventory' element={<InventoryList />} />
               <Route path='/Warehouse' element={<WarehouseIndex />} />

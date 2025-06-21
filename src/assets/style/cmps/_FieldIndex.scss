@@ -33,6 +33,31 @@
         opacity: 0.6;
         cursor: not-allowed;
       }
+
+      &.add-task-btn {
+        background-color: #6366f1;
+        color: #fff;
+
+        &:hover {
+          background-color: #1d1a53;
+        }
+      }
+      &.harvest-data-btn {
+        background-color: #0ea5e9;
+        color: #fff;
+
+        &:hover {
+          background-color: #044969;
+        }
+      }
+      &.harvest-btn {
+        background-color: #22c55e;
+        color: #fff;
+
+        &:hover {
+          background-color: #0b3f1e;
+        }
+      }
     }
 
     ul {

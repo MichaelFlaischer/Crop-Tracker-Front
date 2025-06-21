@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { registerLocale } from 'react-datepicker'
@@ -32,17 +32,34 @@ const schema = yup.object().shape({
 
 export function TaskAdd() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const fieldIdFromUrl = searchParams.get('fieldId') || ''
+
   const [fields, setFields] = useState([])
   const [operations, setOperations] = useState([])
+  const [isReady, setIsReady] = useState(false)
 
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
+    reset,
   } = useForm({
     resolver: yupResolver(schema),
     mode: 'onTouched',
+    defaultValues: {
+      taskDescription: '',
+      fieldId: '',
+      operationId: '',
+      startDate: null,
+      endDate: null,
+      startTime: '',
+      endTime: '',
+      requiredEmployees: '',
+      comments: '',
+      notes: '',
+    },
   })
 
   useEffect(() => {
@@ -54,11 +71,31 @@ export function TaskAdd() {
       const [fields, operations] = await Promise.all([fieldService.query(), operationService.query()])
       setFields(fields)
       setOperations(operations)
+      setIsReady(true)
     } catch (err) {
       console.error('שגיאה בטעינת חלקות/פעולות:', err)
       showErrorMsg('שגיאה בטעינת חלקות או פעולות')
     }
   }
+
+  useEffect(() => {
+    if (!isReady) return
+
+    const fieldExists = fields.some((f) => f._id.toString() === fieldIdFromUrl)
+
+    reset({
+      taskDescription: '',
+      fieldId: fieldExists ? fieldIdFromUrl : '',
+      operationId: '',
+      startDate: null,
+      endDate: null,
+      startTime: '',
+      endTime: '',
+      requiredEmployees: '',
+      comments: '',
+      notes: '',
+    })
+  }, [isReady, fields, fieldIdFromUrl, reset])
 
   async function onSubmit(data) {
     try {
@@ -83,7 +120,7 @@ export function TaskAdd() {
 
         <label>
           חלקה
-          <select {...register('fieldId')}>
+          <select {...register('fieldId')} disabled={!!fieldIdFromUrl}>
             <option value=''>בחר חלקה</option>
             {fields.map((f) => (
               <option key={f._id} value={f._id}>

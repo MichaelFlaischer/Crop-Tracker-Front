@@ -1,0 +1,235 @@
+.sowing-details {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #1f2937;
+
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: #111827;
+  }
+
+  .actions-bar {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+
+    .btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: #2563eb;
+      }
+    }
+  }
+
+  section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    border-radius: 14px;
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: #374151;
+      border-bottom: 2px solid #d1d5db;
+      padding-bottom: 0.5rem;
+    }
+
+    p {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+      color: #4b5563;
+
+      strong {
+        color: #111827;
+      }
+    }
+
+    ul {
+      padding-left: 1.2rem;
+      list-style: none;
+
+      li {
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+        color: #374151;
+      }
+    }
+  }
+
+  .sowing-info {
+    background-color: #ecfdf5;
+    border-color: #d1fae5;
+
+    .sowing-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+
+      p {
+        margin-bottom: 0.75rem;
+        font-size: 1rem;
+        color: #065f46;
+
+        strong {
+          color: #064e3b;
+        }
+      }
+
+      ul li {
+        color: #065f46;
+      }
+
+      @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+
+  .crop-card {
+    background-color: #fff7ed;
+    border-color: #fed7aa;
+
+    ul {
+      padding-left: 1rem;
+
+      li {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+        color: #7c2d12;
+      }
+    }
+  }
+
+  .task-list {
+    background-color: #eef2ff;
+    border-color: #c7d2fe;
+  }
+
+  .task-timeline {
+    position: relative;
+    margin: 2rem 0;
+    padding-left: 1.5rem;
+    border-left: 3px solid #d1d5db;
+
+    .timeline-entry {
+      position: relative;
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: flex-start;
+
+      .timeline-icon {
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        background-color: #3b82f6;
+        color: white;
+        width: 2rem;
+        height: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .timeline-content {
+        flex: 1;
+        background-color: inherit;
+
+        .timeline-date {
+          font-size: 0.85rem;
+          color: #6b7280;
+          margin-bottom: 0.3rem;
+        }
+
+        .timeline-desc {
+          font-size: 1rem;
+          font-weight: 500;
+          color: #1f2937;
+        }
+      }
+    }
+  }
+
+  .task-legend {
+    margin-top: 1rem;
+
+    ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+
+      li {
+        display: flex;
+        align-items: center;
+        font-size: 0.9rem;
+        color: #374151;
+
+        .legend-color {
+          width: 1rem;
+          height: 1rem;
+          margin-left: 0.5rem;
+          border-radius: 3px;
+          border: 1px solid #ccc;
+        }
+      }
+    }
+  }
+
+  .weather-dss {
+    background-color: #f0f9ff;
+    border-color: #bae6fd;
+  }
+
+  @media (max-width: 600px) {
+    padding: 1rem;
+
+    h1 {
+      font-size: 1.5rem;
+    }
+
+    .actions-bar {
+      flex-direction: column;
+      align-items: center;
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    section {
+      padding: 1rem;
+
+      h2 {
+        font-size: 1.25rem;
+      }
+
+      p,
+      li {
+        font-size: 0.9rem;
+      }
+    }
+  }
+}
