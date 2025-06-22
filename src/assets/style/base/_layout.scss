@@ -6,6 +6,7 @@
   grid-template-columns: 30vh auto;
   grid-template-rows: 1fr auto;
   min-height: 100vh;
+  overflow-x: hidden;
 
   > header {
     grid-area: header;
@@ -23,8 +24,8 @@
     grid-area: main;
     background-color: #fff;
     padding: 2rem;
-
-    min-height: 0; // מונע גלילה כפולה
+    min-width: 0;
+    overflow-x: auto;
   }
 
   > footer {
@@ -48,6 +49,10 @@
       height: auto;
       border-inline-end: none;
       border-bottom: 1px solid #ccc;
+    }
+
+    > main {
+      padding: 1rem;
     }
   }
 }

@@ -17,6 +17,7 @@
     justify-content: center;
     gap: 1rem;
     margin-bottom: 2rem;
+    flex-wrap: wrap;
 
     .btn {
       display: flex;
@@ -81,7 +82,7 @@
 
     .sowing-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 2rem;
 
       p {
@@ -97,10 +98,6 @@
       ul li {
         color: #065f46;
       }
-
-      @media (max-width: 768px) {
-        grid-template-columns: 1fr;
-      }
     }
   }
 
@@ -115,6 +112,27 @@
         font-size: 1rem;
         margin-bottom: 0.5rem;
         color: #7c2d12;
+      }
+    }
+
+    .crop-card-actions {
+      display: flex;
+      justify-content: center;
+      margin-top: 1rem;
+
+      .btn {
+        background-color: #f59e0b;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+
+        &:hover {
+          background-color: #d97706;
+        }
       }
     }
   }
@@ -138,6 +156,7 @@
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
       display: flex;
       align-items: flex-start;
+      flex-wrap: wrap;
 
       .timeline-icon {
         margin-right: 1rem;
@@ -167,6 +186,22 @@
           font-size: 1rem;
           font-weight: 500;
           color: #1f2937;
+        }
+
+        .btn {
+          margin-top: 0.5rem;
+          background-color: #4b5563;
+          color: white;
+          padding: 0.4rem 0.8rem;
+          font-size: 0.85rem;
+          border-radius: 6px;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.4rem;
+
+          &:hover {
+            background-color: #374151;
+          }
         }
       }
     }
@@ -230,6 +265,15 @@
       li {
         font-size: 0.9rem;
       }
+    }
+
+    .sowing-info .sowing-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .task-timeline {
+      padding-left: 1rem;
     }
   }
 }

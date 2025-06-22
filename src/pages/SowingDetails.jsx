@@ -4,6 +4,7 @@ import { sowingAndHarvestService } from '../services/sowing-and-harvest.service.
 import { cropService } from '../services/crop.service.js'
 import { fieldService } from '../services/field.service.js'
 import { taskService } from '../services/task.service.js'
+import { operationService } from '../services/operation.service.js'
 import { getForecastByCoords } from '../services/weather.service.js'
 import { WeeklyRecommendations } from '../cmps/WeeklyRecommendations.jsx'
 import { seasonService } from '../services/seasons.service.js'
@@ -22,7 +23,6 @@ import {
   TrendingUp,
   StickyNote,
   Info,
-  Palette,
   Wrench,
   PlusCircle,
   Scissors,
@@ -36,6 +36,7 @@ export function SowingDetails() {
   const [tasks, setTasks] = useState([])
   const [forecast, setForecast] = useState([])
   const [preferredSeasonName, setPreferredSeasonName] = useState('')
+  const [operations, setOperations] = useState([])
 
   const navigate = useNavigate()
 
@@ -49,13 +50,15 @@ export function SowingDetails() {
       const sowingRecord = await sowingAndHarvestService.getById(sowingId)
       setSowing(sowingRecord)
 
-      const [field, crop, allTasks] = await Promise.all([
+      const [field, crop, allTasks, allOperations] = await Promise.all([
         fieldService.getById(sowingRecord.fieldId),
         cropService.getById(sowingRecord.cropId),
         taskService.query(),
+        operationService.query(),
       ])
       setField(field)
       setCrop(crop)
+      setOperations(allOperations)
 
       if (crop.preferredSeasonId) {
         const season = await seasonService.getById(crop.preferredSeasonId)
@@ -97,6 +100,12 @@ export function SowingDetails() {
   }
 
   if (!sowing || !field || !crop) return <p>🔄 טוען מידע...</p>
+
+  const totalCost = tasks.reduce((acc, task) => {
+    const operation = operations.find((op) => op._id === task.operationId)
+    const costPerUnit = operation?.costPerUnit || 0
+    return acc + (field.size || 0) * costPerUnit
+  }, 0)
 
   return (
     <section className='sowing-details'>
@@ -147,6 +156,11 @@ export function SowingDetails() {
               ))}
             </ul>
           </div>
+          <div>
+            <p>
+              <Wrench size={18} /> <strong>סה"כ עלות גידול מוערך:</strong> ₪{formatNumber(totalCost)}
+            </p>
+          </div>
         </div>
       </section>
 
@@ -190,6 +204,10 @@ export function SowingDetails() {
             <StickyNote size={16} /> הערות: {crop.notes}
           </li>
         </ul>
+
+        <button className='btn btn-small' onClick={() => navigate(`/crop/${crop._id}`)}>
+          <Info size={14} /> לצפייה
+        </button>
       </section>
 
       <section className='weather-dss'>
@@ -202,18 +220,33 @@ export function SowingDetails() {
         <div className='task-timeline'>
           {tasks
             .sort((a, b) => new Date(a.startDate) - new Date(b.startDate))
-            .map((task) => (
-              <div className='timeline-entry' key={task._id} style={{ backgroundColor: getTaskColor(task.taskDescription) }}>
-                <div className='timeline-icon'>
-                  <Wrench size={16} />
+            .map((task) => {
+              const operation = operations.find((op) => op._id === task.operationId)
+              const operationName = operation?.operationName || '---'
+              const costPerUnit = operation?.costPerUnit || 0
+              const estimatedCost = (field.size || 0) * costPerUnit
+
+              return (
+                <div className='timeline-entry' key={task._id} style={{ backgroundColor: getTaskColor(task.taskDescription) }}>
+                  <div className='timeline-icon'>
+                    <Wrench size={16} />
+                  </div>
+                  <div className='timeline-content'>
+                    <div className='timeline-date'>{formatDate(task.startDate)}</div>
+                    <div className='timeline-desc'>
+                      <strong>{operationName}</strong> – {task.taskDescription}
+                      <br />
+                      <small>מחיר מוערך: ₪{estimatedCost.toLocaleString('he-IL')}</small>
+                    </div>
+                    <button className='btn btn-small' onClick={() => navigate(`/tasks/${task._id}`)}>
+                      <Info size={14} /> לצפייה
+                    </button>
+                  </div>
                 </div>
-                <div className='timeline-content'>
-                  <div className='timeline-date'>{formatDate(task.startDate)}</div>
-                  <div className='timeline-desc'>{task.taskDescription}</div>
-                </div>
-              </div>
-            ))}
+              )
+            })}
         </div>
+
         <div className='task-legend'>
           <h3>🎨 מקרא צבעים:</h3>
           <ul>
