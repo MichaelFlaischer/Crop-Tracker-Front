@@ -28,6 +28,7 @@ const schema = yup.object().shape({
   requiredEmployees: yup.number().required('יש להזין כמות עובדים נדרשת').min(1, 'לפחות עובד אחד נדרש'),
   status: yup.string().required('יש לבחור סטטוס'),
   notes: yup.string(),
+  comments: yup.string().nullable(),
 })
 
 export function TaskEdit() {
@@ -53,6 +54,7 @@ export function TaskEdit() {
 
   const startDate = watch('startDate')
   const endDate = watch('endDate')
+  const status = watch('status')
 
   useEffect(() => {
     loadFormData()
@@ -73,6 +75,7 @@ export function TaskEdit() {
         ...taskData,
         startDate: taskData.startDate ? new Date(taskData.startDate) : null,
         endDate: taskData.endDate ? new Date(taskData.endDate) : null,
+        comments: taskData.comments || '',
       })
     } catch (err) {
       console.error('שגיאה בטעינת משימה:', err)
@@ -137,6 +140,11 @@ export function TaskEdit() {
           </label>
 
           <label>
+            הערות לביצוע המשימה
+            <textarea {...register('notes')} />
+          </label>
+
+          <label>
             תאריך התחלה
             <DatePicker
               selected={startDate}
@@ -190,10 +198,13 @@ export function TaskEdit() {
             {errors.status && <span className='error'>{errors.status.message}</span>}
           </label>
 
-          <label>
-            הערות למשימה
-            <textarea {...register('notes')} />
-          </label>
+          {(status === 'done' || status === 'cancelled') && (
+            <label>
+              תוצאות המשימה
+              <textarea {...register('comments')} placeholder='מה בוצע בפועל, תקלות, תוצרים וכו׳' />
+              {errors.comments && <span className='error'>{errors.comments.message}</span>}
+            </label>
+          )}
 
           <div className='actions'>
             <button type='submit'>💾 שמור שינויים</button>

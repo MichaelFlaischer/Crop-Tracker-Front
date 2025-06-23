@@ -91,7 +91,7 @@ export function UserIndex() {
           { key: 'email', label: 'אימייל' },
           { key: 'phoneNumber', label: 'טלפון' },
           { key: 'status', label: 'סטטוס' },
-          { key: 'isAdmin', label: 'אדמין' },
+          { key: 'isAdmin', label: 'תפקיד ניהולי' },
         ]}
         data={filteredData}
         filterBy={filterBy}

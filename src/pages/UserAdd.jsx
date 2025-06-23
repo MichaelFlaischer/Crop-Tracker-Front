@@ -24,7 +24,7 @@ const schema = yup.object().shape({
   startDate: yup.date().typeError('יש להזין תאריך תקין').notRequired(),
   salary: yup.number().typeError('יש להזין מספר').min(0, 'שכר לא יכול להיות שלילי').notRequired(),
   address: yup.string().notRequired(),
-  roleId: yup.number().required('יש לבחור תפקיד'),
+  roleId: yup.string().required('יש לבחור תפקיד'),
   roleName: yup.string().required('שם תפקיד נדרש'),
   isAdmin: yup.boolean().default(false),
   status: yup.string().oneOf(['Active', 'Inactive']),
@@ -51,7 +51,7 @@ export function UserAdd() {
       startDate: '',
       salary: '',
       address: '',
-      roleId: 2,
+      roleId: '',
       roleName: '',
       isAdmin: false,
       status: 'Active',
@@ -66,10 +66,11 @@ export function UserAdd() {
     try {
       const rolesFromServer = await roleService.query()
       setRoles(rolesFromServer)
-      const defaultRole = rolesFromServer.find((r) => r.RoleID === 2) || rolesFromServer[0]
+
+      const defaultRole = rolesFromServer[0]
       if (defaultRole) {
-        setValue('roleId', defaultRole.RoleID)
-        setValue('roleName', defaultRole.RoleName)
+        setValue('roleId', defaultRole.roleId)
+        setValue('roleName', defaultRole.roleName)
         setValue('isAdmin', !!defaultRole.isAdmin)
       }
     } catch (err) {
@@ -88,7 +89,7 @@ export function UserAdd() {
         startDate: user.startDate,
         salary: +user.salary,
         address: user.address,
-        roleId: +user.roleId,
+        roleId: user.roleId,
         roleName: user.roleName,
         isAdmin: !!user.isAdmin,
         status: user.status,
@@ -169,18 +170,18 @@ export function UserAdd() {
           <select
             {...register('roleId')}
             onChange={(e) => {
-              const selectedId = +e.target.value
-              const selectedRole = roles.find((role) => role.RoleID === selectedId)
+              const selectedId = e.target.value
+              const selectedRole = roles.find((role) => role.roleId === selectedId)
               if (selectedRole) {
-                setValue('roleId', selectedRole.RoleID)
-                setValue('roleName', selectedRole.RoleName)
+                setValue('roleId', selectedRole.roleId)
+                setValue('roleName', selectedRole.roleName)
                 setValue('isAdmin', !!selectedRole.isAdmin)
               }
             }}
           >
             {roles.map((role) => (
-              <option key={role._id} value={role.RoleID}>
-                {role.RoleName}
+              <option key={role._id} value={role.roleId}>
+                {role.roleName}
               </option>
             ))}
           </select>
@@ -197,7 +198,7 @@ export function UserAdd() {
         </label>
 
         <label>
-          האם אדמין:
+          האם תפקיד ניהולי:
           <span>{watch('isAdmin') ? 'כן' : 'לא'}</span>
         </label>
 

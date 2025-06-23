@@ -24,7 +24,7 @@ const schema = yup.object().shape({
   startDate: yup.date().typeError('יש להזין תאריך תקין').nullable(),
   salary: yup.number().typeError('יש להזין מספר').min(0, 'שכר לא יכול להיות שלילי').optional(),
   address: yup.string().optional(),
-  roleId: yup.number().required('יש לבחור תפקיד'),
+  roleId: yup.string().required('יש לבחור תפקיד'),
   roleName: yup.string().required('שם תפקיד נדרש'),
   isAdmin: yup.boolean().default(false),
   status: yup.string().oneOf(['Active', 'Inactive']),
@@ -56,7 +56,10 @@ export function UserEdit() {
       startDate: null,
       isAdmin: false,
     },
+    shouldUnregister: true,
   })
+
+  const isAdmin = watch('isAdmin')
 
   useEffect(() => {
     loadUser()
@@ -74,7 +77,7 @@ export function UserEdit() {
         startDate: userFromServer.startDate ? new Date(userFromServer.startDate) : null,
         salary: userFromServer.salary || '',
         address: userFromServer.address || '',
-        roleId: userFromServer.roleId || 2,
+        roleId: userFromServer.roleId || '',
         roleName: userFromServer.roleName || '',
         isAdmin: !!userFromServer.isAdmin,
         status: userFromServer.status || 'Active',
@@ -103,7 +106,7 @@ export function UserEdit() {
         ...formValues,
         _id: userId,
         salary: +formValues.salary,
-        roleId: +formValues.roleId,
+        roleId: formValues.roleId,
       }
 
       delete userToSend.Changepassword
@@ -175,19 +178,21 @@ export function UserEdit() {
           <select
             {...register('roleId')}
             onChange={(e) => {
-              const selectedId = +e.target.value
-              const selectedRole = roles.find((role) => role.RoleID === selectedId)
+              const selectedId = e.target.value
+              const selectedRole = roles.find((role) => role._id === selectedId || role.RoleID === selectedId)
               if (selectedRole) {
-                setValue('roleId', selectedRole.RoleID)
-                setValue('roleName', selectedRole.RoleName)
+                setValue('roleId', selectedRole.RoleID || selectedRole._id)
+                setValue('roleName', selectedRole.roleName)
                 setValue('isAdmin', !!selectedRole.isAdmin)
               }
             }}
           >
-            {watch('roleId') && !roles.find((r) => r.RoleID === +watch('roleId')) && <option value={watch('roleId')}>{watch('roleName')}</option>}
+            {watch('roleId') && !roles.find((r) => r.RoleID === watch('roleId') || r._id === watch('roleId')) && (
+              <option value={watch('roleId')}>{watch('roleName')}</option>
+            )}
             {roles.map((role) => (
-              <option key={role._id} value={role.RoleID}>
-                {role.RoleName}
+              <option key={role._id} value={role.RoleID || role._id}>
+                {role.roleName}
               </option>
             ))}
           </select>
@@ -204,8 +209,8 @@ export function UserEdit() {
         </label>
 
         <label>
-          האם אדמין:
-          <span>{watch('isAdmin') ? 'כן' : 'לא'}</span>
+          האם תפקיד ניהולי:
+          <span>{isAdmin ? 'כן' : 'לא'}</span>
         </label>
 
         <label className='password-toggle'>

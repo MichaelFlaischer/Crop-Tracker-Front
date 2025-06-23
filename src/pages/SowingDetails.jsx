@@ -102,10 +102,26 @@ export function SowingDetails() {
   if (!sowing || !field || !crop) return <p>🔄 טוען מידע...</p>
 
   const totalCost = tasks.reduce((acc, task) => {
+    if (task.status === 'cancelled') return acc
     const operation = operations.find((op) => op._id === task.operationId)
     const costPerUnit = operation?.costPerUnit || 0
     return acc + (field.size || 0) * costPerUnit
   }, 0)
+
+  const translateStatus = (status) => {
+    switch (status) {
+      case 'pending':
+        return 'ממתינה'
+      case 'in-progress':
+        return 'בתהליך'
+      case 'done':
+        return 'הושלמה'
+      case 'cancelled':
+        return 'בוטלה'
+      default:
+        return status
+    }
+  }
 
   return (
     <section className='sowing-details'>
@@ -226,6 +242,9 @@ export function SowingDetails() {
               const costPerUnit = operation?.costPerUnit || 0
               const estimatedCost = (field.size || 0) * costPerUnit
 
+              const isCancelled = task.status === 'cancelled'
+              const textStyle = isCancelled ? { textDecoration: 'line-through', opacity: 0.6 } : {}
+
               return (
                 <div className='timeline-entry' key={task._id} style={{ backgroundColor: getTaskColor(task.taskDescription) }}>
                   <div className='timeline-icon'>
@@ -233,10 +252,11 @@ export function SowingDetails() {
                   </div>
                   <div className='timeline-content'>
                     <div className='timeline-date'>{formatDate(task.startDate)}</div>
-                    <div className='timeline-desc'>
-                      <strong>{operationName}</strong> – {task.taskDescription}
+                    <div className='timeline-desc' style={textStyle}>
+                      <strong>{operationName}</strong> – {task.taskDescription} ({translateStatus(task.status)})<br />
+                      {task.comments && <small>תוצאה: {task.comments}</small>}
                       <br />
-                      <small>מחיר מוערך: ₪{estimatedCost.toLocaleString('he-IL')}</small>
+                      {!isCancelled && <small>מחיר מוערך: ₪{estimatedCost.toLocaleString('he-IL')}</small>}
                     </div>
                     <button className='btn btn-small' onClick={() => navigate(`/tasks/${task._id}`)}>
                       <Info size={14} /> לצפייה

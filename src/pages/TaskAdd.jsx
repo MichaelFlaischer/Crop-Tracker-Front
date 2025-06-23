@@ -26,7 +26,6 @@ const schema = yup.object().shape({
   startTime: yup.string().required('יש להזין שעת התחלה'),
   endTime: yup.string().required('יש להזין שעת סיום'),
   requiredEmployees: yup.number().typeError('יש להזין מספר').min(1, 'לפחות עובד אחד נדרש'),
-  comments: yup.string(),
   notes: yup.string(),
 })
 
@@ -57,7 +56,6 @@ export function TaskAdd() {
       startTime: '',
       endTime: '',
       requiredEmployees: '',
-      comments: '',
       notes: '',
     },
   })
@@ -92,14 +90,13 @@ export function TaskAdd() {
       startTime: '',
       endTime: '',
       requiredEmployees: '',
-      comments: '',
       notes: '',
     })
   }, [isReady, fields, fieldIdFromUrl, reset])
 
   async function onSubmit(data) {
     try {
-      await taskService.add({ ...data, status: 'in-progress' })
+      await taskService.add({ ...data, status: 'in-progress', comments: '' })
       showSuccessMsg('המשימה נוספה בהצלחה 🎉')
       navigate('/tasks')
     } catch (err) {
@@ -203,12 +200,7 @@ export function TaskAdd() {
         </label>
 
         <label>
-          הערות
-          <textarea {...register('comments')} />
-        </label>
-
-        <label>
-          הערות כלליות
+          הערות לביצוע המשימה
           <textarea {...register('notes')} />
         </label>
 

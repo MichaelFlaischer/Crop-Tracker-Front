@@ -33,6 +33,7 @@ export function TaskDetails() {
     done: 'הושלמה',
     delayed: 'נדחתה',
     missed: 'לא בוצעה',
+    cancelled: 'בוטלה',
   }
 
   useEffect(() => {
@@ -161,6 +162,9 @@ export function TaskDetails() {
           <strong>תיאור משימה:</strong> {task.taskDescription}
         </p>
         <p>
+          <strong> הערות לביצוע:</strong> {task.notes}
+        </p>
+        <p>
           <strong>חלקה:</strong> {fieldName}
         </p>
         <p>
@@ -177,6 +181,9 @@ export function TaskDetails() {
         </p>
         <p>
           <strong>משובצים כעת:</strong> {employees.length} עובדים — {statusNote}
+        </p>
+        <p>
+          <strong>תוצאות המשימה:</strong> {task.comments}
         </p>
       </div>
 
