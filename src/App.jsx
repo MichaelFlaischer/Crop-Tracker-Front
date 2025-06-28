@@ -139,7 +139,7 @@ export function App() {
               <Route path='/inventory' element={<InventoryList />} />
               <Route path='/Warehouse' element={<WarehouseIndex />} />
               <Route path='/Warehouse/add' element={<WarehouseAdd />} />
-              <Route path='/Warehouse/edit/:WarehouseId' element={<WarehouseEdit />} />
+              <Route path='/warehouse/edit/:warehouseId' element={<WarehouseEdit />} />
               {/* Operations */}
               <Route path='/operations' element={<OperationIndex />} />
               <Route path='/operations/add' element={<OperationAdd />} />
