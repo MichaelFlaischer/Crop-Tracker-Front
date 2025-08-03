@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { GoogleMap, Marker, Polygon, DrawingManager, useJsApiLoader } from '@react-google-maps/api'
 import { fieldService } from '../services/field.service.js'
 import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service.js'
+import { Loader } from '../cmps/Loader.jsx'
 
 const containerStyle = {
   width: '100%',
@@ -141,7 +142,7 @@ export function FieldEdit() {
     navigate('/field')
   }
 
-  if (!isLoaded || !field) return <p>טוען את פרטי החלקה...</p>
+  if (!isLoaded || !field) return <Loader />
 
   return (
     <section className='field-edit-layout' style={{ display: 'flex', gap: '2rem' }}>

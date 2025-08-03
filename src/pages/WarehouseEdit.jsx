@@ -4,6 +4,7 @@ import { GoogleMap, Marker, StandaloneSearchBox, useJsApiLoader } from '@react-g
 import { warehouseService } from '../services/warehouse.service.js'
 import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service.js'
 import * as yup from 'yup'
+import { Loader } from '../cmps/Loader.jsx'
 
 const containerStyle = {
   width: '100%',
@@ -33,6 +34,7 @@ const warehouseSchema = yup.object().shape({
 export function WarehouseEdit() {
   const [warehouse, setWarehouse] = useState(null)
   const [errors, setErrors] = useState({})
+  const [isLoading, setIsLoading] = useState(true)
   const mapRef = useRef(null)
   const searchBoxRef = useRef(null)
   const searchInputRef = useRef(null)
@@ -56,6 +58,8 @@ export function WarehouseEdit() {
     } catch (err) {
       console.error('שגיאה בטעינת מחסן:', err)
       showErrorMsg('שגיאה בטעינת המחסן')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -166,6 +170,7 @@ export function WarehouseEdit() {
     }
   }
 
+  if (isLoading) return <Loader />
   if (!isLoaded || !warehouse) return <p>טוען...</p>
 
   return (

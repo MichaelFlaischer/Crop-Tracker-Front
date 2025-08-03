@@ -4,9 +4,11 @@ import { taskService } from '../services/task.service.js'
 import { cropService } from '../services/crop.service.js'
 import { fieldService } from '../services/field.service.js'
 import TimelinesChart from 'timelines-chart'
+import { Loader } from '../cmps/Loader.jsx'
 
 export function SowingAndHarvestTimeline() {
   const [records, setRecords] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     loadData()
@@ -121,6 +123,8 @@ export function SowingAndHarvestTimeline() {
       setRecords(recordsWithTimeline)
     } catch (err) {
       console.error('Error loading data:', err)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -194,6 +198,8 @@ export function SowingAndHarvestTimeline() {
       </details>
     )
   }
+
+  if (isLoading) return <Loader />
 
   return (
     <section className='sowing-harvest-timeline'>

@@ -6,6 +6,7 @@ import { customerOrderItemService } from '../services/customer-order-item.servic
 import { fieldService } from '../services/field.service.js'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, LineChart, Line, CartesianGrid } from 'recharts'
 import { useNavigate } from 'react-router-dom'
+import { Loader } from '../cmps/Loader.jsx'
 
 export function DashboardDSS() {
   const [cropStats, setCropStats] = useState([])
@@ -14,6 +15,7 @@ export function DashboardDSS() {
   const [recommendations, setRecommendations] = useState([])
   const [forecastDetails, setForecastDetails] = useState({})
   const [growthTimeData, setGrowthTimeData] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -21,6 +23,7 @@ export function DashboardDSS() {
   }, [])
 
   async function loadData() {
+    setIsLoading(true)
     try {
       const [warehouses, crops, records, fields] = await Promise.all([
         warehouseService.query(),
@@ -141,8 +144,12 @@ export function DashboardDSS() {
       setRecommendations(recommendationList)
     } catch (err) {
       console.error('שגיאה בטעינת נתוני DSS:', err)
+    } finally {
+      setIsLoading(false)
     }
   }
+
+  if (isLoading) return <Loader />
 
   return (
     <section className='dashboard-dss'>

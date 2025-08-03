@@ -7,6 +7,7 @@ import { cropService } from '../services/crop.service'
 import { seasonService } from '../services/seasons.service'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service'
 import { Slider, TextField, Button, Switch, FormControlLabel } from '@mui/material'
+import { Loader } from '../cmps/Loader.jsx'
 
 const schema = yup.object().shape({
   cropName: yup.string().required('יש להזין שם יבול'),
@@ -151,7 +152,7 @@ export function CropEdit() {
     navigate('/crop')
   }
 
-  if (isLoading) return <div className='loader'>טוען...</div>
+  if (isLoading) return <Loader />
 
   return (
     <section className='crop-edit'>

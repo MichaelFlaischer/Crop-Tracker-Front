@@ -6,6 +6,7 @@ import { userService } from '../services/user.service.js'
 import { fieldService } from '../services/field.service.js'
 import { customerOrderService } from '../services/customer-order.service.js'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service.js'
+import { Loader } from '../cmps/Loader.jsx'
 
 export function TaskAssign() {
   const [tasks, setTasks] = useState([])
@@ -15,6 +16,7 @@ export function TaskAssign() {
   const [ordersMap, setOrdersMap] = useState({})
   const [notesMap, setNotesMap] = useState({})
   const [statusMap, setStatusMap] = useState({})
+  const [isLoading, setIsLoading] = useState(true)
 
   const loggedInUser = userService.getLoggedInUser()
   const navigate = useNavigate()
@@ -65,6 +67,8 @@ export function TaskAssign() {
       setStatusMap(initialStatus)
     } catch (err) {
       showErrorMsg('שגיאה בטעינת הנתונים')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -264,6 +268,8 @@ export function TaskAssign() {
       )}
     </>
   )
+
+  if (isLoading) return <Loader />
 
   return (
     <section className='task-assign'>

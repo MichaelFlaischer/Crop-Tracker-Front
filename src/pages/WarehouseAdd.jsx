@@ -4,6 +4,7 @@ import { GoogleMap, Marker, useJsApiLoader, StandaloneSearchBox } from '@react-g
 import { warehouseService } from '../services/warehouse.service.js'
 import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service.js'
 import * as yup from 'yup'
+import { Loader } from '../cmps/Loader.jsx'
 
 const containerStyle = {
   width: '100%',
@@ -42,6 +43,7 @@ export function WarehouseAdd() {
   })
 
   const [errors, setErrors] = useState({})
+  const [isLoading, setIsLoading] = useState(false)
   const mapRef = useRef(null)
   const searchBoxRef = useRef(null)
   const searchInputRef = useRef(null)
@@ -138,6 +140,7 @@ export function WarehouseAdd() {
   async function onSave(ev) {
     ev.preventDefault()
     try {
+      setIsLoading(true)
       await warehouseSchema.validate(warehouse, { abortEarly: false })
       await warehouseService.save(warehouse)
       showSuccessMsg('המחסן נוסף בהצלחה')
@@ -153,8 +156,12 @@ export function WarehouseAdd() {
         console.error('שגיאה בהוספת מחסן:', err)
         showErrorMsg('שגיאה בהוספת מחסן')
       }
+    } finally {
+      setIsLoading(false)
     }
   }
+
+  if (isLoading) return <Loader />
 
   if (!isLoaded) return <p>טוען מפה...</p>
 

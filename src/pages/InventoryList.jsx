@@ -5,9 +5,11 @@ import { cropService } from '../services/crop.service.js'
 import { sowingAndHarvestService } from '../services/sowing-and-harvest.service.js'
 import { fieldService } from '../services/field.service.js'
 import { customerOrderItemService } from '../services/customer-order-item.service.js'
+import { Loader } from '../cmps/Loader.jsx'
 
 export function InventoryList() {
   const [inventoryData, setInventoryData] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -15,6 +17,7 @@ export function InventoryList() {
   }, [])
 
   async function loadInventory() {
+    setIsLoading(true)
     try {
       const [warehouses, crops, records, fields] = await Promise.all([
         warehouseService.query(),
@@ -138,8 +141,12 @@ export function InventoryList() {
       setInventoryData(Object.values(cropInventory).sort((a, b) => a.crop.cropName.localeCompare(b.crop.cropName)))
     } catch (err) {
       console.error('שגיאה בטעינת מלאי:', err)
+    } finally {
+      setIsLoading(false)
     }
   }
+
+  if (isLoading) return <Loader />
 
   return (
     <section className='inventory-list'>

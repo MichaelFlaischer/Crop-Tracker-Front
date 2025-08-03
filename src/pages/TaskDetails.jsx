@@ -12,6 +12,7 @@ import { userService } from '../services/user.service.js'
 import { fieldService } from '../services/field.service.js'
 import { operationService } from '../services/operation.service.js'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service.js'
+import { Loader } from '../cmps/Loader.jsx'
 
 registerLocale('he', he)
 
@@ -24,6 +25,7 @@ export function TaskDetails() {
   const [operationName, setOperationName] = useState('')
   const [fieldName, setFieldName] = useState('')
   const [newAssignments, setNewAssignments] = useState({ employeeIds: [], actualStart: null })
+  const [isLoading, setIsLoading] = useState(true)
 
   const statusMap = {
     waiting: 'בהמתנה',
@@ -59,6 +61,8 @@ export function TaskDetails() {
       setFieldName(field?.fieldName || '-')
     } catch (err) {
       showErrorMsg('שגיאה בטעינת פרטי משימה')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -143,6 +147,8 @@ export function TaskDetails() {
       : employees.length === task?.requiredEmployees
       ? 'כמות מדויקת של עובדים שובצה'
       : 'שובצו יותר מדי עובדים'
+
+  if (isLoading) return <Loader />
 
   if (!task) return <section className='task-details'>טוען פרטים...</section>
 

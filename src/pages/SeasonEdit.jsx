@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { seasonService } from '../services/seasons.service'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service'
+import { Loader } from '../cmps/Loader.jsx'
 
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
@@ -78,7 +79,7 @@ export function SeasonEdit() {
     setSeason(updated)
   }
 
-  if (!season) return <div>טוען נתונים...</div>
+  if (!season) return <Loader />
 
   return (
     <section className='season-edit'>

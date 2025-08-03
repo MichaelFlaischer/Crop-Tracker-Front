@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Loader } from '../cmps/Loader.jsx'
 import { customerOrderService } from '../services/customer-order.service.js'
 import { clientService } from '../services/client.service.js'
 import { taskService } from '../services/task.service.js'
@@ -18,6 +19,7 @@ export function OrderIndex() {
     deliveryFrom: '',
     deliveryTo: '',
   })
+  const [isLoading, setIsLoading] = useState(true)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -124,6 +126,8 @@ export function OrderIndex() {
     }
     return filtered
   }
+
+  if (isLoading) return <Loader />
 
   return (
     <section className='order-index'>

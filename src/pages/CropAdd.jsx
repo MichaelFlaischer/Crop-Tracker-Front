@@ -7,6 +7,7 @@ import { cropService } from '../services/crop.service.js'
 import { seasonService } from '../services/seasons.service.js'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service.js'
 import { Slider, TextField, Switch, FormControlLabel } from '@mui/material'
+import { Loader } from '../cmps/Loader.jsx'
 
 const schema = yup.object().shape({
   cropName: yup.string().required('יש להזין שם יבול'),
@@ -39,6 +40,7 @@ export function CropAdd() {
   const [selectedSeasonId, setSelectedSeasonId] = useState('')
   const [seasonMatchMessage, setSeasonMatchMessage] = useState(null)
   const [isSensitiveToRain, setIsSensitiveToRain] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   const {
     register,
@@ -51,7 +53,18 @@ export function CropAdd() {
   })
 
   useEffect(() => {
-    seasonService.query().then(setSeasons)
+    async function loadSeasons() {
+      setIsLoading(true)
+      try {
+        const data = await seasonService.query()
+        setSeasons(data)
+      } catch (err) {
+        showErrorMsg('שגיאה בטעינת עונות')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadSeasons()
   }, [])
 
   useEffect(() => {
@@ -160,6 +173,8 @@ export function CropAdd() {
       showErrorMsg('שגיאה בהוספת יבול')
     }
   }
+
+  if (isLoading) return <Loader />
 
   return (
     <section className='crop-add'>

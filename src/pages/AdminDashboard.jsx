@@ -10,6 +10,7 @@ import { fieldService } from '../services/field.service.js'
 import { sowingAndHarvestService } from '../services/sowing-and-harvest.service.js'
 import { employeesInTaskService } from '../services/employees-in-task.service.js'
 import { Link } from 'react-router-dom'
+import { Loader } from '../cmps/Loader.jsx'
 
 export function AdminDashboard() {
   const [stats, setStats] = useState([])
@@ -18,6 +19,7 @@ export function AdminDashboard() {
   const [cropDistributionData, setCropDistributionData] = useState([])
   const [todayTasks, setTodayTasks] = useState([])
   const [todayDeliveries, setTodayDeliveries] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
 
   const userId = sessionStorage.getItem('loggedinUser')
     ? JSON.parse(sessionStorage.getItem('loggedinUser'))._id?.$oid || JSON.parse(sessionStorage.getItem('loggedinUser'))._id
@@ -33,6 +35,7 @@ export function AdminDashboard() {
   }
 
   async function loadDashboardData() {
+    setIsLoading(true)
     try {
       const [crops, users, clients, orders, tasks, fields, sowingAndHarvestList, assignments] = await Promise.all([
         cropService.query(),
@@ -145,10 +148,14 @@ export function AdminDashboard() {
       setTodayDeliveries(enrichedTasks.filter((t) => isSameDate(t.startDate, today) && t.operationId === deliveryOperationId))
     } catch (err) {
       console.error('שגיאה בטעינת הנתונים:', err)
+    } finally {
+      setIsLoading(false)
     }
   }
 
   const COLORS = ['#00C49F', '#FF8042', '#FFBB28', '#0088FE', '#FF6699', '#AA55FF']
+
+  if (isLoading) return <Loader />
 
   return (
     <section className='admin-dashboard'>

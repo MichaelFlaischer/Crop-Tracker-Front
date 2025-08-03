@@ -5,6 +5,7 @@ import { cropService } from '../services/crop.service.js'
 import { sowingAndHarvestService } from '../services/sowing-and-harvest.service.js'
 import { seasonService } from '../services/seasons.service.js'
 import { getWeeklyWeatherSummary } from '../services/weather.service.js'
+import { Loader } from '../cmps/Loader.jsx'
 
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
@@ -49,6 +50,7 @@ export function SowingAdd() {
   const [errors, setErrors] = useState({})
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     async function loadData() {
@@ -63,6 +65,7 @@ export function SowingAdd() {
         if (field) setSelectedFieldName(field.fieldName)
         setFormData((prev) => ({ ...prev, fieldId: prefillFieldId }))
       }
+      setIsLoading(false)
     }
     loadData()
   }, [searchParams])
@@ -169,6 +172,8 @@ export function SowingAdd() {
   function handleCancel() {
     navigate('/field')
   }
+
+  if (isLoading) return <Loader />
 
   return (
     <section className='sowing-add'>

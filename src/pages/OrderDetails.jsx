@@ -9,6 +9,7 @@ import { userService } from '../services/user.service.js'
 import { employeesInTaskService } from '../services/employees-in-task.service.js'
 import { taskService } from '../services/task.service.js'
 import { format, isValid } from 'date-fns'
+import { Loader } from '../cmps/Loader.jsx'
 
 const DELIVERY_OPERATION_ID = '68354fa1d29fa199e95c04d8'
 
@@ -55,6 +56,7 @@ export function OrderDetails() {
   const [usersMap, setUsersMap] = useState({})
   const [users, setUsers] = useState([])
   const [deliveryEmployees, setDeliveryEmployees] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -64,6 +66,7 @@ export function OrderDetails() {
   }, [orderId])
 
   async function loadOrder() {
+    setIsLoading(true)
     try {
       const o = await customerOrderService.getById(orderId)
       const i = await customerOrderItemService.queryByOrderId(orderId)
@@ -89,6 +92,8 @@ export function OrderDetails() {
       }
     } catch (err) {
       console.error('שגיאה בטעינת פרטי הזמנה:', err)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -128,6 +133,7 @@ export function OrderDetails() {
     loadOrder()
   }
 
+  if (isLoading) return <Loader />
   if (!order || !client) return <div>טוען פרטי הזמנה...</div>
 
   const daysLeft = getDaysLeft()

@@ -4,15 +4,18 @@ import { sowingAndHarvestService } from '../services/sowing-and-harvest.service.
 import { warehouseService } from '../services/warehouse.service.js'
 import { customerOrderItemService } from '../services/customer-order-item.service.js'
 import { fieldService } from '../services/field.service.js'
+import { Loader } from '../cmps/Loader.jsx'
 
 export function ReportIndex() {
   const [report, setReport] = useState({})
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     loadReport()
   }, [])
 
   async function loadReport() {
+    setIsLoading(true)
     try {
       const [crops, records, warehouses, orderItems, fields] = await Promise.all([
         cropService.query(),
@@ -63,8 +66,12 @@ export function ReportIndex() {
       })
     } catch (err) {
       console.error('שגיאה בטעינת סקירה כללית:', err)
+    } finally {
+      setIsLoading(false)
     }
   }
+
+  if (isLoading) return <Loader />
 
   return (
     <section className='report-index'>

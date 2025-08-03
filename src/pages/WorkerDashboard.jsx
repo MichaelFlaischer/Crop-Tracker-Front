@@ -5,11 +5,13 @@ import { taskService } from '../services/task.service.js'
 import { fieldService } from '../services/field.service.js'
 import { showErrorMsg } from '../services/event-bus.service.js'
 import { Link } from 'react-router-dom'
+import { Loader } from '../cmps/Loader.jsx'
 
 export function WorkerDashboard() {
   const [todayTasks, setTodayTasks] = useState([])
   const [weeklyStats, setWeeklyStats] = useState([])
   const [todayDeliveries, setTodayDeliveries] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
   const userId = sessionStorage.getItem('loggedinUser') ? JSON.parse(sessionStorage.getItem('loggedinUser'))._id : null
 
   useEffect(() => {
@@ -64,8 +66,12 @@ export function WorkerDashboard() {
     } catch (err) {
       showErrorMsg('שגיאה בטעינת נתוני הדשבורד')
       console.error(err)
+    } finally {
+      setIsLoading(false)
     }
   }
+
+  if (isLoading) return <Loader />
 
   return (
     <section className='worker-dashboard'>

@@ -27,6 +27,7 @@ import {
   PlusCircle,
   Scissors,
 } from 'lucide-react'
+import { Loader } from '../cmps/Loader.jsx'
 
 export function SowingDetails() {
   const { sowingId } = useParams()
@@ -99,7 +100,7 @@ export function SowingDetails() {
     return taskColorMap[taskDescription]
   }
 
-  if (!sowing || !field || !crop) return <p>🔄 טוען מידע...</p>
+  if (!sowing || !field || !crop) return <Loader />
 
   const totalCost = tasks.reduce((acc, task) => {
     if (task.status === 'cancelled') return acc

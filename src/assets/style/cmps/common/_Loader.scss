@@ -1,42 +1,100 @@
-.loader-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1em;
-
-    /* position: fixed;
+.loader-fullscreen-wrapper {
+  position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%); */
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  padding: 2rem;
+  border-radius: 1rem;
+  opacity: 0;
+  animation: fadeIn 0.4s ease-out forwards;
+}
 
-    .animation {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
 
-        span {
-            display: inline-block;
-            border-radius: 50vw;
-            background-color: $clr-brand2;
-            width: 2em;
-            height: 2em;
-            animation: bounce 1.5s infinite ease-in-out both;
-        }
+.loader-orbit-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
 
-        span:nth-child(1) {
-            animation-delay: -0.32s;
-        }
+.loader-orbit {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: auto;
+  animation: rotate 3s linear infinite;
 
-        span:nth-child(2) {
-            animation-delay: -0.16s;
-        }
+  .center-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60px;
+    height: 60px;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+  }
 
-        p {
-            line-height: 1.5em;
-            letter-spacing: 1px;
-            text-align: center;
-            margin: 1rem 0 0;
-            max-width: 50ch;
-        }
+  .orbit-icon {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+
+    &.icon1 {
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
     }
+
+    &.icon2 {
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text {
+  margin-top: 1.2rem;
+  font-size: 1.1rem;
+  text-align: center;
+  color: #3a3a3a;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &::after {
+    content: '';
+    display: inline-block;
+    width: 1.2em;
+    text-align: left;
+    animation: dots 1.5s steps(3, end) infinite;
+  }
+}
+
+@keyframes dots {
+  0%   { content: ''; }
+  33%  { content: '.'; }
+  66%  { content: '..'; }
+  100% { content: '...'; }
+}
+
+.loader-icon {
+  font-size: 1.2em;
+  color: #6dbb4d;
 }

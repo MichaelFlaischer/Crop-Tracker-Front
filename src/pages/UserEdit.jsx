@@ -11,6 +11,7 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { registerLocale } from 'react-datepicker'
 import he from 'date-fns/locale/he'
+import { Loader } from '../cmps/Loader.jsx'
 registerLocale('he', he)
 
 const schema = yup.object().shape({
@@ -41,6 +42,7 @@ export function UserEdit() {
   const navigate = useNavigate()
   const [roles, setRoles] = useState([])
   const [ispasswordEditable, setIspasswordEditable] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   const {
     register,
@@ -64,6 +66,7 @@ export function UserEdit() {
   useEffect(() => {
     loadUser()
     loadRoles()
+    setIsLoading(false)
   }, [])
 
   async function loadUser() {
@@ -119,6 +122,8 @@ export function UserEdit() {
       showErrorMsg('שגיאה בעדכון העובד')
     }
   }
+
+  if (isLoading) return <Loader />
 
   return (
     <section className='user-edit'>

@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { clientService } from '../services/client.service.js'
 import { ResponsiveTable } from '../cmps/ResponsiveTable.jsx'
+import { Loader } from '../cmps/Loader.jsx'
 
 export function ClientIndex() {
   const [clients, setClients] = useState([])
   const [filteredClients, setFilteredClients] = useState([])
   const [filterBy, setFilterBy] = useState({ name: '', contact: '', sort: '' })
-
+  const [isLoading, setIsLoading] = useState(true)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -19,11 +20,14 @@ export function ClientIndex() {
   }, [filterBy, clients])
 
   async function loadClients() {
+    setIsLoading(true)
     try {
       const data = await clientService.query()
       setClients(data)
     } catch (err) {
       console.error('שגיאה בטעינת לקוחות:', err)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -76,6 +80,8 @@ export function ClientIndex() {
   function clearFilters() {
     setFilterBy({ name: '', contact: '', sort: '' })
   }
+
+  if (isLoading) return <Loader />
 
   return (
     <section className='client-index'>

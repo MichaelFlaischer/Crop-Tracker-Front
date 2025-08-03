@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { roleService } from '../services/role.service'
 import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service'
+import { Loader } from '../cmps/Loader.jsx'
 
 export function RoleEdit() {
   const [role, setRole] = useState(null)
@@ -44,7 +45,7 @@ export function RoleEdit() {
     }
   }
 
-  if (!role) return <p>טוען נתונים...</p>
+  if (!role) return <Loader />
 
   return (
     <section className='role-edit'>

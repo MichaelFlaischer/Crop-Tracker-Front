@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { operationService } from '../services/operation.service.js'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service.js'
+import { Loader } from '../cmps/Loader.jsx'
 
 export function OperationIndex() {
   const [operations, setOperations] = useState([])
@@ -61,7 +62,7 @@ export function OperationIndex() {
       </button>
 
       {isLoading ? (
-        <p>טוען נתונים...</p>
+        <Loader />
       ) : operations.length === 0 ? (
         <p>לא קיימות פעולות במערכת. לחץ על "הוספת פעולה חדשה" כדי להתחיל.</p>
       ) : (

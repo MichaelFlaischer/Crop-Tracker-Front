@@ -5,6 +5,7 @@ import { warehouseService } from '../services/warehouse.service.js'
 import { sowingAndHarvestService } from '../services/sowing-and-harvest.service.js'
 import { fieldService } from '../services/field.service.js'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service.js'
+import { Loader } from '../cmps/Loader.jsx'
 
 export function CropIndex() {
   const [crops, setCrops] = useState([])
@@ -98,7 +99,7 @@ export function CropIndex() {
     return { inWarehouses, growingInFields }
   }
 
-  if (isLoading) return <div className='loader'>טוען נתונים...</div>
+  if (isLoading) return <Loader />
 
   return (
     <section className='crop-index'>

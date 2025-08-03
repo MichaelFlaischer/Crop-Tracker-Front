@@ -5,6 +5,7 @@ import { sowingAndHarvestService } from '../services/sowing-and-harvest.service.
 import { cropService } from '../services/crop.service.js'
 import { getDailyWeatherSummary, getRecommendedHarvestDays } from '../services/weather.service.js'
 import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api'
+import { Loader } from '../cmps/Loader.jsx'
 
 const GOOGLE_LIBRARIES = ['drawing', 'places', 'geometry']
 
@@ -146,7 +147,7 @@ export function FieldIndex() {
     if (filter === 'inactive') return !field.isActive
   })
 
-  if (!isLoaded) return <p>טוען מפה...</p>
+  if (!isLoaded) return <Loader />
 
   return (
     <div className='field-index' style={{ display: 'flex', gap: '1.5rem' }}>

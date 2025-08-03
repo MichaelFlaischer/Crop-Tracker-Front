@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { seasonService } from '../services/seasons.service'
 import { showErrorMsg } from '../services/event-bus.service'
+import { Loader } from '../cmps/Loader.jsx'
 
 export function SeasonIndex() {
   const [seasons, setSeasons] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -22,6 +24,8 @@ export function SeasonIndex() {
       setSeasons(sorted)
     } catch (err) {
       showErrorMsg('שגיאה בטעינת העונות')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -38,6 +42,8 @@ export function SeasonIndex() {
     const date = new Date(dateStr)
     return date.toLocaleDateString('he-IL')
   }
+
+  if (isLoading) return <Loader />
 
   return (
     <section className='season-index'>

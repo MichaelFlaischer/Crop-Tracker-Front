@@ -5,6 +5,7 @@ import { sowingAndHarvestService } from '../services/sowing-and-harvest.service.
 import { cropService } from '../services/crop.service.js'
 import { getForecastByCoords } from '../services/weather.service.js'
 import { taskService } from '../services/task.service.js'
+import { Loader } from '../cmps/Loader.jsx'
 
 export function WeatherForecast() {
   const [forecastData, setForecastData] = useState([])
@@ -149,7 +150,7 @@ export function WeatherForecast() {
     loadForecasts()
   }, [])
 
-  if (isLoading) return <p>🔄 טוען תחזיות...</p>
+  if (isLoading) return <Loader />
 
   return (
     <section className='weekly-weather-page'>

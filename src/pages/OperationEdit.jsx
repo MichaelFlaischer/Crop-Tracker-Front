@@ -6,6 +6,7 @@ import * as yup from 'yup'
 
 import { operationService } from '../services/operation.service.js'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service.js'
+import { Loader } from '../cmps/Loader.jsx'
 
 const schema = yup.object().shape({
   operationName: yup.string().required('יש להזין שם פעולה'),
@@ -78,7 +79,7 @@ export function OperationEdit() {
       </p>
 
       {isLoading ? (
-        <p>טוען נתונים...</p>
+        <Loader />
       ) : (
         <form onSubmit={handleSubmit(onSubmit)} className='form'>
           <label>

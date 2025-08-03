@@ -4,18 +4,21 @@ import { clientService } from '../services/client.service.js'
 import { userService } from '../services/user.service.js'
 import * as XLSX from 'xlsx'
 import { saveAs } from 'file-saver'
+import { Loader } from '../cmps/Loader.jsx'
 
 export function CustomerOrderHistoryReport() {
   const [orders, setOrders] = useState([])
   const [clients, setClients] = useState([])
   const [users, setUsers] = useState([])
   const [sortConfig, setSortConfig] = useState({ key: '', direction: 'asc' })
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     loadData()
   }, [])
 
   async function loadData() {
+    setIsLoading(true)
     try {
       const [ordersData, clientsData, usersData] = await Promise.all([customerOrderService.query(), clientService.query(), userService.query()])
       setOrders(ordersData)
@@ -23,6 +26,8 @@ export function CustomerOrderHistoryReport() {
       setUsers(usersData)
     } catch (err) {
       console.error('❌ שגיאה בטעינת נתונים', err)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -134,6 +139,8 @@ export function CustomerOrderHistoryReport() {
     const blob = new Blob([excelBuffer], { type: 'application/octet-stream' })
     saveAs(blob, 'היסטוריית_הזמנות.xlsx')
   }
+
+  if (isLoading) return <Loader />
 
   return (
     <section className='order-history-report'>

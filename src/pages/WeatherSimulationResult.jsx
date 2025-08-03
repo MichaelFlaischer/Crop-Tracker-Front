@@ -1,10 +1,13 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Bar, Line } from 'react-chartjs-2'
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend, PointElement, LineElement } from 'chart.js'
+import { Loader } from '../cmps/Loader.jsx'
+import { useState, useEffect } from 'react'
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend, PointElement, LineElement)
 
 export function WeatherSimulationResult() {
+  const [isLoading, setIsLoading] = useState(true)
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -24,6 +27,17 @@ export function WeatherSimulationResult() {
     selectedCropName,
     growthPeriodInDays,
   } = location.state || {}
+
+  useEffect(() => {
+    // Simulate data loading
+    const timer = setTimeout(() => {
+      setIsLoading(false)
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  if (isLoading) return <Loader />
 
   if (!analyzedDays) {
     return (

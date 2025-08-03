@@ -11,6 +11,7 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { registerLocale } from 'react-datepicker'
 import he from 'date-fns/locale/he'
+import { Loader } from '../cmps/Loader.jsx'
 registerLocale('he', he)
 
 export function TaskIndex() {
@@ -164,6 +165,8 @@ export function TaskIndex() {
     assignedEmployees: assignedMap[task._id] || 0,
     status: statusMap[task.status] || task.status,
   }))
+
+  if (isLoading) return <Loader />
 
   return (
     <section className='task-index'>

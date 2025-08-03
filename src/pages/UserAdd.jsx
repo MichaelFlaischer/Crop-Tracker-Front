@@ -10,6 +10,7 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { registerLocale } from 'react-datepicker'
 import he from 'date-fns/locale/he'
+import { Loader } from '../cmps/Loader.jsx'
 registerLocale('he', he)
 
 const schema = yup.object().shape({
@@ -33,6 +34,7 @@ const schema = yup.object().shape({
 export function UserAdd() {
   const navigate = useNavigate()
   const [roles, setRoles] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
 
   const {
     register,
@@ -80,6 +82,7 @@ export function UserAdd() {
 
   async function onSubmit(user) {
     try {
+      setIsLoading(true)
       const userToSend = {
         fullName: user.fullName,
         username: user.username,
@@ -100,8 +103,12 @@ export function UserAdd() {
       navigate('/user')
     } catch (err) {
       showErrorMsg('שגיאה בהוספת העובד')
+    } finally {
+      setIsLoading(false)
     }
   }
+
+  if (isLoading) return <Loader />
 
   return (
     <section className='user-add'>

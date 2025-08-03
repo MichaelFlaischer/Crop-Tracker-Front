@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { clientService } from '../services/client.service.js'
+import { Loader } from '../cmps/Loader.jsx'
 
 export function ClientEdit() {
   const [client, setClient] = useState(null)
   const [errors, setErrors] = useState({})
+  const [isLoading, setIsLoading] = useState(true)
   const { clientId } = useParams()
   const navigate = useNavigate()
 
@@ -13,6 +15,7 @@ export function ClientEdit() {
   }, [])
 
   async function loadClient() {
+    setIsLoading(true)
     try {
       const data = await clientService.getById(clientId)
       if (!data) {
@@ -23,6 +26,8 @@ export function ClientEdit() {
       }
     } catch (err) {
       console.error('שגיאה בטעינת לקוח:', err)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -55,6 +60,7 @@ export function ClientEdit() {
     }
   }
 
+  if (isLoading) return <Loader />
   if (!client) return <div>טוען נתונים...</div>
 
   return (

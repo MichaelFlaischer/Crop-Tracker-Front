@@ -8,6 +8,7 @@ import { cropService } from '../services/crop.service.js'
 import { userService } from '../services/user.service.js'
 import * as XLSX from 'xlsx'
 import { saveAs } from 'file-saver'
+import { Loader } from '../cmps/Loader.jsx'
 
 export function EmployeeTaskHistoryReport() {
   const [tasks, setTasks] = useState([])
@@ -18,6 +19,7 @@ export function EmployeeTaskHistoryReport() {
   const [users, setUsers] = useState([])
   const [assignments, setAssignments] = useState([])
   const [sortBy, setSortBy] = useState({ key: null, asc: true })
+  const [isLoading, setIsLoading] = useState(true)
   const DELIVERY_OPERATION_ID = '68354fa1d29fa199e95c04d8'
 
   useEffect(() => {
@@ -25,6 +27,7 @@ export function EmployeeTaskHistoryReport() {
   }, [])
 
   async function loadData() {
+    setIsLoading(true)
     try {
       const [allTasks, allOrders, allClients, allFields, allCrops, allUsers, allAssignments] = await Promise.all([
         taskService.query(),
@@ -45,6 +48,8 @@ export function EmployeeTaskHistoryReport() {
       setAssignments(allAssignments)
     } catch (err) {
       console.error('שגיאה בטעינת נתונים:', err)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -117,6 +122,8 @@ export function EmployeeTaskHistoryReport() {
     const valB = b[key] || ''
     return sortBy.asc ? new Date(valA).getTime() - new Date(valB).getTime() : new Date(valB).getTime() - new Date(valA).getTime()
   })
+
+  if (isLoading) return <Loader />
 
   return (
     <section className='employee-task-history'>

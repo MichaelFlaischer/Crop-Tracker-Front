@@ -3,6 +3,7 @@ import { employeesInTaskService } from '../services/employees-in-task.service.js
 import { taskService } from '../services/task.service.js'
 import { userService } from '../services/user.service.js'
 import { showErrorMsg } from '../services/event-bus.service.js'
+import { Loader } from '../cmps/Loader.jsx'
 
 export function EmployeesInTaskIndex() {
   const [records, setRecords] = useState([])
@@ -15,6 +16,7 @@ export function EmployeesInTaskIndex() {
   }, [])
 
   async function loadData() {
+    setIsLoading(true)
     try {
       const [records, tasks, users] = await Promise.all([employeesInTaskService.query(), taskService.query(), userService.query()])
       const taskMap = tasks.reduce((acc, t) => {
@@ -36,6 +38,19 @@ export function EmployeesInTaskIndex() {
       setIsLoading(false)
     }
   }
+
+  const statusMap = {
+    waiting: 'בהמתנה',
+    'in-progress': 'בתהליך',
+    completed: 'הושלם',
+    missed: 'הוחמץ',
+  }
+
+  function translateStatus(status) {
+    return statusMap[status] || status
+  }
+
+  if (isLoading) return <Loader />
 
   return (
     <section className='employees-in-task-index'>
@@ -132,15 +147,4 @@ export function EmployeesInTaskIndex() {
       )}
     </section>
   )
-}
-
-const statusMap = {
-  waiting: 'בהמתנה',
-  'in-progress': 'בתהליך',
-  completed: 'הושלם',
-  missed: 'הוחמץ',
-}
-
-function translateStatus(status) {
-  return statusMap[status] || status
 }

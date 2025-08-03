@@ -4,6 +4,7 @@ import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api'
 import { warehouseService } from '../services/warehouse.service.js'
 import { cropService } from '../services/crop.service.js'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service.js'
+import { Loader } from '../cmps/Loader.jsx'
 
 const containerStyle = {
   width: '100%',
@@ -19,6 +20,7 @@ export function WarehouseIndex() {
   const [cropsMap, setCropsMap] = useState({})
   const [activeWarehouseId, setActiveWarehouseId] = useState(null)
   const [filterStatus, setFilterStatus] = useState('all')
+  const [isLoading, setIsLoading] = useState(true)
   const mapRef = useRef(null)
   const navigate = useNavigate()
 
@@ -45,6 +47,8 @@ export function WarehouseIndex() {
     } catch (err) {
       console.error('Failed to load warehouses or crops:', err)
       showErrorMsg('שגיאה בטעינת נתונים')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -102,6 +106,8 @@ export function WarehouseIndex() {
     const status = getCapacityStatus(used, wh.capacity)
     return filterStatus === 'all' || status === filterStatus
   })
+
+  if (isLoading) return <Loader />
 
   return (
     <section className='warehouse-index split-layout'>

@@ -14,6 +14,7 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { registerLocale } from 'react-datepicker'
 import he from 'date-fns/locale/he'
+import { Loader } from '../cmps/Loader.jsx'
 
 registerLocale('he', he)
 
@@ -27,6 +28,7 @@ export function OrderUpdateQty() {
   const [users, setUsers] = useState([])
   const [assignments, setAssignments] = useState([])
   const [deliveryDate, setDeliveryDate] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
   const navigate = useNavigate()
   const loggedInUser = useSelector((storeState) => storeState.userModule.loggedInUser)
 
@@ -35,6 +37,7 @@ export function OrderUpdateQty() {
   }, [orderId])
 
   async function loadData() {
+    setIsLoading(true)
     const o = await customerOrderService.getById(orderId)
     const i = await customerOrderItemService.queryByOrderId(orderId)
     const c = await clientService.getById(o.customerId)
@@ -57,6 +60,7 @@ export function OrderUpdateQty() {
     setUsers(users)
     setCropsMap(cropMap)
     setDeliveryDate(o.desiredDeliveryDate ? new Date(o.desiredDeliveryDate) : '')
+    setIsLoading(false)
   }
 
   function handleWarehouseQtyChange(itemIdx, warehouseId, value) {
@@ -153,6 +157,8 @@ export function OrderUpdateQty() {
       console.error('שגיאה באישור ההזמנה:', err)
     }
   }
+
+  if (isLoading) return <Loader />
 
   if (!order || !client) return <div>טוען נתונים...</div>
 

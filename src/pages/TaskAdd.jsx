@@ -12,6 +12,7 @@ import { taskService } from '../services/task.service.js'
 import { fieldService } from '../services/field.service.js'
 import { operationService } from '../services/operation.service.js'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service.js'
+import { Loader } from '../cmps/Loader.jsx'
 
 registerLocale('he', he)
 
@@ -37,6 +38,7 @@ export function TaskAdd() {
   const [fields, setFields] = useState([])
   const [operations, setOperations] = useState([])
   const [isReady, setIsReady] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   const {
     register,
@@ -64,18 +66,6 @@ export function TaskAdd() {
     loadFormOptions()
   }, [])
 
-  async function loadFormOptions() {
-    try {
-      const [fields, operations] = await Promise.all([fieldService.query(), operationService.query()])
-      setFields(fields)
-      setOperations(operations)
-      setIsReady(true)
-    } catch (err) {
-      console.error('שגיאה בטעינת חלקות/פעולות:', err)
-      showErrorMsg('שגיאה בטעינת חלקות או פעולות')
-    }
-  }
-
   useEffect(() => {
     if (!isReady) return
 
@@ -94,6 +84,20 @@ export function TaskAdd() {
     })
   }, [isReady, fields, fieldIdFromUrl, reset])
 
+  async function loadFormOptions() {
+    try {
+      const [fields, operations] = await Promise.all([fieldService.query(), operationService.query()])
+      setFields(fields)
+      setOperations(operations)
+      setIsReady(true)
+    } catch (err) {
+      console.error('שגיאה בטעינת חלקות/פעולות:', err)
+      showErrorMsg('שגיאה בטעינת חלקות או פעולות')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   async function onSubmit(data) {
     try {
       await taskService.add({ ...data, status: 'in-progress', comments: '' })
@@ -104,6 +108,8 @@ export function TaskAdd() {
       showErrorMsg('שגיאה בהוספת משימה')
     }
   }
+
+  if (isLoading) return <Loader />
 
   return (
     <section className='task-add'>

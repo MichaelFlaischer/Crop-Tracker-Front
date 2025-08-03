@@ -4,18 +4,21 @@ import { customerOrderService } from '../services/customer-order.service.js'
 import { cropService } from '../services/crop.service.js'
 import * as XLSX from 'xlsx'
 import { saveAs } from 'file-saver'
+import { Loader } from '../cmps/Loader.jsx'
 
 export function CropPriceHistoryReport() {
   const [items, setItems] = useState([])
   const [orders, setOrders] = useState([])
   const [crops, setCrops] = useState([])
   const [sortConfig, setSortConfig] = useState({ key: '', direction: 'asc' })
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     loadData()
   }, [])
 
   async function loadData() {
+    setIsLoading(true)
     try {
       const [itemData, orderData, cropData] = await Promise.all([customerOrderItemService.query(), customerOrderService.query(), cropService.query()])
       setItems(itemData)
@@ -23,6 +26,8 @@ export function CropPriceHistoryReport() {
       setCrops(cropData)
     } catch (err) {
       console.error('❌ שגיאה בטעינת נתונים', err)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -94,6 +99,8 @@ export function CropPriceHistoryReport() {
     const blob = new Blob([excelBuffer], { type: 'application/octet-stream' })
     saveAs(blob, 'היסטוריית_מחירי_יבול.xlsx')
   }
+
+  if (isLoading) return <Loader />
 
   return (
     <section className='crop-price-history'>

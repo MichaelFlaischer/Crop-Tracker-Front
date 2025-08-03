@@ -3,11 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { customerOrderService } from '../services/customer-order.service.js'
 import { clientService } from '../services/client.service.js'
 import { format, isValid } from 'date-fns'
+import { Loader } from '../cmps/Loader.jsx'
 
 export function ClientOrders() {
   const [orders, setOrders] = useState([])
   const [collapsed, setCollapsed] = useState({ Draft: false, Approved: false, Delivered: false, Cancelled: false })
   const [client, setClient] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
   const { clientId } = useParams()
   const navigate = useNavigate()
 
@@ -26,11 +28,14 @@ export function ClientOrders() {
   }
 
   async function loadOrders() {
+    setIsLoading(true)
     try {
       const data = await customerOrderService.query()
       setOrders(data.filter((order) => String(order.customerId) === String(clientId)))
     } catch (err) {
       console.error('שגיאה בטעינת הזמנות:', err)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -157,6 +162,8 @@ export function ClientOrders() {
       </section>
     )
   }
+
+  if (isLoading) return <Loader />
 
   return (
     <section className='client-orders'>

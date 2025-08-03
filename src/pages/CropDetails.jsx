@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { cropService } from '../services/crop.service.js'
 import { seasonService } from '../services/seasons.service.js'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service.js'
+import { Loader } from '../cmps/Loader.jsx'
 
 export function CropDetails() {
   const [crop, setCrop] = useState(null)
@@ -53,7 +54,7 @@ export function CropDetails() {
     return num.toLocaleString('he-IL')
   }
 
-  if (isLoading) return <div className='loader'>טוען פרטי יבול...</div>
+  if (isLoading) return <Loader />
   if (!crop) return <div>לא נמצאו נתונים עבור היבול המבוקש</div>
 
   return (

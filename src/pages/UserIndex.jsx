@@ -3,10 +3,12 @@ import { userService } from '../services/user.service'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service'
 import { useNavigate } from 'react-router-dom'
 import { ResponsiveTable } from '../cmps/ResponsiveTable.jsx'
+import { Loader } from '../cmps/Loader.jsx'
 
 export function UserIndex() {
   const [users, setUsers] = useState([])
   const [filterBy, setFilterBy] = useState({ name: '', sort: '' })
+  const [isLoading, setIsLoading] = useState(true)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -19,6 +21,8 @@ export function UserIndex() {
       setUsers(users)
     } catch (err) {
       showErrorMsg('שגיאה בטעינת העובדים')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -74,6 +78,8 @@ export function UserIndex() {
   }
 
   const filteredData = sortedData.filter((user) => user.fullName.toLowerCase().includes(filterBy.name.toLowerCase()))
+
+  if (isLoading) return <Loader />
 
   return (
     <section className='user-index'>

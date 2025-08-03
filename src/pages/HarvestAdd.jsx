@@ -10,6 +10,7 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { registerLocale } from 'react-datepicker'
 import he from 'date-fns/locale/he'
+import { Loader } from '../cmps/Loader.jsx'
 registerLocale('he', he)
 
 export function HarvestAdd() {
@@ -164,7 +165,7 @@ export function HarvestAdd() {
     }
   }
 
-  if (!sowingRecord) return <p>טוען נתונים...</p>
+  if (!sowingRecord) return <Loader />
 
   return (
     <section className='harvest-add'>

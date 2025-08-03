@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { cropService } from '../services/crop.service.js'
 import { sowingAndHarvestService } from '../services/sowing-and-harvest.service.js'
 import { fieldService } from '../services/field.service.js'
+import { Loader } from '../cmps/Loader.jsx'
 
 export function InventoryHistory() {
   const [history, setHistory] = useState([])
@@ -61,7 +62,7 @@ export function InventoryHistory() {
     <section className='inventory-history'>
       <h1>היסטוריית קציר לפי חלקות ויבולים</h1>
       {isLoading ? (
-        <p>טוען נתונים...</p>
+        <Loader />
       ) : history.length === 0 ? (
         <p>לא קיימים נתוני קציר להצגה.</p>
       ) : (

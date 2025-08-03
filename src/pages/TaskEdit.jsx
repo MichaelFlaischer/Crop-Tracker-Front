@@ -12,6 +12,7 @@ import { taskService } from '../services/task.service.js'
 import { fieldService } from '../services/field.service.js'
 import { operationService } from '../services/operation.service.js'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service.js'
+import { Loader } from '../cmps/Loader.jsx'
 
 registerLocale('he', he)
 
@@ -100,7 +101,7 @@ export function TaskEdit() {
     <section className='task-edit'>
       <h1>{isDeliveryTask ? 'עריכת משימת משלוח ללקוח' : 'עריכת משימה'}</h1>
       {isLoading ? (
-        <p>טוען...</p>
+        <Loader />
       ) : (
         <form className='form' onSubmit={handleSubmit(onSubmit)}>
           <label>

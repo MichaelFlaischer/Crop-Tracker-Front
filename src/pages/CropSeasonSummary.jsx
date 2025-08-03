@@ -2,16 +2,19 @@ import { useEffect, useState } from 'react'
 import { cropService } from '../services/crop.service'
 import { sowingAndHarvestService } from '../services/sowing-and-harvest.service'
 import { seasonService } from '../services/seasons.service'
+import { Loader } from '../cmps/Loader.jsx'
 
 export function CropSeasonSummary() {
   const [summaryData, setSummaryData] = useState([])
   const [openIndexes, setOpenIndexes] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     loadSummary()
   }, [])
 
   async function loadSummary() {
+    setIsLoading(true)
     try {
       const [crops, harvests, seasons] = await Promise.all([cropService.query(), sowingAndHarvestService.query(), seasonService.query()])
 
@@ -84,6 +87,8 @@ export function CropSeasonSummary() {
       setSummaryData(structured)
     } catch (err) {
       console.error('Error loading summary:', err)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -94,6 +99,8 @@ export function CropSeasonSummary() {
   function formatNumber(num) {
     return (+num).toLocaleString('he-IL', { maximumFractionDigits: 0 })
   }
+
+  if (isLoading) return <Loader />
 
   return (
     <section className='crop-season-summary'>

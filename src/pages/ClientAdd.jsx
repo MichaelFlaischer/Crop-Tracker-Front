@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { clientService } from '../services/client.service.js'
+import { Loader } from '../cmps/Loader.jsx'
 
 export function ClientAdd() {
   const [client, setClient] = useState({
@@ -13,6 +14,7 @@ export function ClientAdd() {
   })
 
   const [errors, setErrors] = useState({})
+  const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
 
   function handleChange({ target }) {
@@ -36,17 +38,21 @@ export function ClientAdd() {
       return
     }
 
+    setIsLoading(true)
     try {
       await clientService.add(client)
       navigate('/client')
     } catch (err) {
       console.error('שגיאה בשמירת לקוח:', err)
+    } finally {
+      setIsLoading(false)
     }
   }
 
   return (
     <section className='client-form'>
       <h1>➕ הוספת לקוח</h1>
+      {isLoading && <Loader />}
       <form onSubmit={onSave}>
         <label>
           שם לקוח:

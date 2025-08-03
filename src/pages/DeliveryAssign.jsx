@@ -2,18 +2,21 @@ import { useEffect, useState } from 'react'
 import { customerOrderService } from '../services/customer-order.service.js'
 import { clientService } from '../services/client.service.js'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service.js'
+import { Loader } from '../cmps/Loader.jsx'
 
 export function DeliveryAssign() {
   const [orders, setOrders] = useState([])
   const [clients, setClients] = useState([])
   const [clientMap, setClientMap] = useState({})
   const [assignments, setAssignments] = useState({}) // { orderId: { driver: '', date: '' } }
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     loadOrders()
   }, [])
 
   async function loadOrders() {
+    setIsLoading(true)
     try {
       const [allOrders, allClients] = await Promise.all([customerOrderService.query(), clientService.query()])
       const approved = allOrders.filter((order) => order.status === 'מאושרת')
@@ -27,6 +30,8 @@ export function DeliveryAssign() {
     } catch (err) {
       console.error('שגיאה בטעינת הזמנות:', err)
       showErrorMsg('שגיאה בטעינת הזמנות')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -64,6 +69,8 @@ export function DeliveryAssign() {
       showErrorMsg('שגיאה בשיבוץ משלוח')
     }
   }
+
+  if (isLoading) return <Loader />
 
   return (
     <section className='delivery-assign'>

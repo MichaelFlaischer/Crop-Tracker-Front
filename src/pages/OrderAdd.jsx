@@ -9,6 +9,7 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { registerLocale } from 'react-datepicker'
 import he from 'date-fns/locale/he'
+import { Loader } from '../cmps/Loader.jsx'
 registerLocale('he', he)
 
 export function OrderAdd() {
@@ -19,6 +20,7 @@ export function OrderAdd() {
   const [notes, setNotes] = useState('')
   const [items, setItems] = useState([{ cropId: '', quantity: '', price: '' }])
   const [cropStats, setCropStats] = useState({})
+  const [isLoading, setIsLoading] = useState(true)
 
   const navigate = useNavigate()
 
@@ -28,20 +30,26 @@ export function OrderAdd() {
   }, [])
 
   async function loadClients() {
+    setIsLoading(true)
     try {
       const data = await clientService.query()
       setClients(data)
     } catch (err) {
       console.error('שגיאה בטעינת לקוחות:', err)
+    } finally {
+      setIsLoading(false)
     }
   }
 
   async function loadCrops() {
+    setIsLoading(true)
     try {
       const data = await cropService.query()
       setCrops(data)
     } catch (err) {
       console.error('שגיאה בטעינת יבולים:', err)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -125,6 +133,8 @@ export function OrderAdd() {
   }
 
   const selectedClient = clients.find((c) => String(c._id) === selectedCustomerId)
+
+  if (isLoading) return <Loader />
 
   return (
     <section className='order-add'>
